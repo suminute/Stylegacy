@@ -5,7 +5,7 @@ import '../color.css';
 const Home = () => {
   return (
     <>
-      <>Home</>
+      <div>Home</div>
     </>
   );
 };
