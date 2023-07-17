@@ -1,70 +1,112 @@
-# Getting Started with Create React App
+# STYLEGACY
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+프로젝트 설명...
 
-## Available Scripts
+## 디자이너 브랜드 및 편집샵 위치 정보 제공
 
-In the project directory, you can run:
+react-toolkit, react-query, firebase를 이용한 웹앱 구현
 
-### `yarn start`
+## install
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```javascript
+ yarn install
+ # 또는
+ yarn i
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 팀구성
 
-### `yarn test`
+윤수민 | 김슬기 | 안홍민 | 전동헌 | 박희연
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 기술스택
 
-### `yarn build`
+  <img src="https://img.shields.io/badge/React-61DAFB?style=flat&logo=React&logoColor=white"/>
+	<img src="https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=HTML5&logoColor=white" />
+	<img src="https://img.shields.io/badge/Styledcomponents-DB7093?style=flat&logo=Styledcomponents&logoColor=white" />
+  <img src="https://img.shields.io/badge/Firebase-FFCA28?style=flat&logo=Firebase&logoColor=white" />
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 커밋 컨벤션
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- Feat : 새로운 기능 추가
+- Fix : 버그 수정
+- Docs : 문서 변경
+- Style : styled-components 수정 등 스타일 관련 변경, 코드 formatting, 코드 자체의 변경이 없는 경우
+- Chore : 설정 변경 등 기타 변경사항
+- Refactor : 코드 리팩토링 (변수명 변경 등)
+- Comment : 주석 추가 및 변경
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 코드 컨벤션
 
-### `yarn eject`
+### 폴더, 파일명
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+컴포넌트 파일명은 `파스칼 케이스(PascalCase)`를 사용한다.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```javascript
+MainHome.jsx;
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+컴포넌트를 제외한 폴더, 파일명은 `카멜 케이스(camelCase)`를 사용한다.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```javascript
+kakaoMap.js;
+```
 
-## Learn More
+### 함수
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+함수명은 `카멜 케이스(camelCase)`를 원칙으로 한다.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```javascript
+const addPost = () => {};
+```
 
-### Code Splitting
+### 클래스명
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+클래스명은 케밥 케이스(kebab-case)를 원칙으로 한다.
 
-### Analyzing the Bundle Size
+```javascript
+<h1 className="main-title">제목</h1>
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+### 스타일 코드 순서
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+스타일 코드의 순서는 아래와 같이 작성한다.
 
-### Advanced Configuration
+```javascript
+.sample {
+  /* position 관련 */
+  position: absolute;
+  top: 0;
+  left: 0;
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+  /* display 관련 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-### Deployment
+  /* size 관련 */
+  width: auto;
+  height: auto;
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+  /* margin, padding */
+  margin: 0 auto;
+  padding: 12px;
 
-### `yarn build` fails to minify
+  /* background 관련 */
+  background-color: #ffffff;
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+  /* border 관련 */
+  border: 1px solid #ffffff;
+  border-radius: 12px;
+
+  /* font 관련 */
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+
+  /* animation 관련 */
+  transform: translate(10px, 100%);
+  transition: 300ms;
+}
+```

@@ -1,13 +1,30 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Noto Sans KR', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/* a 엘리먼트의 기본스타일 초기화 */
+a,
+a:link {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* 화면에 보이면 안되는 엘리먼트에 대한 hidden 클래스 */
+.hidden {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+  text-indent: -9999px;
+}
+
+/* 기본적으로 버튼은 커서가 포인트가되는 클래스 */
+button {
+  cursor: pointer;
 }
