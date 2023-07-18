@@ -7,8 +7,8 @@ import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 
 const StoreDetail = () => {
-  const { storeId } = useParams();
-  // const { isLoading, error, data } = useQuery(['stores', storeId], () => getStoreData(storeId));
+  const { id } = useParams();
+  // const { isLoading, error, data } = useQuery(['stores', id], () => getStoreData(id));
   const location = useLocation();
   console.log(location.state.location);
 
@@ -20,6 +20,7 @@ const StoreDetail = () => {
   // };
 
   const data = {
+    id: 'lGBXdJibgGduq4GDvjS8',
     site: 'https://www.instagram.com/tonywack_readytowear',
     phoneNumber: '070-7765-5578',
     marker: {
@@ -28,11 +29,10 @@ const StoreDetail = () => {
     },
     image:
       'https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20220815_97%2F166056034235103u8W_JPEG%2F45553d3b7e8e7d2e2dacfceb2c62a5da.jpg',
-    name: '토니웩 한남',
+    store: '토니웩 한남',
     time: '12:00-20:30',
-    storeId: '2WGKahNO',
-    address: '서울 용산구 한남대로28가길 19',
-    id: 'lGBXdJibgGduq4GDvjS8'
+    location: '서울 용산구 한남대로28가길 19',
+    like: 0
   };
 
   // if (isLoading) return <div>Loading...</div>;

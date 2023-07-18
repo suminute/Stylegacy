@@ -44,7 +44,6 @@ const StoreUpdateModal = ({ type, closeModal, id, post }) => {
       queryClient.invalidateQueries('stores');
     }
   });
-
   const updateMutation = useMutation(updateStore, {
     onSuccess: () => {
       queryClient.invalidateQueries('stores');
