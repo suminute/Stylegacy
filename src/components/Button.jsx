@@ -85,6 +85,11 @@ const StButton = styled.button`
       padding: 0 1rem;
       margin: 10px auto;
     `}
+    ${({ disabled }) =>
+    disabled === true &&
+    css`
+      background-color: var(--color_gray2);
+    `}
 `;
 // 사용방식
 
