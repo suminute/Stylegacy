@@ -170,6 +170,7 @@ const Outer = styled.div`
   height: 100%;
   background-color: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(2px);
+  z-index: 100;
 `;
 
 const Inner = styled.form`

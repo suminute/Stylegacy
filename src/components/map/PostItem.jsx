@@ -31,17 +31,17 @@ const PostItem = ({ post }) => {
     }
   };
   return (
-    <Link to={`/detail/${post.id}`} state={{ location: post.location }}>
-      <StCard key={post.id}>
+    <StCard key={post.id}>
+      <Link to={`/store/${post.id}`} state={{ location: post.location }}>
         <p>{post.id}</p>
         <p>{post.store}</p>
         <p>{post.location}</p>
         <p>{post.time}</p>
-        <button onClick={openModal}>수정</button>
-        {isOpen && <StoreUpdateModal type="update" closeModal={closeModal} id={post.id} post={post}></StoreUpdateModal>}
-        <button onClick={() => deleteOnClickHandler(post.id)}>삭제</button>
-      </StCard>
-    </Link>
+      </Link>
+      <button onClick={openModal}>수정</button>
+      {isOpen && <StoreUpdateModal type="update" closeModal={closeModal} id={post.id} post={post}></StoreUpdateModal>}
+      <button onClick={() => deleteOnClickHandler(post.id)}>삭제</button>
+    </StCard>
   );
 };
 

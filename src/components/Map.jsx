@@ -194,7 +194,7 @@ const Map = () => {
   }, []);
   return (
     <>
-      <div onContextMenu={(e) => e.preventDefault()} ref={mapRef} style={{ width: '100%', height: '100vh' }} />
+      <div onContextMenu={(e) => e.preventDefault()} ref={mapRef} style={{ width: '100%', height: '94vh' }} />
     </>
   );
 };

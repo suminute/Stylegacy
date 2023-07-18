@@ -109,7 +109,7 @@ const Stdiv = styled.div`
 
 const StBackground = styled.div`
   position: fixed;
-  top: 75px;
+  top: 59px;
   left: 0;
   width: 450px;
   height: 94vh;
