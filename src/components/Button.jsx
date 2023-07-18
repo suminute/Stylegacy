@@ -47,6 +47,13 @@ const StButton = styled.button`
       color: var(--color_white);
     `}
 
+    ${({ color }) =>
+    color === 'gray1' &&
+    css`
+      background-color: var(--color_gray1);
+      color: var(--color_black);
+    `}
+
   ${(props) =>
     props.full === 'true' &&
     css`
@@ -78,10 +85,14 @@ const StButton = styled.button`
       padding: 0 1rem;
       margin: 10px auto;
     `}
+    ${({ disabled }) =>
+    disabled === true &&
+    css`
+      background-color: var(--color_gray2);
+    `}
 `;
 // 사용방식
-{
-  /* <Button color='pink2' size="large" full>
+
+/* <Button color='pink2' size="large" full>
         버튼입니다
       </Button> */
-}
