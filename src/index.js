@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
+import './color.css';
 import App from './App';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { Provider } from 'react-redux';

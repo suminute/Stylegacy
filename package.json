@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@phosphor-icons/react": "^2.0.10",
     "@reduxjs/toolkit": "^1.9.5",
+    "algoliasearch": "^4.18.0",
     "axios": "^1.4.0",
     "firebase": "^10.0.0",
     "react": "^18.2.0",
