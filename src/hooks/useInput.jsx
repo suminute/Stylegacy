@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
-const useInput = (inputValue) => {
-  const [value, setValue] = useState(inputValue);
+const useInput = (initialValue) => {
+  const [value, setValue] = useState(initialValue);
 
   const handler = (e) => {
     setValue(e.target.value);
