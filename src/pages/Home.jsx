@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import SearchBar from "../components/SearchBar";
+import React from 'react';
 
 const Home = () => {
 
