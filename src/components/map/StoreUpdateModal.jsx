@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { styled } from 'styled-components';
 import Button from '../Button';
 import { useMutation, useQueryClient } from 'react-query';
-import { addStore, storageUpload, updateStore } from '../../api/maps';
+import { addStore, storageUpload, updateStore } from '../../api/stores';
 import useInput from '../../hooks/useInput';
 import Checkbox from './Checkbox';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
@@ -55,7 +55,6 @@ const StoreUpdateModal = ({ type, closeModal, id, post }) => {
       setDisabled(true);
     }
   }, [location, store]);
-
 
   const days = ['월', '화', '수', '목', '금', '토', '일'];
 
@@ -249,4 +248,3 @@ const StCheckbosDiv = styled.div`
 const StImagePreview = styled.div`
   width: 100%;
 `;
-

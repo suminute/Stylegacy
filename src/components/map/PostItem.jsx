@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import StoreUpdateModal from './StoreUpdateModal';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { deleteStore } from '../../api/maps';
+import { deleteStore } from '../../api/stores';
 import { styled } from 'styled-components';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';

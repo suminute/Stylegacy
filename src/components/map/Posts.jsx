@@ -1,4 +1,4 @@
-import { getStores } from '../../api/maps';
+import { getStores } from '../../api/stores';
 import { useQuery } from 'react-query';
 import PostItem from './PostItem';
 

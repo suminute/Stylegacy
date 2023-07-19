@@ -10,10 +10,7 @@ import {
   updateDoc,
   writeBatch
 } from 'firebase/firestore';
-import { db } from '../firebase';
-import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import { auth, db } from '../firebase';
-
 
 // 각 user의 좋아요 클릭 여부 handle
 export const getLikes = async (storeId) => {
@@ -63,7 +60,7 @@ export const removeAllLike = async (storeId) => {
     batch.delete(doc.ref);
   });
   await batch.commit();
-
+};
 
 export const getLikedStoresByUser = async () => {
   const user = auth.currentUser;
@@ -89,5 +86,4 @@ export const getLikedStoresByUser = async () => {
   }
 
   return results;
-
 };
