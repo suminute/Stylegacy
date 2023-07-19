@@ -17,8 +17,8 @@ function App() {
       dispatch(
         getUser({
           userId: isSessionList.uid,
-          displayName: isSessionList.displayName,
-          email: isSessionList.email
+          userName: isSessionList.displayName,
+          userEmail: isSessionList.email
         })
       );
     }
