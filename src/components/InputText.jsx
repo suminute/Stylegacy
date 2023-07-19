@@ -1,8 +1,19 @@
 import styled, { css } from "styled-components"
 
-const InputText = ({full, ...props}) => {
+const InputText = ({full, size,type,name,id,value,onChange,placeholder, ...props}) => {
   return (
-    <StInputText full={full.toString()} {...props}></StInputText>
+    <StInputText 
+      full={full ? 'true': 'false'} 
+      size={size}
+      type={type}
+      name={name}
+      id={id}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      {...props}
+    >
+    </StInputText>
   )
 }
 
@@ -16,7 +27,6 @@ const StInputText = styled.input`
   border: 5px solid var(--color_pink1);
   background-color: var(--color_pink3);
   border-radius: 20px;
-  width: 100%;
   ${(props) =>
     props.full === 'true' &&
     css`
