@@ -31,11 +31,23 @@ const StoreUpdateModal = ({ type, closeModal, id, post }) => {
     }
   }, [location]);
 
-  const newStore = {
-    store,
-    time,
-    location
-  };
+  let newStore = {};
+
+  if (type === 'add') {
+    newStore = {
+      store,
+      time,
+      location,
+      likeCount: 0
+    };
+  } else if (type === 'update') {
+    newStore = {
+      store,
+      time,
+      location,
+      likeCount: post.likeCount
+    };
+  }
 
   // 쿼리
   const queryClient = useQueryClient();
@@ -116,46 +128,4 @@ const StBackground = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-`;
-
-const StDropdown = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-`;
-
-const DropdownWrapper = styled.div`
-  width: 170px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: white;
-  /* box-shadow: 0px 0px 9px 5px #00000014; */
-`;
-
-const DropdownHeader = styled.div`
-  padding: 10px;
-  padding: 10px;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-`;
-
-const DropdownList = styled.div`
-  border-top: 1px solid #ccc;
-  position: absolute;
-  width: 170px;
-  height: 300px;
-  border: 1px solid #ccc;
-  background-color: #ffffff;
-  overflow: scroll;
-  border-radius: 8px;
-`;
-
-const DropdownItem = styled.div`
-  padding: 10px;
-  cursor: pointer;
-  text-align: center;
-  &:hover {
-    background-color: lightgray;
-  }
 `;
