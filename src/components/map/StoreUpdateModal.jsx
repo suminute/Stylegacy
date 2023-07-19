@@ -19,6 +19,8 @@ const StoreUpdateModal = ({ type, closeModal, id, post }) => {
   const [checkItems, setCheckItems] = useState(new Set());
   const [selectedFile, setSelectedFile] = useState(null);
   const [imageURL, setImageURL] = useState(null);
+  const basicImgURL =
+    'https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20220815_97%2F166056034235103u8W_JPEG%2F45553d3b7e8e7d2e2dacfceb2c62a5da.jpg';
 
   useEffect(() => {
     if (type === 'add') {
@@ -83,7 +85,7 @@ const StoreUpdateModal = ({ type, closeModal, id, post }) => {
       site: null,
       phoneNumber: null,
       marker: { x: 0, y: 0 },
-      image: null,
+      image: basicImgURL,
       likeCount: 0
     };
     addMutation.mutate(newStore);
@@ -100,7 +102,7 @@ const StoreUpdateModal = ({ type, closeModal, id, post }) => {
       site,
       phoneNumber,
       marker: { x: 0, y: 0 },
-      image: selectedFile ? await storageUpload({ id, selectedFile }) : imageURL
+      image: selectedFile ? await storageUpload({ id, selectedFile }) : basicImgURL
     };
     updateMutation.mutate({ id, modifiedStore });
     closeModal();
@@ -137,6 +139,30 @@ const StoreUpdateModal = ({ type, closeModal, id, post }) => {
   // 이미지 업로드
   const handleFileSelect = (event) => {
     setSelectedFile(event.target.files[0]);
+    handleImgPreviw(event);
+  };
+
+  // 이미지 미리보기
+  const [imgSrc, setImgSrc] = useState(imageURL);
+  const handleImgPreviw = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+
+    if (file) {
+      setSelectedFile(file);
+      reader.readAsDataURL(file);
+      reader.onload = (e) => {
+        setImgSrc(e.target.result);
+      };
+    }
+  };
+
+  // 이미지 삭제
+  const deleteImgHandler = () => {
+    post.image = null;
+    setImageURL(null);
+    setImgSrc(null);
+    setSelectedFile(null);
   };
 
   return (
@@ -195,9 +221,24 @@ const StoreUpdateModal = ({ type, closeModal, id, post }) => {
             <div>
               <label>가게 이미지</label>
               <input type="file" accept="image/*" onChange={handleFileSelect} />
-              {imageURL && <Button>이미지 삭제</Button>}
+              {imgSrc || imageURL ? <Button onClick={deleteImgHandler}>이미지 삭제</Button> : null}
+              {/* {imgSrc && <Button onClick={deleteImgHandler}>이미지 삭제</Button>} */}
+              {/* {imageURL && <Button onClick={deleteImgHandler}>이미지 삭제</Button>} */}
               <StImagePreview>
-                <img src={post.image} alt="이미지 미리보기" style={{ width: '300px' }} />
+                {imgSrc ? (
+                  <div>
+                    <img src={imgSrc} alt="이미지 미리보기" style={{ width: '300px' }} />
+                  </div>
+                ) : (
+                  <div>
+                    <img
+                      // src={post.image}
+                      src={imageURL}
+                      alt="이미지 미리보기"
+                      style={{ width: '300px' }}
+                    />
+                  </div>
+                )}
               </StImagePreview>
             </div>
           </>
@@ -231,7 +272,8 @@ const StBackground = styled.div`
   bottom: 0;
   left: 0;
   z-index: 50;
-  min-width: 450px;
+  min-width: 600px;
+  max-width: 600px;
   height: 91vh;
   background-color: var(--color_pink3);
   display: flex;

@@ -6,6 +6,7 @@ import { styled } from 'styled-components';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { addLike, decreaseLikeCount, getLikes, increaseLikeCount, removeAllLike, removeLike } from '../../api/likes';
+import { FaHeart, FaRegHeart, FaEllipsisV } from 'react-icons/fa';
 
 const PostItem = ({ post }) => {
   // user 정보
@@ -13,13 +14,13 @@ const PostItem = ({ post }) => {
   const userId = user.userId;
 
   const [isOpen, setIsOpen] = useState(false);
-
   const openModal = () => {
     setIsOpen(true);
   };
   const closeModal = () => {
     setIsOpen(false);
   };
+  const [openMenu, setOpenMenu] = useState(false);
 
   // 리액트 쿼리 (항상 컴포넌트 최상위에서 동일한 순서로 호출되어야 한다.)
   const queryClient = useQueryClient();
@@ -86,17 +87,37 @@ const PostItem = ({ post }) => {
   return (
     <StCard key={post.id}>
       <Link to={`/store/${post.id}`} state={{ location: post.location }}>
-        <p>{post.id}</p>
-        <p>{post.store}</p>
-        <p>{post.location}</p>
-        <p>{post.day}</p>
-        <p>{post.time}</p>
+        <img src={post.image} />
+        <StCardContents className="contents">
+          <span className="storeName">{post.store}</span>
+          <p>{post.location}</p>
+          <p>
+            <span>{post.day}</span>
+            {` ${post.time}`}
+          </p>
+          <div className="like">
+            <FaHeart size="18" color="#ce7777" />
+            <p>{post.likeCount}</p>
+          </div>
+        </StCardContents>
       </Link>
-      <button onClick={openModal}>수정</button>
-      {isOpen && <StoreUpdateModal type="update" closeModal={closeModal} id={post.id} post={post}></StoreUpdateModal>}
-      <button onClick={() => deleteOnClickHandler(post.id)}>삭제</button>
-      {userId && <button onClick={handleLikeClick}>{isLiked ? 'Unlike' : 'Like'}</button>}
-      <p>{post.likeCount}</p>
+      <StButtonContainer>
+        {userId && (
+          <StLikeButton onClick={handleLikeClick}>
+            {isLiked ? <FaHeart size="25" color="#ce7777" /> : <FaRegHeart size="25" color="#ce7777" />}
+          </StLikeButton>
+        )}
+        <StLikeButton onClick={() => setOpenMenu(!openMenu)}>
+          <FaEllipsisV size="20" color="#ce7777" />
+        </StLikeButton>
+        {openMenu && (
+          <div>
+            <button onClick={openModal}>수정</button>
+            <button onClick={() => deleteOnClickHandler(post.id)}>삭제</button>
+          </div>
+        )}
+        {isOpen && <StoreUpdateModal type="update" closeModal={closeModal} id={post.id} post={post}></StoreUpdateModal>}
+      </StButtonContainer>
     </StCard>
   );
 };
@@ -104,8 +125,66 @@ const PostItem = ({ post }) => {
 export default PostItem;
 
 const StCard = styled.div`
-  border: 1px solid black;
-  border-radius: 8px;
-  margin: 20px;
+  margin: 10px 0 10px 0;
   padding: 10px;
+  display: grid;
+  grid-template-columns: 1fr 100px;
+
+  & a {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  & a > img {
+    width: 100%;
+    height: 165px;
+    grid-column: 1 / 2;
+    border-radius: 8px;
+  }
+  & a > .contents {
+    grid-column: 2 / 3;
+    padding-left: 10px;
+  }
+
+  &:hover {
+    box-shadow: 0px 0px 9px 5px #00000014;
+  }
+`;
+
+const StCardContents = styled.div`
+  display: grid;
+  grid-template-rows: 35px 30px 1fr 20px;
+  & .storeName {
+    margin: 5px;
+    font-size: larger;
+  }
+
+  & p {
+    margin: 5px;
+    color: #777;
+  }
+
+  & p > span {
+    color: var(--color_navy);
+  }
+
+  & .like {
+    display: flex;
+    margin-left: 5px;
+    align-items: center;
+  }
+`;
+
+const StButtonContainer = styled.div`
+  grid-column: 2 / 3;
+  margin-left: auto;
+  display: grid;
+  grid-template-columns: 30px 30px;
+  grid-template-rows: 30px 1fr;
+`;
+
+const StLikeButton = styled.button`
+  grid-row: 1 / 2;
+  background-color: transparent;
+  border: none;
+  padding: 0;
 `;
