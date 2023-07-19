@@ -73,7 +73,7 @@ const SignUpModal = ({ isOpen, setIsOpen }) => {
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
       console.log('회원가입한 유저', user);
       await updateProfile(auth.currentUser, { displayName: name });
-      const newUser = { email, name, userId: user.uid };
+      const newUser = { userEmail: email, userName: name, userId: user.uid, userImage: null };
       console.log('newUser', newUser);
       // react-query로 users 컬렉션에 추가함
       addUserMutation.mutate(newUser);
