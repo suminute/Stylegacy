@@ -25,8 +25,8 @@ const LogInModal = ({ isOpen, setIsOpen }) => {
       dispatch(
         getUser({
           userId: userCredential.user.uid,
-          displayName: userCredential.user.displayName,
-          email: userCredential.user.email
+          userName: userCredential.user.displayName,
+          userEmail: userCredential.user.email
         })
       );
       alert('로그인되었습니다.');

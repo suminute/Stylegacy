@@ -6,7 +6,7 @@ import LogInModal from './Auth/LogInModal';
 import { useSelector } from 'react-redux';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Header = () => {
   const users = useSelector((state) => state.user);
@@ -25,14 +25,18 @@ const Header = () => {
   };
 
   const goToMyPage = () => {
-    navigate('/');
+    navigate('/mypage');
   };
 
   if (user.userId === null) {
     return (
       <>
         <StDiv>
-          <div></div>
+          <LinkDiv>
+            <Link to={'/'} style={{ color: 'var(--color_white)' }}>
+              StyLEgacy
+            </Link>
+          </LinkDiv>
           <ButtonDiv>
             <Button
               color="gray1"
@@ -62,7 +66,11 @@ const Header = () => {
     return (
       <>
         <StDiv>
-          <div></div>
+          <LinkDiv>
+            <Link to={'/'} style={{ color: 'var(--color_white)' }}>
+              StyLEgacy
+            </Link>
+          </LinkDiv>
           <ButtonDiv>
             <Button color="gray1" size="medium" onClick={logOut}>
               로그아웃
@@ -81,10 +89,14 @@ export default Header;
 
 const StDiv = styled.div`
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   height: 75px;
   background-color: var(--color_navy);
+`;
+
+const LinkDiv = styled.div`
+  margin-left: 20px;
 `;
 
 const ButtonDiv = styled.div`
