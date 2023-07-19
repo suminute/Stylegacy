@@ -5,7 +5,7 @@ import { deleteStore } from '../../api/maps';
 import { styled } from 'styled-components';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { addLike, decreaseLikeCount, getLikes, increaseLikeCount, removeLike } from '../../api/likes';
+import { addLike, decreaseLikeCount, getLikes, increaseLikeCount, removeAllLike, removeLike } from '../../api/likes';
 
 const PostItem = ({ post }) => {
   // user 정보
@@ -51,21 +51,25 @@ const PostItem = ({ post }) => {
       queryClient.invalidateQueries(['stores'], post.id);
     }
   });
+  // 게시글 삭제 시, 해당 좋아요 문서 삭제
+  const removeAllLikeMutation = useMutation(removeAllLike, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['likes'], post.id);
+    }
+  });
 
   // 게시글 삭제 버튼
   const deleteOnClickHandler = (id) => {
     const deleteConf = window.confirm('정말 삭제하시겠습니까?');
     if (deleteConf) {
       deleteMutation.mutate(id);
-      removeLikeMutation.mutate({ userId, storeId: post.id });
+      removeAllLikeMutation.mutate(post.id);
     }
   };
 
   // 좋아요
   const { isLoading, data: likes } = useQuery(['likes', post.id], () => getLikes(post.id));
-
   const isLiked = likes ? likes.includes(userId) : undefined;
-
   if (isLoading) return <div>Loading...</div>;
 
   // 좋아요 버튼
