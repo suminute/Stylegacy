@@ -25,7 +25,7 @@ const Header = () => {
   };
 
   const goToMyPage = () => {
-    navigate('/');
+    navigate('/my');
   };
 
   if (user.userId === null) {
