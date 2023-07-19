@@ -269,7 +269,8 @@ const Map = () => {
   //   }
   // }
 
-  if (isLoading) return <p>얍얍ㅇ뱌</p>;
+  // if (isLoading) return <p>얍얍ㅇ뱌</p>;
+  // if (isError) return <p>얍얍ㅇ뱌</p>;
   return (
     <>
       <div onContextMenu={(e) => e.preventDefault()} ref={mapRef} style={{ width: '100%', height: '94vh' }}></div>
