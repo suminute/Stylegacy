@@ -4,11 +4,12 @@ import { useQuery } from 'react-query';
 import Mapcontents from '../components/map/MapContents';
 import Map from '../components/Map';
 import { styled } from 'styled-components';
+import { getStores } from '../api/stores';
 
 const Search = () => {
   const [searchParams] = useSearchParams();
   const name = searchParams.get('name') || '';
-  const { isLoading, error, data } = useQuery(['stores', name], () => storeSearch(name));
+  const { isLoading, error, data } = useQuery(['stores', name], getStores);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error...</div>;

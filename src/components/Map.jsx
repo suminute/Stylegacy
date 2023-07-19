@@ -4,7 +4,7 @@ import { setAddress } from '../redux/modules/mapSlice';
 import footNavyMarkerImg from '../images/footprint_marker_navy.svg';
 import footRedMarkerImg from '../images/footprint_marker_red.svg';
 import { useQuery } from 'react-query';
-import { getStores } from '../api/maps';
+import { getStores } from '../api/stores';
 import { collection, getDocs, query } from 'firebase/firestore';
 import { db } from '../firebase';
 import { styled } from 'styled-components';
@@ -107,9 +107,6 @@ const Map = () => {
         // data를 받아왔을 때에만 map 메서드를 실행합니다.
 
         const coordinatesArray = await Promise.all(
-          //
-          //
-
           abcAdress.map((x) => {
             return new Promise((resolve) => {
               geocoder.addressSearch(x.location, function (result, status) {
@@ -272,6 +269,7 @@ const Map = () => {
   //   }
   // }
 
+  if (isLoading) return <p>얍얍ㅇ뱌</p>;
   return (
     <>
       <div onContextMenu={(e) => e.preventDefault()} ref={mapRef} style={{ width: '100%', height: '94vh' }}></div>
