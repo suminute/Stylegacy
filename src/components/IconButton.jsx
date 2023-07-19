@@ -29,10 +29,13 @@ export default IconButton
 
 export const StButton = styled.button`
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   background-color: transparent;
   border: none;
   padding: 8px;
-  border-radius: 20px;
+  border-radius: 50%;
   position: relative;
+  &:hover {
+    background-color: #0000001a;
+  }
 `;
