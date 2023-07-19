@@ -5,6 +5,8 @@ import Button from '../Button';
 import { useState } from 'react';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth } from '../../firebase';
+import { useMutation, useQueryClient } from 'react-query';
+import { addUser } from '../../api/users';
 
 export const PORTAL_MODAL = 'portal-root';
 
@@ -18,6 +20,14 @@ const SignUpModal = ({ isOpen, setIsOpen }) => {
   const [checkEmail, setCheckEmail] = useState('');
   const [checkPassword, setCheckPassword] = useState('');
   const [checkConfirmPassword, setCheckConfirmPassword] = useState('');
+
+  // React-query -> 회원가입 시 users 컬렉션에 data 업데이트
+  const queryClient = useQueryClient();
+  const addUserMutation = useMutation(addUser, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('users');
+    }
+  });
 
   // 회원정보 정규표현식 필터
   const nameRegEx = /^(?=.*[a-zA-Z가-힣])[a-zA-Z가-힣]{2,16}$/;
@@ -63,8 +73,10 @@ const SignUpModal = ({ isOpen, setIsOpen }) => {
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
       console.log('회원가입한 유저', user);
       await updateProfile(auth.currentUser, { displayName: name });
-      const newUser = { email, name, userId: user.uid };
+      const newUser = { userEmail: email, userName: name, userId: user.uid, userImage: null };
       console.log('newUser', newUser);
+      // react-query로 users 컬렉션에 추가함
+      addUserMutation.mutate(newUser);
       alert('회원가입에 성공하였습니다.');
       setIsOpen(false);
     } catch (error) {

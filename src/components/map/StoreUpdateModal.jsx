@@ -56,6 +56,7 @@ const StoreUpdateModal = ({ type, closeModal, id, post }) => {
     }
   }, [location, store]);
 
+
   const days = ['월', '화', '수', '목', '금', '토', '일'];
 
   // 쿼리
@@ -248,3 +249,4 @@ const StCheckbosDiv = styled.div`
 const StImagePreview = styled.div`
   width: 100%;
 `;
+

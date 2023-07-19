@@ -3,8 +3,8 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   user: {
     userId: null,
-    displayName: null,
-    email: null
+    userName: null,
+    userEmail: null
   }
 };
 
@@ -18,8 +18,8 @@ const userSlice = createSlice({
         return state;
       } else {
         state.userId = null;
-        state.displayName = null;
-        state.email = null;
+        state.userName = null;
+        state.userEmail = null;
         return state;
       }
     }
