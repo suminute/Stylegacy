@@ -3,10 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { getLikedStoresByUser } from '../api/likes';
 import { useSelector } from 'react-redux';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import ProfileModal from '../components/Auth/ProfileModal';
 
 const MyPage = () => {
   const { userId, userName, userEmail } = useSelector(({ user }) => user.user);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+
   const navigate = useNavigate();
   useEffect(() => {
     if (!userId) navigate('/');
@@ -36,7 +39,8 @@ const MyPage = () => {
             <p>{userEmail}</p>
           </ProfileInfoContainer>
         </Profile>
-        <ProfileUpdateLink>프로필 수정</ProfileUpdateLink>
+        <ProfileUpdateButton onClick={() => setIsProfileOpen(true)}>프로필 수정</ProfileUpdateButton>
+        {isProfileOpen && <ProfileModal isOpen={isProfileOpen} setIsOpen={setIsProfileOpen} />}
       </ProfileContainer>
       <MyLikeTitleContainer>
         <MyLikeTitle>내가 찜한 가게</MyLikeTitle>
@@ -92,7 +96,7 @@ const ProfileInfoContainer = styled.div`
   font-size: 1.5rem;
 `;
 
-const ProfileUpdateLink = styled(Link)`
+const ProfileUpdateButton = styled.button`
   background-color: #d9d9d9;
   padding: 2rem 4rem;
   border-radius: 0.625rem;
