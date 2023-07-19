@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setAddress } from '../redux/modules/mapSlice';
+import { markerAddress } from '../redux/modules/mapSlice';
 import footNavyMarkerImg from '../images/footprint_marker_navy.svg';
 import footRedMarkerImg from '../images/footprint_marker_red.svg';
 import { useQuery } from 'react-query';
@@ -46,7 +46,8 @@ const Map = () => {
     const ps = new kakao.maps.services.Places();
 
     // 키워드로 장소를 검색합니다
-    ps.keywordSearch(param, placesSearchCB);
+    // ps.keywordSearch(param, placesSearchCB);
+    ps.keywordSearch('편집샵', placesSearchCB);
 
     // 키워드 검색 완료 시 호출되는 콜백함수 입니다
     function placesSearchCB(data, status, pagination) {
@@ -220,7 +221,7 @@ const Map = () => {
             </div>`;
 
           let address = result[0].address.address_name;
-          dispatch(setAddress(address));
+          dispatch(markerAddress(address));
 
           // 마커를 클릭한 위치에 표시합니다
           marker.setPosition(mouseEvent.latLng);
@@ -271,6 +272,7 @@ const Map = () => {
 
   // if (isLoading) return <p>얍얍ㅇ뱌</p>;
   // if (isError) return <p>얍얍ㅇ뱌</p>;
+
   return (
     <>
       <div onContextMenu={(e) => e.preventDefault()} ref={mapRef} style={{ width: '100%', height: '94vh' }}></div>
