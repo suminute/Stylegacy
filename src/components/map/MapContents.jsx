@@ -33,11 +33,13 @@ const Mapcontents = () => {
 export default Mapcontents;
 
 const StDiv = styled.div`
-  width: 35%;
-  height: 94vh;
+  bottom: 0;
+  min-width: 450px;
+  height: 91vh;
   background-color: var(--color_white);
   box-shadow: 0px 0px 9px 5px #00000014;
   padding: 20px;
+  z-index: 50;
 `;
 
 const Form = styled.form`

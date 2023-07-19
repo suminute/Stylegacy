@@ -36,6 +36,7 @@ const PostItem = ({ post }) => {
         <p>{post.id}</p>
         <p>{post.store}</p>
         <p>{post.location}</p>
+        <p>{post.day}</p>
         <p>{post.time}</p>
       </Link>
       <button onClick={openModal}>수정</button>
