@@ -3,12 +3,22 @@ import { auth, db } from '../firebase';
 
 export const getStoreComments = async (storeId) => {
   const q = query(collection(db, 'comments'), where('storeId', '==', storeId));
-  const snap = await getDocs(q);
+  const commentsSnap = await getDocs(q);
   const commentsList = [];
-  snap.forEach((doc) => {
+  commentsSnap.forEach((doc) => {
     commentsList.push({ id: doc.id, ...doc.data() });
   });
-  return commentsList.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  const userNameList = {};
+
+  for (const comment of commentsList) {
+    if (userNameList[comment.userId]) continue;
+    const userQuery = query(collection(db, 'users'), where('userId', '==', comment.userId));
+    const userSnap = await getDocs(userQuery);
+    const docData = userSnap.docs[0].data();
+    userNameList[docData.userId] = docData.userName;
+  }
+  const nameAddedCommentList = commentsList.map((comment) => ({ ...comment, userName: userNameList[comment.userId] }));
+  return nameAddedCommentList.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 };
 
 export const updateComment = async ({ id, content }) => {
@@ -50,14 +60,13 @@ export const addComment = async ({ storeId, content }) => {
   // 유저 확인
   const user = auth.currentUser;
   if (!user) throw new Error('로그인 상태가 아닙니다');
-  const { displayName, uid } = user;
+  const { uid } = user;
   // 스토어 확인
   const storeDocRef = doc(db, 'stores', storeId);
   const storeDocSnap = await getDoc(storeDocRef);
   if (!storeDocSnap?.exists()) throw new Error('가게를 찾을 수 없습니다');
   // 댓글 생성
-  const docRef = await addDoc(collection(db, 'comments'), {
-    userName: displayName,
+  await addDoc(collection(db, 'comments'), {
     userId: uid,
     storeId,
     content,
