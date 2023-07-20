@@ -7,7 +7,8 @@ import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import ProfileAvatar from '../ProfileAvatar';
 import { changeUser } from '../../redux/modules/userSlice';
-import { apiKey } from '../../firebase';
+import { apiKey, auth } from '../../firebase';
+import { updateProfile } from 'firebase/auth';
 
 export const PORTAL_MODAL = 'portal-root';
 
@@ -56,6 +57,10 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
     try {
       // DB에 userName 업데이트
       await updateUser(data?.id, name);
+
+      // 회원가입 시 firebase에 저장한 displayName도 변경
+      await updateProfile(auth.currentUser, { displayName: name });
+
       // userSlice에 userName 업데이트
       dispatch(changeUser(name));
       if (data?.userName !== name) {
