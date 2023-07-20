@@ -1,8 +1,9 @@
-import { addDoc, collection, getDocs, query, where } from 'firebase/firestore';
+
+import { addDoc, collection, getDocs, query, where, doc, updateDoc } from 'firebase/firestore';
 import { auth, db, storage } from '../firebase';
 import shortid from 'shortid';
 import { ref, uploadBytes, getDownloadURL } from '@firebase/storage';
-import { async } from 'q';
+
 
 // user 데이터 조회
 export const getUsers = async () => {
@@ -20,6 +21,7 @@ export const addUser = async (newUser) => {
   const collectionRef = collection(db, 'users');
   await addDoc(collectionRef, newUser);
 };
+
 
 export const uploadProfileImage = async ({ userId, file }) => {
   const fileName = shortid.generate(); // random file name
@@ -44,4 +46,10 @@ export const getCurrentUser = async () => {
   if (!userDoc?.exists()) throw new Error('유저를 찾을 수 없습니다');
   const userData = { id: userDoc.id, ...userDoc.data() };
   return userData;
+
+// 프로필 수정 시 user 데이터 변경
+export const updateUser = async (id, newName) => {
+  const userRef = doc(db, 'users', id);
+  await updateDoc(userRef, { userName: newName });
+
 };
