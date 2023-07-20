@@ -2,8 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Map, MapInfoWindow, MapMarker, ZoomControl } from 'react-kakao-maps-sdk';
 import { useQuery } from 'react-query';
 import { getStores } from '../api/stores';
-import StoreInfoWindow from './map/StoreInfoWindow';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { markerAddress } from '../redux/modules/mapSlice';
 import MarkerGray from '../images/footprint_marker_navy.svg';
 import MarkerRed from '../images/footprint_marker_red.svg';
@@ -17,10 +16,11 @@ function KakaoMap() {
   const [positionList, setPositionList] = useState([]);
   const [position, setPosition] = useState('');
   const [isOpen, setIsOpen] = useState(false);
-  const dispatch = useDispatch();
   const mapRef = useRef(null);
   const rightClickRef = useRef(null);
   const { lat, lng } = position;
+  const dispatch = useDispatch();
+  const toggleSelector = useSelector((state) => state.toggleSlice);
 
   useEffect(() => {
     if (data) {

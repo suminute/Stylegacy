@@ -1,34 +1,38 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Map, MapInfoWindow, MapMarker, ZoomControl, CustomOverlayMap } from 'react-kakao-maps-sdk';
 import { useQuery } from 'react-query';
 import { getStores } from '../api/stores';
-import StoreInfoWindow from './map/StoreInfoWindow';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { markerAddress } from '../redux/modules/mapSlice';
 import MarkerGray from '../images/footprint_marker_navy.svg';
 import MarkerRed from '../images/footprint_marker_red.svg';
-import styled from 'styled-components';
 import KakaoCustomInto from './map/KakaoCustomInto';
-import Mapcontents from './map/MapContents';
 import Button from './Button';
+import { toggleMap } from '../redux/modules/toggleSlice';
+import { styled } from 'styled-components';
 
 function KakaoMap() {
+  const { kakao } = window;
   const { isLoading, isError, data } = useQuery('stores', getStores);
-  const [posts, setPosts] = useState(data);
+  const mapRef = useRef(null);
+  const [clickAddress, setClickAddress] = useState([]);
+
+  // 이건 나중에 사용해서 맵 중앙을 바꿀 수 있는 useState 훅입니다.
   const [latitude, setLatitude] = useState(37.5543737621718);
   const [longitude, setLongitude] = useState(126.83326640676);
   const [positionList, setPositionList] = useState([]);
   const [position, setPosition] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
+
+  // 커스텀 인포박스 토글부분입니다.
+  const toggleSelector = useSelector((state) => state.toggleSlice);
   const dispatch = useDispatch();
-  const mapRef = useRef(null);
   const { lat, lng } = position;
+  const [toggleCustom, setToggleCustom] = useState(toggleSelector);
+
+  const [test, setTest] = useState('');
 
   useEffect(() => {
-    if (data) {
-      setPosts(data);
-    }
-
+    // 주소 => 위도, 경도로 변환하는 함수입니다.
     const geocoder = new window.kakao.maps.services.Geocoder();
     const geocodeAddress = () => {
       data &&
@@ -44,6 +48,32 @@ function KakaoMap() {
     geocodeAddress();
   }, [data]);
 
+  // 검색시 주소를 얻습니다.
+  useEffect(() => {
+    const geocoder = new window.kakao.maps.services.Geocoder();
+    const geocodeAddress = () => {
+      return geocoder.addressSearch(test, (result, status) => {
+        if (status === window.kakao.maps.services.Status.OK) {
+          const { x, y } = result[0];
+        }
+      });
+    };
+    geocodeAddress();
+    // 주소 => 위도, 경도로 변환하는 함수입니다.
+  }, [test]);
+
+  // 지도 클릭시 주소, 정보를 출력합니다
+  const getCoor2Address = useCallback(
+    (lat, lng) => {
+      const geocoder = new kakao.maps.services.Geocoder();
+      geocoder.coord2Address(lng, lat, (result, status) => {
+        if (status === kakao.maps.services.Status.OK) {
+          setClickAddress(result[0].address);
+        }
+      });
+    },
+    [lat, lng]
+  );
   // 받아온 데이터 주소 => 위도, 경도로 변환후 newData로 저장
   const newData =
     positionList.length > 0 &&
@@ -70,6 +100,7 @@ function KakaoMap() {
               lng: event.latLng.getLng()
             });
             dispatch(markerAddress({ lat, lng }));
+            getCoor2Address(event.latLng.getLat(), event.latLng.getLng());
           }}
         >
           <ZoomControl position={window.kakao.maps.ControlPosition.TOPRIGHT} />
@@ -77,22 +108,22 @@ function KakaoMap() {
             <MapMarker
               position={position}
               image={{
-                src: MarkerGray, // 마커이미지의 주소입니다
+                src: MarkerGray,
                 size: {
                   width: 64,
                   height: 69
-                }, // 마커이미지의 크기입니다
+                },
                 options: {
                   offset: {
                     x: 27,
                     y: 69
-                  } // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+                  }
                 }
               }}
             >
-              <div
+              <StClickInfoWindow
                 style={{
-                  padding: '7px',
+                  padding: '7px ',
                   color: 'rgb(0, 0, 0)',
                   width: '162px',
                   textAlign: 'center',
@@ -101,114 +132,73 @@ function KakaoMap() {
               >
                 이 store을
                 <br /> 추가해보세요 <br />
+                <StClickInfoWindowSpan>{clickAddress.address_name}</StClickInfoWindowSpan>
                 <Button color="pink2" size="small">
                   ADD
                 </Button>
-              </div>
+              </StClickInfoWindow>
             </MapMarker>
           )}
 
-          {/* 마커찍어주기  */}
+          {/* 마우스 클릭 마커  */}
           {positionList.length >= newData.length &&
             newData.map((data, index) => {
-              const { id, latlng, location, store, time } = data;
-              let openCustom = false;
+              const { id, latlng } = data;
               return (
                 <>
                   <MapMarker
                     onClick={() => {
-                      setIsOpen(true);
-                      console.log(openCustom);
+                      dispatch(toggleMap({ state: true, index: index }));
+                      setToggleCustom({ state: true, index: index });
                     }}
                     key={id + index}
                     position={latlng}
                     image={{
-                      src: MarkerRed, // 마커이미지의 주소입니다
+                      src: MarkerRed,
                       size: {
                         width: 64,
                         height: 69
-                      }, // 마커이미지의 크기입니다
+                      },
                       options: {
                         offset: {
                           x: 32,
                           y: 35
-                        } // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+                        }
                       }
                     }}
                   ></MapMarker>
-                  {console.log(latlng)}
-                  <CustomOverlayMap clickable={true} position={{ lat: latlng.lat + 0.004, lng: latlng.lng }}>
-                    <KakaoCustomInto data={data} isOpen={true} />
-                  </CustomOverlayMap>
+                  {console.log(toggleCustom.state === true && toggleCustom.index === index)}
+                  {toggleCustom.state === true && toggleCustom.index === index ? (
+                    <CustomOverlayMap
+                      xAnchor={0.5}
+                      yAnchor={1.5}
+                      clickable={true}
+                      position={{ lat: latlng.lat, lng: latlng.lng }}
+                    >
+                      <KakaoCustomInto clickable={true} data={data} index={index} />
+                    </CustomOverlayMap>
+                  ) : null}
                 </>
               );
             })}
         </Map>
       }
+      <input
+        onChange={(e) => setTest(e.target.value)}
+        style={{ display: 'inline-block', marginLeft: '500px' }}
+        type="text"
+        value={test}
+      />
     </>
   );
 }
 
-export default KakaoMap;
+export default React.memo(KakaoMap);
 
-const StInfoContainer = styled.div`
-  box-sizing: border-box;
-  background-color: red;
-  padding: 0.5rem 1.2rem;
-  & div {
-    margin-top: 0.4rem;
-  }
-  /* transform: translateY(-100px); */
-`;
-const StCustomInfoBox = styled.div`
+const StClickInfoWindow = styled.div`
   position: relative;
-  box-sizing: border-box;
-  background-color: #fff;
-  width: 400px;
-  padding: 1rem 1rem 1.6rem 1rem;
-  border-radius: 5px;
-
-  &::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translate(-50%, 100%);
-    height: 50px;
-    width: 50px;
-    /* border-right-width: 0; */
-    border-bottom-color: #fff;
-  }
 `;
-const StCustomInfoHeader = styled.section`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 18px;
-  & h4 {
-    display: inline-block;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid #000;
-  }
-  & button {
-    display: flex;
-    justify-content: center;
-    align-self: center;
-    border: 1px solid #000;
-    width: 20px;
-    height: 20px;
-  }
-`;
-const StCustomInfoContentBox = styled.section`
-  margin-top: 0.6rem;
-  font-size: 12px;
-
-  & h3 {
-    flex: 1 0 274px;
-    opacity: 0.8;
-  }
-  & p {
-    margin-top: 0.3rem;
-    opacity: 0.6;
-  }
+const StClickInfoWindowSpan = styled.span`
+  font-size: 11px;
+  opacity: 0.8;
 `;

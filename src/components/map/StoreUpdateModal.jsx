@@ -7,6 +7,10 @@ import useInput from '../../hooks/useInput';
 import Checkbox from './Checkbox';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { storage } from '../../firebase';
+import { useSelector } from 'react-redux';
+import { createPortal } from 'react-dom';
+
+export const PORTAL_MODAL = 'portal-root';
 
 const StoreUpdateModal = ({ type, closeModal, id, post }) => {
   const [disabled, setDisabled] = useState(true);
@@ -19,7 +23,7 @@ const StoreUpdateModal = ({ type, closeModal, id, post }) => {
   const [checkItems, setCheckItems] = useState(new Set());
   const [selectedFile, setSelectedFile] = useState(null);
   const [imageURL, setImageURL] = useState(null);
-
+  const storeModal = useSelector((state) => state.storeAddSlice);
   useEffect(() => {
     if (type === 'add') {
       setStore('');
@@ -139,84 +143,87 @@ const StoreUpdateModal = ({ type, closeModal, id, post }) => {
     setSelectedFile(event.target.files[0]);
   };
 
-  return (
-    <StBackground>
-      <Stdiv>
-        <Button color="pink3" size="medium" onClick={closeModal}>
-          X
-        </Button>
-      </Stdiv>
-      <form>
-        <div>
-          <label>가게 이름</label>
-          <input value={store} onChange={storeHandler} />
-        </div>
-        <div>
-          <label>영업일</label>
-          <StCheckbosDiv>
-            {type === 'add' &&
-              days.map((day, index) => {
-                return <Checkbox key={index} day={day} index={index} checkHandler={checkHandler} />;
-              })}
-            {type === 'update' &&
-              days.map((day, index) => {
-                return (
-                  <Checkbox
-                    key={index}
-                    day={day}
-                    index={index}
-                    checkHandler={checkHandler}
-                    checkedDay={post.checkedDay}
-                    setCheckItems={setCheckItems}
-                  />
-                );
-              })}
-          </StCheckbosDiv>
-          <div>
-            <label>영업시간</label>
-            <input type="time" value={openTime} onChange={openTimeHandler} />
-            <input type="time" value={closeTime} onChange={closeTimeHandler} />
-          </div>
-        </div>
-        <div>
-          <label>상세주소</label>
-          <input value={location} onChange={locationHandler} />
-        </div>
-        {type === 'update' && (
-          <>
-            <div>
-              <label>전화번호</label>
-              <input value={phoneNumber} onChange={phoneNumberHandler} />
-            </div>
-            <div>
-              <label>웹사이트</label>
-              <input value={site} onChange={siteHandler} />
-            </div>
-            <div>
-              <label>가게 이미지</label>
-              <input type="file" accept="image/*" onChange={handleFileSelect} />
-              {imageURL && <Button>이미지 삭제</Button>}
-              <StImagePreview>
-                <img src={post.image} alt="이미지 미리보기" style={{ width: '300px' }} />
-              </StImagePreview>
-            </div>
-          </>
-        )}
-        <div>
-          {type === 'add' && (
-            <Button type="submit" color="pink2" size="medium" disabled={disabled} onClick={addButtonHandler}>
-              저장
+  return storeModal
+    ? createPortal(
+        <StBackground>
+          <Stdiv>
+            <Button color="pink3" size="medium" onClick={closeModal}>
+              X
             </Button>
-          )}
-          {type === 'update' && (
-            <Button type="submit" color="pink2" size="medium" disabled={disabled} onClick={updateButtonHandler}>
-              수정
-            </Button>
-          )}
-        </div>
-      </form>
-    </StBackground>
-  );
+          </Stdiv>
+          <form>
+            <div>
+              <label>가게 이름</label>
+              <input value={store} onChange={storeHandler} />
+            </div>
+            <div>
+              <label>영업일</label>
+              <StCheckbosDiv>
+                {type === 'add' &&
+                  days.map((day, index) => {
+                    return <Checkbox key={index} day={day} index={index} checkHandler={checkHandler} />;
+                  })}
+                {type === 'update' &&
+                  days.map((day, index) => {
+                    return (
+                      <Checkbox
+                        key={index}
+                        day={day}
+                        index={index}
+                        checkHandler={checkHandler}
+                        checkedDay={post.checkedDay}
+                        setCheckItems={setCheckItems}
+                      />
+                    );
+                  })}
+              </StCheckbosDiv>
+              <div>
+                <label>영업시간</label>
+                <input type="time" value={openTime} onChange={openTimeHandler} />
+                <input type="time" value={closeTime} onChange={closeTimeHandler} />
+              </div>
+            </div>
+            <div>
+              <label>상세주소</label>
+              <input value={location} onChange={locationHandler} />
+            </div>
+            {type === 'update' && (
+              <>
+                <div>
+                  <label>전화번호</label>
+                  <input value={phoneNumber} onChange={phoneNumberHandler} />
+                </div>
+                <div>
+                  <label>웹사이트</label>
+                  <input value={site} onChange={siteHandler} />
+                </div>
+                <div>
+                  <label>가게 이미지</label>
+                  <input type="file" accept="image/*" onChange={handleFileSelect} />
+                  {imageURL && <Button>이미지 삭제</Button>}
+                  <StImagePreview>
+                    <img src={post.image} alt="이미지 미리보기" style={{ width: '300px' }} />
+                  </StImagePreview>
+                </div>
+              </>
+            )}
+            <div>
+              {type === 'add' && (
+                <Button type="submit" color="pink2" size="medium" disabled={disabled} onClick={addButtonHandler}>
+                  저장
+                </Button>
+              )}
+              {type === 'update' && (
+                <Button type="submit" color="pink2" size="medium" disabled={disabled} onClick={updateButtonHandler}>
+                  수정
+                </Button>
+              )}
+            </div>
+          </form>
+        </StBackground>,
+        document.getElementById(PORTAL_MODAL)
+      )
+    : null;
 };
 
 export default StoreUpdateModal;

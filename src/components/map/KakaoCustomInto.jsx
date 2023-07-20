@@ -1,21 +1,25 @@
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { toggleMap } from '../../redux/modules/toggleSlice';
 
-function KakaoCustomInto({ data, isOpen }) {
-  const [open, setOpen] = useState(isOpen);
+function KakaoCustomInto({ data, index }) {
+  const dispatch = useDispatch();
+  const toggleCostom = useSelector((state) => state.toggleSlice);
+  const [open, setOpen] = useState(toggleCostom);
   const { store, location, time } = data;
   //   const data
   return (
     <>
-      {open && (
+      {open.state === true && (
         <StCustomInfoBox>
           <StCustomInfoHeader>
             <h4>{store}</h4>
 
             <button
               onClick={() => {
-                console.log(1212);
-                setOpen(false);
+                dispatch(toggleMap({ state: false, index }));
+                setOpen({ state: false, index });
               }}
             >
               X
@@ -32,8 +36,8 @@ function KakaoCustomInto({ data, isOpen }) {
   );
 }
 
-// export default React.memo(KakaoCustomInto);
-export default KakaoCustomInto;
+export default React.memo(KakaoCustomInto);
+// export default KakaoCustomInto;
 
 const StCustomInfoBox = styled.div`
   position: relative;
