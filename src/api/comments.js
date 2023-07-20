@@ -15,9 +15,9 @@ export const getStoreComments = async (storeId) => {
     const userQuery = query(collection(db, 'users'), where('userId', '==', comment.userId));
     const userSnap = await getDocs(userQuery);
     const docData = userSnap.docs[0].data();
-    userNameList[docData.userId] = docData.userName;
+    userNameList[docData.userId] = { userName: docData.userName, userImage: docData.userImage };
   }
-  const nameAddedCommentList = commentsList.map((comment) => ({ ...comment, userName: userNameList[comment.userId] }));
+  const nameAddedCommentList = commentsList.map((comment) => ({ ...comment, ...userNameList[comment.userId] }));
   return nameAddedCommentList.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 };
 
