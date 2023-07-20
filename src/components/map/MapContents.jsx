@@ -27,22 +27,23 @@ const Mapcontents = () => {
         장소 추가하기
       </Button>
       {/* {isOpen && <StoreUpdateModal type="add" closeModal={closeModal}></StoreUpdateModal>} */}
-      <div>
+      <StPostDiv>
         <Posts />
-      </div>
+      </StPostDiv>
     </StDiv>
   );
 };
 
-export default Mapcontents;
+export default React.memo(Mapcontents);
 
 const StDiv = styled.div`
   bottom: 0;
-  min-width: 450px;
-  height: 91vh;
+  min-width: 600px;
+  max-width: 600px;
+  height: 94vh;
   background-color: var(--color_white);
   box-shadow: 0px 0px 9px 5px #00000014;
-  padding: 20px;
+  /* padding: 20px; */
   z-index: 50;
 `;
 
@@ -50,4 +51,8 @@ const Form = styled.form`
   display: flex;
   justify-content: center;
   gap: 10px;
+`;
+
+const StPostDiv = styled.div`
+  display: grid;
 `;

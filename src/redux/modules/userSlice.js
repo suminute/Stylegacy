@@ -22,9 +22,17 @@ const userSlice = createSlice({
         state.userEmail = null;
         return state;
       }
+    },
+    changeUser: (state, action) => {
+      if (action.payload) {
+        state.user.userName = action.payload;
+        return state;
+      } else {
+        console.log('userSlice의 changeUser에서 error 발생');
+      }
     }
   }
 });
 
-export const { getUser } = userSlice.actions;
+export const { getUser, changeUser } = userSlice.actions;
 export default userSlice.reducer;

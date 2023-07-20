@@ -18,7 +18,7 @@ const StButton = styled.button`
   border: none;
   border-radius: 8px;
   padding: 0.1rem;
-
+  white-space: nowrap;
   ${({ color }) =>
     color === 'pink1' &&
     css`
