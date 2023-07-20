@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { styled } from 'styled-components';
 import Button from '../Button';
-import { getUsers } from '../../api/users';
+import { getUsers, uploadProfileImage } from '../../api/users';
 import { useQuery } from 'react-query';
 import { useSelector } from 'react-redux';
+import ProfileAvatar from '../ProfileAvatar';
 
 export const PORTAL_MODAL = 'portal-root';
 
@@ -21,6 +22,10 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [profileImage, setProfileImage] = useState('');
+  const [profileImageFile, setProfileImageFile] = useState(null);
+  const [isResetProfileImage,setResetProfileImage] = useState(false)
+  const inputImageRef = useRef(null)
 
   const [checkName, setCheckName] = useState('');
   const [checkCurrentPassword, setCheckCurrentPassword] = useState('');
@@ -78,6 +83,44 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
     e.stopPropagation();
   };
 
+  const handleUploadImage =async (e) => {
+    const fileTypes = [
+      "image/jpeg",
+      "image/png",
+    ];
+    const file = e.target.files[0];
+    if(!file) return
+    const {type, size} = file
+    if(size > 5*1048576) return alert('5MB 이하의 이미지를 선택해주세요.')
+    if(!fileTypes.includes(type)) return alert('지원하지 않는 파일 형식입니다. 지원 형식: jpeg, png')
+    setProfileImageFile(file)
+    setProfileImage(URL.createObjectURL(file))
+    setResetProfileImage(false)
+    const url = await uploadProfileImage({userId,file})
+    console.log(url)
+  }
+
+  const handleDeleteImage = (e) => {
+    setResetProfileImage(true)
+    setProfileImageFile(null)
+    setProfileImage('')
+  }
+
+  // if(isResetProfileImage) image = ''
+  // else if(profileImageFile) image = await uploadProfileImage(profileImage)
+
+  useEffect(() => {
+    console.log('change data',data)
+   if(data?.userImage) {
+    console.log('userImage', data.userImage)
+    setProfileImage(data.userImage)
+   }
+  },[data])
+
+  useEffect(() => {
+    console.log('profileImage',profileImage)
+  },[profileImage])
+
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error...</div>;
 
@@ -86,7 +129,19 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
         <Outer onClick={closeHandler}>
           <Inner onClick={stopPropagation}>
             <p>프로필을 수정해볼까요?</p>
-
+            <ProfileAvatarButton type='button' onClick={() => inputImageRef.current.click()}>
+              <ProfileAvatar  width='100' height='100' src={profileImage} />
+              <ProfileAvatarButtonText>변경</ProfileAvatarButtonText>
+            </ProfileAvatarButton>
+            <input ref={inputImageRef} onChange={handleUploadImage} type="file" name="profileImage" id="profileImage" accept='image/*' hidden/>
+            <StButtonSet>
+              <Button color="navy" size="small" type='button' onClick={() => inputImageRef.current.click()}>
+                  변경
+              </Button>
+              <Button color="pink3" size="small" type='button' onClick={handleDeleteImage}>
+                  삭제
+              </Button>
+            </StButtonSet>
             <Input type="text" name="name" value={name} onChange={nameController} placeholder="이름" autoFocus />
             {checkName === true ? (
               <StP style={{ color: 'var(--color_black)' }}>사용 가능한 이름입니다.</StP>
@@ -255,3 +310,29 @@ const StP = styled.h2`
 //       }
 
 //   };
+
+const ProfileAvatarButton = styled.button`
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+`
+const ProfileAvatarButtonText = styled.p`
+  height: 100%;
+  width: 100%;
+  color: transparent;
+  display: flex;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  align-items: center;
+  justify-content: center;
+  transition: all 200ms ease-in-out;
+  &:hover {
+    color: white;
+    background-color: rgb(0 0 0 / 46%);
+  }
+`

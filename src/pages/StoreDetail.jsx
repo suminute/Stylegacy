@@ -20,7 +20,10 @@ const StoreDetail = () => {
   );
 
   const mutationAddComment = useMutation(addComment, {
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['storeDetailComment'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['storeDetailComment'] });
+      setInputComment('');
+    },
     onError: (error) => {
       alert(error.message);
     }

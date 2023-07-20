@@ -5,6 +5,8 @@ import { getLikedStoresByUser } from '../api/likes';
 import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import ProfileModal from '../components/Auth/ProfileModal';
+import { getCurrentUser } from '../api/users';
+import ProfileAvatar from '../components/ProfileAvatar';
 
 const MyPage = () => {
   const { userId, userName, userEmail } = useSelector(({ user }) => user.user);
@@ -14,25 +16,22 @@ const MyPage = () => {
   useEffect(() => {
     if (!userId) navigate('/');
   }, [navigate, userId]);
-  const { isLoading, isError, data, error } = useQuery({ queryKey: ['likedStores'], queryFn: getLikedStoresByUser });
 
-  if (isLoading) {
+  const user = useQuery({ queryKey: ['likedStores'], queryFn: getCurrentUser });
+  const likedStores = useQuery({ queryKey: ['likedStores'], queryFn: getLikedStoresByUser });
+
+  if (user.isLoading) {
     return <span>Loading...</span>;
   }
-  if (isError) {
-    return <span>Error: {error.message}</span>;
+  if (user.isError) {
+    return <span>Error: {user.error.message}</span>;
   }
   return (
     <Container>
       <ProfileContainer>
         <Profile>
           <ProfileImageContainer>
-            <ProfileImage
-              src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
-              alt="profile"
-              width="150"
-              height="150"
-            />
+          <ProfileAvatar  width='150' height='150' src={user.data.userImage} />
           </ProfileImageContainer>
           <ProfileInfoContainer>
             <p>{userName}님, 안녕하세요!</p>
@@ -47,7 +46,7 @@ const MyPage = () => {
         <MyLikeLink>더보기</MyLikeLink>
       </MyLikeTitleContainer>
       <MyLikeListContainer>
-        {data.length > 0 && data.map((store) => <LikedStoreCard key={store.id} store={store} />)}
+        {likedStores.length > 0 && likedStores.map((store) => <LikedStoreCard key={store.id} store={store} />)}
       </MyLikeListContainer>
     </Container>
   );
@@ -83,10 +82,6 @@ const ProfileImageContainer = styled.div`
   display: inline-block;
   border-radius: 50%;
   overflow: hidden;
-`;
-
-const ProfileImage = styled.img`
-  object-fit: cover;
 `;
 
 const ProfileInfoContainer = styled.div`

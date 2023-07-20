@@ -7,8 +7,10 @@ import styled from 'styled-components';
 import { Pencil, Trash } from '@phosphor-icons/react';
 import InputText from './InputText';
 import Button from './Button';
+import ProfileAvatar from './ProfileAvatar';
 
 const Comment = ({comment}) => {
+  console.log(comment)
   const [isUpdating,setUpdating] = useState(false)
   const [inputComment,setInputComment] = useState(comment.content)
   const user = useSelector(({user}) => user.user);
@@ -60,7 +62,10 @@ const Comment = ({comment}) => {
 
   return(<StComment>
     <StCommentInner>
-      <StCommentName>{comment.userName}</StCommentName>
+      <StCommentUserContent>
+        <ProfileAvatar width='30' height='30' src={comment.userImage}/>
+        <StCommentName>{comment.userName}</StCommentName>
+      </StCommentUserContent>
       <div>
         <StCommentDate>{formatDate(comment.createdAt)}</StCommentDate>
         {comment.userId === user.userId &&
@@ -96,7 +101,7 @@ const StCommentInner = styled.div`
 `
 
 const StCommentName = styled.span`
-  margin-right: 2rem;
+  margin-right: 1rem;
 `;
 
 const StCommentDate = styled.span`
@@ -107,6 +112,12 @@ const StCommentUpdateForm = styled.form`
   margin-top: 10px;
   display: flex;
   gap: 10px;
+`
+
+const StCommentUserContent = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 `
 
 const StCommentContent = styled.p`
