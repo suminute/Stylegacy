@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { Map, MapInfoWindow, MapMarker, ZoomControl, CustomOverlayMap } from 'react-kakao-maps-sdk';
+import { Map, MapInfoWindow, MapMarker, ZoomControl, CustomOverlayMap, MarkerClusterer } from 'react-kakao-maps-sdk';
 import { useQuery } from 'react-query';
 import { getStores } from '../api/stores';
 import { useDispatch, useSelector } from 'react-redux';
@@ -50,6 +50,12 @@ function KakaoMap() {
     };
     geocodeAddress();
   }, [data]);
+
+  // const [positions, setPositions] = useState([]);
+
+  // useEffect(() => {
+  //   // setPositions(clusterPositionsData.positions);
+  // },[])
 
   // 검색시 주소를 얻습니다.
   // useEffect(() => {
@@ -104,7 +110,7 @@ function KakaoMap() {
           ref={mapRef}
           center={{ lat: latitude, lng: longitude }}
           style={{ width: '100%', height: '60vh', padding: '20px' }}
-          level={8} // 지도의 확대 레벨
+          level={14} // 지도의 확대 레벨
           onClick={(e, event) => {
             setPosition({
               lat: event.latLng.getLat(),
@@ -114,91 +120,120 @@ function KakaoMap() {
             getCoor2Address(event.latLng.getLat(), event.latLng.getLng());
           }}
         >
-          <ZoomControl position={window.kakao.maps.ControlPosition.TOPRIGHT} />
-          {position && (
-            <MapMarker
-              onClick={() => {
-                setLatitude(position.lat);
-                setLongitude(position.lng);
-              }}
-              style={{
-                pointerEvents: 'none'
-              }}
-              position={position}
-              image={{
-                src: MarkerGray,
-                size: {
-                  width: 64,
-                  height: 69
-                },
-                options: {
-                  offset: {
-                    x: 32,
-                    y: 69
-                  }
-                }
-              }}
-            >
-              <div
+          <MarkerClusterer
+            averageCenter={true} // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
+            minLevel={10} // 클러스터 할 최소 지도 레벨
+          >
+            {console.log(newData)}
+            {newData &&
+              newData.map((pos, idx) => (
+                <CustomOverlayMap
+                  key={`${pos.id}`}
+                  position={{
+                    lat: pos.lat,
+                    lng: pos.lng
+                  }}
+                >
+                  <div
+                    style={{
+                      color: 'black',
+                      textAlign: 'center',
+                      background: 'white',
+                      width: '2rem',
+                      height: '2rem',
+                      borderRadius: '50%'
+                    }}
+                  >
+                    {idx}
+                  </div>
+                </CustomOverlayMap>
+              ))}
+            <ZoomControl position={window.kakao.maps.ControlPosition.TOPRIGHT} />
+            {position && (
+              <MapMarker
+                onClick={() => {
+                  setLatitude(position.lat);
+                  setLongitude(position.lng);
+                }}
                 style={{
-                  padding: '10px ',
-                  color: 'rgb(0, 0, 0)',
-                  width: '190px',
-                  textAlign: 'center'
+                  pointerEvents: 'none'
+                }}
+                position={position}
+                image={{
+                  src: MarkerGray,
+                  size: {
+                    width: 64,
+                    height: 69
+                  },
+                  options: {
+                    offset: {
+                      x: 32,
+                      y: 69
+                    }
+                  }
                 }}
               >
-                {clickAddress.address_name}
-                <Button color="pink2" size="small" onClick={() => openModal(clickAddress.address_name)}>
-                  STORE ADD
-                </Button>
-                <br />
-              </div>
-            </MapMarker>
-          )}
-          {/* {console.log(toggleCustom)} */}
-          {/* 마우스 클릭 마커  */}
-          {positionList.length >= newData.length &&
-            newData.map((data, index) => {
-              const { id, latlng } = data;
-              return (
-                <>
-                  <MapMarker
-                    onClick={() => {
-                      dispatch(toggleMap({ ...toggleCustom, state: true, index }));
-                      setToggleCustom({ ...toggleCustom, state: true, index });
-                      setLatitude(latlng.lat);
-                      setLongitude(latlng.lng);
-                    }}
-                    key={id + index}
-                    position={latlng}
-                    image={{
-                      src: MarkerRed,
-                      size: {
-                        width: 64,
-                        height: 69
-                      },
-                      options: {
-                        offset: {
-                          x: 32,
-                          y: 35
+                <div
+                  style={{
+                    padding: '10px ',
+                    color: 'rgb(0, 0, 0)',
+                    width: '190px',
+                    textAlign: 'center'
+                  }}
+                >
+                  {clickAddress.address_name}
+                  <Button color="pink2" size="small" onClick={() => openModal(clickAddress.address_name)}>
+                    STORE ADD
+                  </Button>
+                  <br />
+                </div>
+              </MapMarker>
+            )}
+            {/* {console.log(toggleCustom)} */}
+            {/* 마우스 클릭 마커  */}
+            {positionList.length >= newData.length &&
+              newData.map((data, index) => {
+                const { id, latlng } = data;
+                return (
+                  <>
+                    <MapMarker
+                      onClick={() => {
+                        dispatch(toggleMap({ ...toggleCustom, state: true, index }));
+                        setToggleCustom({ ...toggleCustom, state: true, index });
+                        setLatitude(latlng.lat);
+                        setLongitude(latlng.lng);
+                      }}
+                      key={id + index}
+                      position={latlng}
+                      image={{
+                        src: MarkerRed,
+                        size: {
+                          width: 64,
+                          height: 69
+                        },
+                        options: {
+                          offset: {
+                            x: 32,
+                            y: 35
+                          }
                         }
-                      }
-                    }}
-                  ></MapMarker>
-                  {/* {console.log(toggleCustom.state === true && toggleCustom.index === index)} */}
-                  {toggleCustom.state === true && toggleCustom.index === index ? (
-                    <CustomOverlayMap
-                      xAnchor={0.5}
-                      yAnchor={1.5}
-                      clickable={true}
-                      position={{ lat: latlng.lat, lng: latlng.lng }}
-                    >
-                      <KakaoCustomInto clickable={true} data={data} index={index} />
-                    </CustomOverlayMap>
-                  ) : null}
-                </>
-              );
-            })}
+                      }}
+                    ></MapMarker>
+                    {/* {console.log(toggleCustom.state === true && toggleCustom.index === index)} */}
+                    {toggleCustom.state === true && toggleCustom.index === index ? (
+                      <CustomOverlayMap
+                        xAnchor={0.5}
+                        yAnchor={1.5}
+                        clickable={true}
+                        position={{ lat: latlng.lat, lng: latlng.lng }}
+                      >
+                        <KakaoCustomInto clickable={true} data={data} index={index} />
+                      </CustomOverlayMap>
+                    ) : null}
+                  </>
+                );
+              })}
+          </MarkerClusterer>
         </Map>
       }
       <input
