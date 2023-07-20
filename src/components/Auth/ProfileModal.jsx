@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { styled } from 'styled-components';
 import Button from '../Button';
-import { getUsers, uploadProfileImage, updateUser } from '../../api/users';
-import { useQuery } from 'react-query';
-import { useDispatch, useSelector } from 'react-redux';
+import { uploadProfileImage, updateUser, getCurrentUser } from '../../api/users';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useDispatch } from 'react-redux';
 import ProfileAvatar from '../ProfileAvatar';
 import { changeUser } from '../../redux/modules/userSlice';
 import { apiKey, auth } from '../../firebase';
@@ -14,6 +14,18 @@ export const PORTAL_MODAL = 'portal-root';
 
 const ProfileModal = ({ isOpen, setIsOpen }) => {
   const dispatch = useDispatch();
+  const queryClient = useQueryClient()
+  const mutationUpdateUser = useMutation(updateUser, {
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['myPage'] });
+      dispatch(changeUser(name));
+      setIsOpen(false);
+    },
+    onError: (error) => {
+      alert(error.message);
+    }
+  });
+
 
   // 로그인한 userId
   const { user } = useSelector((state) => state.user);
@@ -25,23 +37,22 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
   const userData = allUsers?.find((user) => user.userId === userId);
 
   const [name, setName] = useState(data?.userName ?? '');
-  const [checkName, setCheckName] = useState('');
-
+  const [checkName, setCheckName] = useState(false);
   const [profileImage, setProfileImage] = useState('');
   const [profileImageFile, setProfileImageFile] = useState(null);
   const [isResetProfileImage, setResetProfileImage] = useState(false);
   const inputImageRef = useRef(null);
 
   // 이름 정규표현식 필터
-  const nameRegEx = /^(?=.*[a-zA-Z가-힣])[a-zA-Z가-힣]{2,16}$/;
-  const nameCheck = (name) => {
+  const nameCheck = useCallback((name) => {
+    const nameRegEx = /^(?=.*[a-zA-Z가-힣])[a-zA-Z가-힣]{2,16}$/;
     setCheckName(nameRegEx.test(name));
-  };
+  },[]);
 
   // 수정 모달 처음 열렸을 때, 초기 사용자 이름이 유효한지 확인
   useEffect(() => {
     nameCheck(data?.userName);
-  }, []);
+  }, [data?.userName,nameCheck]);
 
   // input 관리
   const nameController = (e) => {
@@ -88,8 +99,6 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
     setProfileImageFile(file);
     setProfileImage(URL.createObjectURL(file));
     setResetProfileImage(false);
-    const url = await uploadProfileImage({ userId, file });
-    console.log(url);
   };
 
   const handleDeleteImage = (e) => {
@@ -97,21 +106,6 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
     setProfileImageFile(null);
     setProfileImage('');
   };
-
-  // if(isResetProfileImage) image = ''
-  // else if(profileImageFile) image = await uploadProfileImage(profileImage)
-
-  useEffect(() => {
-    console.log('change data', data);
-    if (data?.userImage) {
-      console.log('userImage', data.userImage);
-      setProfileImage(data.userImage);
-    }
-  }, [data]);
-
-  useEffect(() => {
-    console.log('profileImage', profileImage);
-  }, [profileImage]);
 
   // 수정 모달창 닫기
   const closeHandler = () => {
@@ -121,16 +115,19 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
     e.stopPropagation();
   };
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error...</div>;
+  useEffect(() => {
+    if(!isLoading && data.userImage) setProfileImage(data.userImage)
+  },[isLoading, data])
 
+  if (isLoading) return null;
+  if (error) return null;
   return isOpen
     ? createPortal(
         <Outer onClick={closeHandler}>
           <Inner onClick={stopPropagation} onSubmit={handleSubmit}>
             <p>프로필을 수정해볼까요?</p>
             <ProfileAvatarButton type="button" onClick={() => inputImageRef.current.click()}>
-              <ProfileAvatar width="100" height="100" src={profileImage} />
+              <ProfileAvatar width="100" height="100" src={profileImage || data.profileImage} />
               <ProfileAvatarButtonText>변경</ProfileAvatarButtonText>
             </ProfileAvatarButton>
             <input

@@ -19,15 +19,16 @@ const MyPage = () => {
     if (!userId) navigate('/');
   }, [navigate, userId]);
 
-  const user = useQuery({ queryKey: ['likedStores'], queryFn: getCurrentUser });
+  const user = useQuery({ queryKey: ['myPage'], queryFn: getCurrentUser });
   const likedStores = useQuery({ queryKey: ['likedStores'], queryFn: getLikedStoresByUser });
-
+  console.log(likedStores.data)
   if (user.isLoading) {
     return <span>Loading...</span>;
   }
   if (user.isError) {
     return <span>Error: {user.error.message}</span>;
   }
+  
   return (
     <Container>
       <ProfileContainer>
@@ -52,7 +53,7 @@ const MyPage = () => {
         <MyLikeLink>더보기</MyLikeLink>
       </MyLikeTitleContainer>
       <MyLikeListContainer>
-        {likedStores.length > 0 && likedStores.map((store) => <LikedStoreCard key={store.id} store={store} />)}
+        {!likedStores.isLoading  && likedStores.data.map((store) => <LikedStoreCard key={store.id} store={store} />)}
       </MyLikeListContainer>
     </Container>
   );

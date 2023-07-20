@@ -1,6 +1,7 @@
-import { memo, useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState  } from "react"
 import styled from "styled-components"
 import { getDefaultProfileImageUrl } from "../api/users"
+import { useQuery,  } from "react-query";
 
 
 const ProfileAvatar = ({ 
@@ -9,31 +10,32 @@ const ProfileAvatar = ({
     src,
     ...props
   }) => {
-    console.log(src)
-  const [image,setImage] = useState(src|| '')
+    const [imageUrl,setImageUrl] = useState('')
+    const { isLoading, error, data } = useQuery(['profileAvatar'], () => getDefaultProfileImageUrl(),{staleTime:Infinity});
 
-  const handleImageError = useCallback(async () => {
-    const defaultImageUrl = await getDefaultProfileImageUrl()
-    if(image !== defaultImageUrl)
-    setImage(defaultImageUrl)
-  },[image])
+  const handleImageError = useCallback(async (e) => {
+    e.target.src = data
+  },[data])
 
-  useEffect(() => {
-    setImage(src)
-  },[src])
+  useEffect(()=>{
+    if(!data) return
+    setImageUrl(src || data)
+  },[src, data])
 
+  if(isLoading) return null
   return(
   <ProfileImage  
+    onLoad={()=>console.log('onLoad',src)}
     width={`${width}`} 
     height={`${height}`} 
-    src={image} 
+    src={imageUrl} 
     onError={handleImageError} 
     alt='profile' 
     {...props}
   />)
 }
 
-export default memo(ProfileAvatar)
+export default ProfileAvatar
 
 const ProfileImage = styled.img`
   border-radius: 50%;

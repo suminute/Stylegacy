@@ -20,9 +20,13 @@ export const addUser = async (newUser) => {
   await addDoc(collectionRef, newUser);
 };
 
-export const uploadProfileImage = async ({ userId, file }) => {
+export const uploadProfileImage = async (file) => {
+  // uid 가져오기
+  const user = auth.currentUser;
+  if (!user) throw new Error('로그인 상태가 아닙니다');
+  const { uid } = user;
   const fileName = shortid.generate(); // random file name
-  const storageRef = ref(storage, `user/${userId}/profile/${fileName}`);
+  const storageRef = ref(storage, `user/${uid}/profile/${fileName}`);
   const uploadedSnap = await uploadBytes(storageRef, file);
   return await getDownloadURL(uploadedSnap.ref);
 };
@@ -46,7 +50,17 @@ export const getCurrentUser = async () => {
 };
 
 // 프로필 수정 시 user 데이터 변경
-export const updateUser = async (id, newName) => {
-  const userRef = doc(db, 'users', id);
-  await updateDoc(userRef, { userName: newName });
+export const updateUser = async (updatedUser) => {
+  // uid 가져오기
+  console.log(updatedUser);
+  const user = auth.currentUser;
+  if (!user) throw new Error('로그인 상태가 아닙니다');
+  const { uid } = user;
+  // 유저 데이터 가져오기
+  const userQuery = query(collection(db, 'users'), where('userId', '==', uid));
+  const userSnap = await getDocs(userQuery);
+  const userDoc = userSnap.docs[0];
+  if (!userDoc?.exists()) throw new Error('유저를 찾을 수 없습니다');
+  const userRef = userDoc.ref;
+  await updateDoc(userRef, updatedUser);
 };
