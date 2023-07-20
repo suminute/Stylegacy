@@ -86,16 +86,16 @@ const PostItem = ({ post }) => {
   };
 
   return (
-    <StCard key={post.id} onClick={() => setOpenMenu(!openMenu)}>
+    <StCard key={post.id}>
       <Link to={`/store/${post.id}`} state={{ location: post.location }}>
         <img src={post.image} />
         <StCardContents className="contents">
           <span className="storeName">{post.store}</span>
           <p>{post.location}</p>
-          <p>
-            <span>{post.day}</span>
-            {` ${post.time}`}
-          </p>
+          <div>
+            <p className="day">{post.day}</p>
+            <p>{post.time}</p>
+          </div>
           <div className="like">
             <FaHeart size="18" color="#ce7777" />
             <p>{post.likeCount}</p>
@@ -121,10 +121,6 @@ const PostItem = ({ post }) => {
               postId={post.id}
             ></DeleteUpdateButton>
           </StButtonBox>
-          // <StButtonBox>
-          //   <button onClick={openUpdateModal}>수정</button>
-          //   <button onClick={() => deleteOnClickHandler(post.id)}>삭제</button>
-          // </StButtonBox>
         )}
         {isOpen && (
           <StoreUpdateModal
@@ -142,8 +138,7 @@ const PostItem = ({ post }) => {
 export default PostItem;
 
 const StCard = styled.div`
-  margin: 10px 0 10px 0;
-  padding: 10px;
+  padding: 20px 10px;
   display: grid;
   grid-template-columns: 1fr 100px;
 
@@ -170,7 +165,7 @@ const StCard = styled.div`
 
 const StCardContents = styled.div`
   display: grid;
-  grid-template-rows: 35px 30px 1fr 20px;
+  grid-template-rows: 35px 50px 1fr 20px;
   & .storeName {
     margin: 5px;
     font-size: larger;
@@ -181,7 +176,7 @@ const StCardContents = styled.div`
     color: #777;
   }
 
-  & p > span {
+  & div > .day {
     color: var(--color_navy);
   }
 
