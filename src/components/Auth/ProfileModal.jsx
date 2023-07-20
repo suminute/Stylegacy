@@ -7,15 +7,12 @@ import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import ProfileAvatar from '../ProfileAvatar';
 import { changeUser } from '../../redux/modules/userSlice';
+import { apiKey } from '../../firebase';
 
 export const PORTAL_MODAL = 'portal-root';
 
 const ProfileModal = ({ isOpen, setIsOpen }) => {
   const dispatch = useDispatch();
-
-  // userSlice 변경 값 확인 콘솔
-  // const userName = useSelector((state) => state.user.user.userName);
-  // console.log('userName', userName);
 
   // 로그인한 userId
   const { user } = useSelector((state) => state.user);
@@ -64,6 +61,12 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
       if (data?.userName !== name) {
         alert('이름이 성공적으로 변경되었습니다.');
       }
+      // 로그인 세션을 유지하는 세션 스토리지에서도 정보 변경 필요
+      const sessionKey = `firebase:authUser:${apiKey}:[DEFAULT]`;
+      let sessionUserData = JSON.parse(sessionStorage.getItem(sessionKey));
+      sessionUserData.displayName = name;
+      sessionStorage.setItem(sessionKey, JSON.stringify(sessionUserData));
+
       setIsOpen(false);
     } catch (error) {
       console.log('프로필 수정 에러', error);
