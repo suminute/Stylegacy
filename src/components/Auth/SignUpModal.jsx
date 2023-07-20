@@ -44,8 +44,8 @@ const SignUpModal = ({ isOpen, setIsOpen }) => {
   const passwordCheck = (password) => {
     setCheckPassword(passwordRegEx.test(password));
   };
-  const confirmPasswordCheck = (confirmPassword) => {
-    setCheckConfirmPassword(confirmPassword === password);
+  const confirmPasswordCheck = (confirmPassword, comparePassword = password) => {
+    setCheckConfirmPassword(confirmPassword === comparePassword);
   };
 
   // input 관리
@@ -58,8 +58,10 @@ const SignUpModal = ({ isOpen, setIsOpen }) => {
     emailCheck(e.target.value);
   };
   const passwordController = (e) => {
-    setPassword(e.target.value);
-    passwordCheck(e.target.value);
+    const comparePassword = e.target.value;
+    setPassword(comparePassword);
+    passwordCheck(comparePassword);
+    confirmPasswordCheck(confirmPassword, comparePassword);
   };
   const confirmPasswordController = (e) => {
     setConfirmPassword(e.target.value);
@@ -104,7 +106,7 @@ const SignUpModal = ({ isOpen, setIsOpen }) => {
             <Input type="text" name="name" value={name} onChange={nameController} placeholder="이름" autoFocus />
             {checkName === true ? (
               <StP style={{ color: 'var(--color_black)' }}>사용 가능한 이름입니다.</StP>
-            ) : name !== '' ? (
+            ) : name ? (
               <StP>2자 이상 16자 내 영어, 한글로 구성해주세요.</StP>
             ) : (
               <br />
@@ -112,7 +114,7 @@ const SignUpModal = ({ isOpen, setIsOpen }) => {
             <Input type="email" name="email" value={email} onChange={emailController} placeholder="이메일" />
             {checkEmail === true ? (
               <StP style={{ color: 'var(--color_black)' }}>사용 가능한 이메일입니다.</StP>
-            ) : email !== '' ? (
+            ) : email ? (
               <StP>이메일 주소를 정확히 입력해주세요.</StP>
             ) : (
               <br />
@@ -126,7 +128,7 @@ const SignUpModal = ({ isOpen, setIsOpen }) => {
             />
             {checkPassword === true ? (
               <StP style={{ color: 'var(--color_black)' }}>사용 가능한 비밀번호입니다.</StP>
-            ) : password !== '' ? (
+            ) : password ? (
               <StP>영문, 숫자, 특수문자를 조합하여 8-16자 로 입력해주세요.</StP>
             ) : (
               <br />
@@ -139,9 +141,9 @@ const SignUpModal = ({ isOpen, setIsOpen }) => {
               onChange={confirmPasswordController}
               placeholder="비밀번호 확인"
             />
-            {checkConfirmPassword === true ? (
+            {confirmPassword && checkConfirmPassword === true ? (
               <StP style={{ color: 'var(--color_black)' }}>비밀번호가 일치합니다.</StP>
-            ) : confirmPassword !== '' ? (
+            ) : confirmPassword && confirmPassword !== password ? (
               <StP>비밀번호가 일치하지 않습니다.</StP>
             ) : (
               <br />
