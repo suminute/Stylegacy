@@ -17,13 +17,13 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
 
   // 로그인한 userId
   const { user } = useSelector((state) => state.user);
+  const data = user;
   const userId = user.userId;
 
-  // DB의 users 컬렉션에서 모든 user 정보 가져와서 -> 로그인한 userId에 해당하는 값만 data 변수에 담기
+  // DB의 users 컬렉션에서 모든 user 정보 가져와서 -> 로그인한 userId에 해당하는 값만 담기
   const { isLoading, error, data: allUsers } = useQuery(['users'], getUsers);
-  const data = allUsers?.find((user) => user.userId === userId);
+  const userData = allUsers?.find((user) => user.userId === userId);
 
-  // [오류] 이름 초기 값 설정 시 data 전달이 늦게 오면 문제 있음. 빈 값으로 일단 설정..
   const [name, setName] = useState(data?.userName ?? '');
   const [checkName, setCheckName] = useState('');
 
@@ -56,7 +56,7 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
     e.preventDefault();
     try {
       // DB에 userName 업데이트
-      await updateUser(data?.id, name);
+      await updateUser(userData?.id, name);
 
       // 회원가입 시 firebase에 저장한 displayName도 변경
       await updateProfile(auth.currentUser, { displayName: name });
