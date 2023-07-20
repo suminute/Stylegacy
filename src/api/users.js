@@ -1,4 +1,4 @@
-import { addDoc, collection, getDocs, query } from 'firebase/firestore';
+import { addDoc, collection, doc, getDocs, query, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 
 // user 데이터 조회
@@ -16,4 +16,10 @@ export const getUsers = async () => {
 export const addUser = async (newUser) => {
   const collectionRef = collection(db, 'users');
   await addDoc(collectionRef, newUser);
+};
+
+// 프로필 수정 시 user 데이터 변경
+export const updateUser = async (id, newName) => {
+  const userRef = doc(db, 'users', id);
+  await updateDoc(userRef, { userName: newName });
 };
