@@ -17,10 +17,7 @@ const userSlice = createSlice({
         state.user = action.payload;
         return state;
       } else {
-        state.userId = null;
-        state.userName = null;
-        state.userEmail = null;
-        return state;
+        state.user = initialState.user;
       }
     },
     changeUser: (state, action) => {
@@ -28,7 +25,7 @@ const userSlice = createSlice({
         state.user.userName = action.payload;
         return state;
       } else {
-        console.log('userSlice의 changeUser에서 error 발생');
+        state.user = initialState.user;
       }
     }
   }
