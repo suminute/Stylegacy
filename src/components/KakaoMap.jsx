@@ -8,11 +8,13 @@ import MarkerGray from '../images/footprint_marker_navy.svg';
 import MarkerRed from '../images/footprint_marker_red.svg';
 import KakaoCustomInto from './map/KakaoCustomInto';
 import Button from './Button';
-import { toggleMap } from '../redux/modules/toggleSlice';
+import toggleSlice, { toggleMap } from '../redux/modules/toggleSlice';
 import { styled } from 'styled-components';
+import { openMarkerStoreModal, openStoreModal } from '../redux/modules/storeAddSlice';
 
 function KakaoMap() {
   const { kakao } = window;
+  const [post, setPost] = useState([]);
   const { isLoading, isError, data } = useQuery('stores', getStores);
   const mapRef = useRef(null);
   const [clickAddress, setClickAddress] = useState([]);
@@ -27,11 +29,11 @@ function KakaoMap() {
   const toggleSelector = useSelector((state) => state.toggleSlice);
   const dispatch = useDispatch();
   const { lat, lng } = position;
-  const [toggleCustom, setToggleCustom] = useState(toggleSelector);
-
+  const [toggleCustom, setToggleCustom] = useState({ ...toggleSelector, render: 0 });
+  // const toggleSelector = useSelector((state) => toggleSlice);
   const [test, setTest] = useState('');
-
   useEffect(() => {
+    setPost(data);
     // 주소 => 위도, 경도로 변환하는 함수입니다.
     const geocoder = new window.kakao.maps.services.Geocoder();
     const geocodeAddress = () => {
@@ -40,6 +42,7 @@ function KakaoMap() {
           return geocoder.addressSearch(el.location, (result, status) => {
             if (status === window.kakao.maps.services.Status.OK) {
               const { x, y } = result[0];
+              setTest(result[0]);
               setPositionList((prev) => [...prev, { lat: +y, lng: +x }]);
             }
           });
@@ -49,18 +52,18 @@ function KakaoMap() {
   }, [data]);
 
   // 검색시 주소를 얻습니다.
-  useEffect(() => {
-    const geocoder = new window.kakao.maps.services.Geocoder();
-    const geocodeAddress = () => {
-      return geocoder.addressSearch(test, (result, status) => {
-        if (status === window.kakao.maps.services.Status.OK) {
-          const { x, y } = result[0];
-        }
-      });
-    };
-    geocodeAddress();
-    // 주소 => 위도, 경도로 변환하는 함수입니다.
-  }, [test]);
+  // useEffect(() => {
+  //   const geocoder = new window.kakao.maps.services.Geocoder();
+  //   const geocodeAddress = () => {
+  //     return geocoder.addressSearch(test, (result, status) => {
+  //       if (status === window.kakao.maps.services.Status.OK) {
+  //         const { x, y } = result[0];
+  //       }
+  //     });
+  //   };
+  //   geocodeAddress();
+  //   // 주소 => 위도, 경도로 변환하는 함수입니다.
+  // }, [test]);
 
   // 지도 클릭시 주소, 정보를 출력합니다
   const getCoor2Address = useCallback(
@@ -75,17 +78,25 @@ function KakaoMap() {
     [lat, lng]
   );
   // 받아온 데이터 주소 => 위도, 경도로 변환후 newData로 저장
+
+  if (isLoading) return '123';
+  if (isError) return '123';
+  // console.log(positionList);
+  const openModal = (clickLocation) => {
+    // setIsOpen(true);
+
+    dispatch(openMarkerStoreModal({ bool: true, clickLocation }));
+  };
+
   const newData =
     positionList.length > 0 &&
-    data.map((el, index) => {
+    post.map((el, index) => {
       return {
         ...el,
         latlng: positionList[index]
       };
     });
 
-  if (isLoading) return '123';
-  if (isError) return '123';
   return (
     <>
       {
@@ -121,25 +132,23 @@ function KakaoMap() {
                 }
               }}
             >
-              <StClickInfoWindow
+              <div
                 style={{
-                  padding: '7px ',
+                  padding: '10px ',
                   color: 'rgb(0, 0, 0)',
-                  width: '162px',
-                  textAlign: 'center',
-                  lineHeight: '20px'
+                  width: '190px',
+                  textAlign: 'center'
                 }}
               >
-                이 store을
-                <br /> 추가해보세요 <br />
-                <StClickInfoWindowSpan>{clickAddress.address_name}</StClickInfoWindowSpan>
-                <Button color="pink2" size="small">
-                  ADD
+                {clickAddress.address_name}
+                <Button color="pink2" size="small" onClick={() => openModal(clickAddress.address_name)}>
+                  STORE ADD
                 </Button>
-              </StClickInfoWindow>
+                <br />
+              </div>
             </MapMarker>
           )}
-
+          {/* {console.log(toggleCustom)} */}
           {/* 마우스 클릭 마커  */}
           {positionList.length >= newData.length &&
             newData.map((data, index) => {
@@ -148,8 +157,8 @@ function KakaoMap() {
                 <>
                   <MapMarker
                     onClick={() => {
-                      dispatch(toggleMap({ state: true, index: index }));
-                      setToggleCustom({ state: true, index: index });
+                      dispatch(toggleMap({ ...toggleCustom, state: true, index }));
+                      setToggleCustom({ ...toggleCustom, state: true, index });
                     }}
                     key={id + index}
                     position={latlng}
@@ -167,7 +176,7 @@ function KakaoMap() {
                       }
                     }}
                   ></MapMarker>
-                  {console.log(toggleCustom.state === true && toggleCustom.index === index)}
+                  {/* {console.log(toggleCustom.state === true && toggleCustom.index === index)} */}
                   {toggleCustom.state === true && toggleCustom.index === index ? (
                     <CustomOverlayMap
                       xAnchor={0.5}
@@ -194,11 +203,3 @@ function KakaoMap() {
 }
 
 export default React.memo(KakaoMap);
-
-const StClickInfoWindow = styled.div`
-  position: relative;
-`;
-const StClickInfoWindowSpan = styled.span`
-  font-size: 11px;
-  opacity: 0.8;
-`;

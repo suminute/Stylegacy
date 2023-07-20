@@ -18,8 +18,8 @@ function KakaoCustomInto({ data, index }) {
 
             <button
               onClick={() => {
-                dispatch(toggleMap({ state: false, index }));
-                setOpen({ state: false, index });
+                dispatch(toggleMap({ ...toggleCostom, state: false, index }));
+                setOpen({ ...toggleCostom, state: false, index });
               }}
             >
               X

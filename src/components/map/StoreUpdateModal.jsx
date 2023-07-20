@@ -7,12 +7,13 @@ import useInput from '../../hooks/useInput';
 import Checkbox from './Checkbox';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { storage } from '../../firebase';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { createPortal } from 'react-dom';
+import { openStoreModal } from '../../redux/modules/storeAddSlice';
 
 export const PORTAL_MODAL = 'portal-root';
 
-const StoreUpdateModal = ({ type, closeModal, id, post }) => {
+const StoreUpdateModal = ({ type, id, post }) => {
   const [disabled, setDisabled] = useState(true);
   const [store, storeHandler, setStore] = useInput('');
   const [openTime, openTimeHandler, setOpenTime] = useInput('');
@@ -24,7 +25,7 @@ const StoreUpdateModal = ({ type, closeModal, id, post }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [imageURL, setImageURL] = useState(null);
   const storeModal = useSelector((state) => state.storeAddSlice);
-  console.log(storeModal);
+  const dispatch = useDispatch();
   const basicImgURL =
     'https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20220815_97%2F166056034235103u8W_JPEG%2F45553d3b7e8e7d2e2dacfceb2c62a5da.jpg';
 
@@ -95,7 +96,7 @@ const StoreUpdateModal = ({ type, closeModal, id, post }) => {
       likeCount: 0
     };
     addMutation.mutate(newStore);
-    closeModal();
+    dispatch(openStoreModal(false));
   };
   const updateButtonHandler = async (e) => {
     e.preventDefault();
@@ -112,7 +113,7 @@ const StoreUpdateModal = ({ type, closeModal, id, post }) => {
         image: selectedFile ? await storageUpload({ id, selectedFile }) : imageURL
       };
       updateMutation.mutate({ id, modifiedStore });
-      closeModal();
+      dispatch(openStoreModal(false));
       alert('수정되었습니다!');
     } else {
       const modifiedStore = {
@@ -127,7 +128,7 @@ const StoreUpdateModal = ({ type, closeModal, id, post }) => {
         image: selectedFile ? await storageUpload({ id, selectedFile }) : basicImgURL
       };
       updateMutation.mutate({ id, modifiedStore });
-      closeModal();
+      dispatch(openStoreModal(false));
       alert('수정되었습니다!');
     }
   };
@@ -188,6 +189,9 @@ const StoreUpdateModal = ({ type, closeModal, id, post }) => {
     setImgSrc(null);
     setSelectedFile(null);
   };
+  const closeModal = () => {
+    dispatch(openStoreModal(false));
+  };
 
   return storeModal.state
     ? createPortal(
@@ -228,7 +232,7 @@ const StoreUpdateModal = ({ type, closeModal, id, post }) => {
               </StInputContainer>
               <StInputContainer>
                 <label>상세주소</label>
-                <input value={location} onChange={locationHandler} />
+                <input value={storeModal.clickLocation || location} onChange={locationHandler} />
               </StInputContainer>
               {type === 'update' && (
                 <>

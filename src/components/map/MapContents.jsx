@@ -1,4 +1,4 @@
-owimport React, { useState } from 'react';
+import React, { useState } from 'react';
 import { styled } from 'styled-components';
 import Button from '../Button';
 import Posts from './Posts';
@@ -9,13 +9,8 @@ import { openStoreModal } from '../../redux/modules/storeAddSlice';
 
 const Mapcontents = () => {
   const dispatch = useDispatch();
-  // const [isOpen, setIsOpen] = useState(false);
   const openModal = () => {
-    // setIsOpen(true);
     dispatch(openStoreModal(true));
-  };
-  const closeModal = () => {
-    // setIsOpen(false);
   };
 
   return (
@@ -23,7 +18,7 @@ const Mapcontents = () => {
       <Form>
         <SearchBar size="small" />
       </Form>
-      <Button color="pink2" size="medium" full onClick={openModal}>
+      <Button color="pink2" size="medium" full onClick={() => openModal()}>
         장소 추가하기
       </Button>
       {/* {isOpen && <StoreUpdateModal type="add" closeModal={closeModal}></StoreUpdateModal>} */}
