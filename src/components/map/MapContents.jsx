@@ -21,7 +21,6 @@ const Mapcontents = () => {
       <Button color="pink2" size="medium" full onClick={openModal}>
         장소 추가하기
       </Button>
-      {/* {isOpen && <StoreUpdateModal type="add" closeModal={closeModal}></StoreUpdateModal>} */}
       <StPostDiv>
         <Posts />
       </StPostDiv>

@@ -8,11 +8,11 @@ const storeAddSlice = createSlice({
   initialState,
   reducers: {
     openStoreModal: (state, action) => {
-      state = action.payload;
+      state.state = action.payload;
       return state;
     },
     closeStoreModal: (state, action) => {
-      state = action.payload;
+      state.state = action.payload;
       return state;
     }
   }

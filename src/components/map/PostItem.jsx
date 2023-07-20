@@ -7,19 +7,20 @@ import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { addLike, decreaseLikeCount, getLikes, increaseLikeCount, removeAllLike, removeLike } from '../../api/likes';
 import { FaHeart, FaRegHeart, FaEllipsisV } from 'react-icons/fa';
+import DeleteUpdateButton from './DeleteUpdateButton';
 
 const PostItem = ({ post }) => {
   // user 정보
   const { user } = useSelector((state) => state.user);
   const userId = user.userId;
-
   const [isOpen, setIsOpen] = useState(false);
-  const openModal = () => {
+  const openUpdateModal = () => {
     setIsOpen(true);
   };
-  const closeModal = () => {
+  const closeUpdateModal = () => {
     setIsOpen(false);
   };
+
   const [openMenu, setOpenMenu] = useState(false);
 
   // 리액트 쿼리 (항상 컴포넌트 최상위에서 동일한 순서로 호출되어야 한다.)
@@ -110,15 +111,29 @@ const PostItem = ({ post }) => {
           <StLikeButton disabled={true}></StLikeButton>
         )}
         <StLikeButton onClick={() => setOpenMenu(!openMenu)}>
-          <FaEllipsisV size="20" color="#ce7777" />
+          <FaEllipsisV size="20" color="#ce7777" display={userId ? 'display' : 'none'} />
         </StLikeButton>
         {openMenu && (
           <StButtonBox>
-            <button onClick={openModal}>수정</button>
-            <button onClick={() => deleteOnClickHandler(post.id)}>삭제</button>
+            <DeleteUpdateButton
+              openUpdateModal={openUpdateModal}
+              deleteOnClickHandler={deleteOnClickHandler}
+              postId={post.id}
+            ></DeleteUpdateButton>
           </StButtonBox>
+          // <StButtonBox>
+          //   <button onClick={openUpdateModal}>수정</button>
+          //   <button onClick={() => deleteOnClickHandler(post.id)}>삭제</button>
+          // </StButtonBox>
         )}
-        {isOpen && <StoreUpdateModal type="update" closeModal={closeModal} id={post.id} post={post}></StoreUpdateModal>}
+        {isOpen && (
+          <StoreUpdateModal
+            type="update"
+            closeUpdateModal={closeUpdateModal}
+            id={post.id}
+            post={post}
+          ></StoreUpdateModal>
+        )}
       </StButtonContainer>
     </StCard>
   );
@@ -208,17 +223,4 @@ const StButtonBox = styled.div`
   border-radius: 8px;
   box-shadow: 0px 0px 9px 2px #00000014;
   padding: 7px;
-  & button {
-    margin: 5px 5px 5px 5px;
-    padding: 5px;
-    border: 1px solid var(--color_pink1);
-    color: var(--color_pink1);
-    font-weight: 700;
-    border-radius: 8px;
-    background-color: white;
-  }
-  & button:hover {
-    color: white;
-    background-color: var(--color_pink1);
-  }
 `;
