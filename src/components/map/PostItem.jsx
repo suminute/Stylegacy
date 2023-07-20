@@ -7,19 +7,20 @@ import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { addLike, decreaseLikeCount, getLikes, increaseLikeCount, removeAllLike, removeLike } from '../../api/likes';
 import { FaHeart, FaRegHeart, FaEllipsisV } from 'react-icons/fa';
+import DeleteUpdateButton from './DeleteUpdateButton';
 
 const PostItem = ({ post }) => {
   // user 정보
   const { user } = useSelector((state) => state.user);
   const userId = user.userId;
-
   const [isOpen, setIsOpen] = useState(false);
-  const openModal = () => {
+  const openUpdateModal = () => {
     setIsOpen(true);
   };
-  const closeModal = () => {
+  const closeUpdateModal = () => {
     setIsOpen(false);
   };
+
   const [openMenu, setOpenMenu] = useState(false);
 
   // 리액트 쿼리 (항상 컴포넌트 최상위에서 동일한 순서로 호출되어야 한다.)
@@ -85,16 +86,16 @@ const PostItem = ({ post }) => {
   };
 
   return (
-    <StCard key={post.id} onClick={() => setOpenMenu(!openMenu)}>
+    <StCard key={post.id}>
       <Link to={`/store/${post.id}`} state={{ location: post.location }}>
         <img src={post.image} />
         <StCardContents className="contents">
           <span className="storeName">{post.store}</span>
           <p>{post.location}</p>
-          <p>
-            <span>{post.day}</span>
-            {` ${post.time}`}
-          </p>
+          <div>
+            <p className="day">{post.day}</p>
+            <p>{post.time}</p>
+          </div>
           <div className="like">
             <FaHeart size="18" color="#ce7777" />
             <p>{post.likeCount}</p>
@@ -110,15 +111,25 @@ const PostItem = ({ post }) => {
           <StLikeButton disabled={true}></StLikeButton>
         )}
         <StLikeButton onClick={() => setOpenMenu(!openMenu)}>
-          <FaEllipsisV size="20" color="#ce7777" />
+          <FaEllipsisV size="20" color="#ce7777" display={userId ? 'display' : 'none'} />
         </StLikeButton>
         {openMenu && (
           <StButtonBox>
-            <button onClick={openModal}>수정</button>
-            <button onClick={() => deleteOnClickHandler(post.id)}>삭제</button>
+            <DeleteUpdateButton
+              openUpdateModal={openUpdateModal}
+              deleteOnClickHandler={deleteOnClickHandler}
+              postId={post.id}
+            ></DeleteUpdateButton>
           </StButtonBox>
         )}
-        {isOpen && <StoreUpdateModal type="update" closeModal={closeModal} id={post.id} post={post}></StoreUpdateModal>}
+        {isOpen && (
+          <StoreUpdateModal
+            type="update"
+            closeUpdateModal={closeUpdateModal}
+            id={post.id}
+            post={post}
+          ></StoreUpdateModal>
+        )}
       </StButtonContainer>
     </StCard>
   );
@@ -127,8 +138,7 @@ const PostItem = ({ post }) => {
 export default PostItem;
 
 const StCard = styled.div`
-  margin: 10px 0 10px 0;
-  padding: 10px;
+  padding: 20px 10px;
   display: grid;
   grid-template-columns: 1fr 100px;
 
@@ -155,7 +165,7 @@ const StCard = styled.div`
 
 const StCardContents = styled.div`
   display: grid;
-  grid-template-rows: 35px 30px 1fr 20px;
+  grid-template-rows: 35px 50px 1fr 20px;
   & .storeName {
     margin: 5px;
     font-size: larger;
@@ -166,7 +176,7 @@ const StCardContents = styled.div`
     color: #777;
   }
 
-  & p > span {
+  & div > .day {
     color: var(--color_navy);
   }
 
@@ -208,17 +218,4 @@ const StButtonBox = styled.div`
   border-radius: 8px;
   box-shadow: 0px 0px 9px 2px #00000014;
   padding: 7px;
-  & button {
-    margin: 5px 5px 5px 5px;
-    padding: 5px;
-    border: 1px solid var(--color_pink1);
-    color: var(--color_pink1);
-    font-weight: 700;
-    border-radius: 8px;
-    background-color: white;
-  }
-  & button:hover {
-    color: white;
-    background-color: var(--color_pink1);
-  }
 `;

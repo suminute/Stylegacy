@@ -11,7 +11,7 @@ import { closeStoreModal } from '../../redux/modules/storeAddSlice';
 
 export const PORTAL_MODAL = 'portal-root';
 
-const StoreUpdateModal = ({ type, id, post }) => {
+const StoreUpdateModal = ({ type, id, post, closeUpdateModal }) => {
   const [disabled, setDisabled] = useState(true);
   const [store, storeHandler, setStore] = useInput('');
   const [openTime, openTimeHandler, setOpenTime] = useInput('');
@@ -22,15 +22,13 @@ const StoreUpdateModal = ({ type, id, post }) => {
   const [checkItems, setCheckItems] = useState(new Set());
   const [selectedFile, setSelectedFile] = useState(null);
   const [imageURL, setImageURL] = useState(null);
+  const basicImgURL = 'https://github.com/suminute/Stylegacy/assets/92218638/9824667b-e8b9-4a4e-a271-a9d3d8341089';
+
   const storeModal = useSelector((state) => state.storeAddSlice);
-  console.log(storeModal);
-  const basicImgURL =
-    'https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20220815_97%2F166056034235103u8W_JPEG%2F45553d3b7e8e7d2e2dacfceb2c62a5da.jpg';
   const dispatch = useDispatch();
   const closeModal = () => {
     dispatch(closeStoreModal(false));
   };
-
   useEffect(() => {
     if (type === 'add') {
       setStore('');
@@ -55,6 +53,12 @@ const StoreUpdateModal = ({ type, id, post }) => {
       }
       if (post.image) {
         setImageURL(post.image);
+      }
+      if (post.phoneNumber) {
+        setPhoneNumber(post.phoneNumber);
+      }
+      if (post.site) {
+        setSite(post.site);
       }
     }
   }, []);
@@ -115,7 +119,7 @@ const StoreUpdateModal = ({ type, id, post }) => {
         image: selectedFile ? await storageUpload({ id, selectedFile }) : imageURL
       };
       updateMutation.mutate({ id, modifiedStore });
-      closeModal();
+      closeUpdateModal();
       alert('수정되었습니다!');
     } else {
       const modifiedStore = {
@@ -130,7 +134,7 @@ const StoreUpdateModal = ({ type, id, post }) => {
         image: selectedFile ? await storageUpload({ id, selectedFile }) : basicImgURL
       };
       updateMutation.mutate({ id, modifiedStore });
-      closeModal();
+      closeUpdateModal();
       alert('수정되었습니다!');
     }
   };
@@ -186,9 +190,8 @@ const StoreUpdateModal = ({ type, id, post }) => {
 
   // 이미지 삭제
   const deleteImgHandler = () => {
-    post.image = null;
     setImageURL(null);
-    setImgSrc(null);
+    setImgSrc(basicImgURL);
     setSelectedFile(null);
   };
 
@@ -262,24 +265,31 @@ const StoreUpdateModal = ({ type, id, post }) => {
                         </div>
                       )}
                     </StImagePreview>
-                    {imgSrc || imageURL ? <button onClick={deleteImgHandler}>이미지 삭제</button> : null}
+                    {imgSrc !== basicImgURL ? <button onClick={deleteImgHandler}>이미지 삭제</button> : null}
                   </StInputFileContainer>
                 </>
               )}
               <StButtonContaioner>
                 {type === 'add' && (
-                  <Button type="submit" color="pink2" size="medium" disabled={disabled} onClick={addButtonHandler}>
-                    저장
-                  </Button>
+                  <>
+                    <Button type="submit" color="pink2" size="medium" disabled={disabled} onClick={addButtonHandler}>
+                      저장
+                    </Button>
+                    <Button type="button" color="white" size="medium" onClick={closeModal}>
+                      닫기
+                    </Button>
+                  </>
                 )}
                 {type === 'update' && (
-                  <Button type="submit" color="pink2" size="medium" disabled={disabled} onClick={updateButtonHandler}>
-                    수정
-                  </Button>
+                  <>
+                    <Button type="submit" color="pink2" size="medium" disabled={disabled} onClick={updateButtonHandler}>
+                      수정
+                    </Button>
+                    <Button type="button" color="white" size="medium" onClick={closeUpdateModal}>
+                      닫기
+                    </Button>
+                  </>
                 )}
-                <Button type="button" color="white" size="medium" onClick={closeModal}>
-                  닫기
-                </Button>
               </StButtonContaioner>
             </StForm>
           </Inner>
@@ -420,8 +430,10 @@ const Inner = styled.form`
       flex-direction: column;
       justify-items: center;
       align-items: center;
-      padding: 100px;
+      padding: 30px 80px;
       background-color: white;
       border-radius: 10px;
+      overflow: scroll;
+      max-height: 900px;
     `}
 `;

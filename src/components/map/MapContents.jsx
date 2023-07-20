@@ -18,10 +18,9 @@ const Mapcontents = () => {
       <Form>
         <SearchBar size="small" />
       </Form>
-      <Button color="pink2" size="medium" full onClick={openModal}>
+      <Button className="addBTN" color="pink2" size="large" full onClick={openModal}>
         장소 추가하기
       </Button>
-      {/* {isOpen && <StoreUpdateModal type="add" closeModal={closeModal}></StoreUpdateModal>} */}
       <StPostDiv>
         <Posts />
       </StPostDiv>
@@ -39,14 +38,28 @@ const StDiv = styled.div`
   background-color: var(--color_white);
   box-shadow: 0px 0px 9px 5px #00000014;
   z-index: 50;
+  overflow: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  & .addBTN {
+    font-weight: 600;
+  }
+  & .addBTN:hover {
+    background-color: var(--color_pink1);
+    color: white;
+  }
 `;
 
 const Form = styled.form`
   display: flex;
   justify-content: center;
   gap: 10px;
+  padding: 20px 30px;
 `;
 
 const StPostDiv = styled.div`
   display: grid;
+  margin-top: 20px;
 `;

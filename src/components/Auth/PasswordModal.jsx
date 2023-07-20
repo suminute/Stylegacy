@@ -2,25 +2,15 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { styled } from 'styled-components';
 import Button from '../Button';
-import { getUsers } from '../../api/users';
-import { useQuery } from 'react-query';
 import { useSelector } from 'react-redux';
 import { EmailAuthProvider, getAuth, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
 
 export const PORTAL_MODAL = 'portal-root';
 
 const PasswordModal = ({ isOpen, setIsOpen }) => {
-  // userSlice 변경 값 확인 콘솔
-  // const userName = useSelector((state) => state.user.user.userName);
-  // console.log('userName', userName);
-
-  // 로그인한 userId
+  // 로그인한 user 정보
   const { user } = useSelector((state) => state.user);
-  const userId = user.userId;
-
-  // DB의 users 컬렉션에서 모든 user 정보 가져와서 -> 로그인한 userId에 해당하는 값만 data 변수에 담기
-  const { isLoading, error, data: allUsers } = useQuery(['users'], getUsers);
-  const data = allUsers?.find((user) => user.userId === userId);
+  const data = user;
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -90,9 +80,6 @@ const PasswordModal = ({ isOpen, setIsOpen }) => {
   const stopPropagation = (e) => {
     e.stopPropagation();
   };
-
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error...</div>;
 
   return isOpen
     ? createPortal(
@@ -232,30 +219,4 @@ const StP = styled.h2`
   margin-top: 5px;
   font-size: 13px;
   color: var(--color_pink1);
-`;
-
-const ProfileAvatarButton = styled.button`
-  overflow: hidden;
-  position: relative;
-  display: flex;
-  padding: 0;
-  border: none;
-  border-radius: 50%;
-`;
-const ProfileAvatarButtonText = styled.p`
-  height: 100%;
-  width: 100%;
-  color: transparent;
-  display: flex;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  align-items: center;
-  justify-content: center;
-  transition: all 200ms ease-in-out;
-  &:hover {
-    color: white;
-    background-color: rgb(0 0 0 / 46%);
-  }
 `;

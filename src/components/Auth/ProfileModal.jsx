@@ -7,6 +7,8 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useDispatch } from 'react-redux';
 import ProfileAvatar from '../ProfileAvatar';
 import { changeUser } from '../../redux/modules/userSlice';
+import { apiKey, auth } from '../../firebase';
+import { updateProfile } from 'firebase/auth';
 
 export const PORTAL_MODAL = 'portal-root';
 
@@ -24,10 +26,16 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
     }
   });
 
-  // get user
-  const { isLoading, error, data } = useQuery(['profileModal'], getCurrentUser);
 
-  // [오류] 이름 초기 값 설정 시 data 전달이 늦게 오면 문제 있음. 빈 값으로 일단 설정..
+  // 로그인한 userId
+  const { user } = useSelector((state) => state.user);
+  const data = user;
+  const userId = user.userId;
+
+  // DB의 users 컬렉션에서 모든 user 정보 가져와서 -> 로그인한 userId에 해당하는 값만 담기
+  const { isLoading, error, data: allUsers } = useQuery(['users'], getUsers);
+  const userData = allUsers?.find((user) => user.userId === userId);
+
   const [name, setName] = useState(data?.userName ?? '');
   const [checkName, setCheckName] = useState(false);
   const [profileImage, setProfileImage] = useState('');
@@ -58,15 +66,24 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const updatedUser = {}
-      if (name !== data?.userName) {
-        updatedUser.userName = name;
-      }
-      if(isResetProfileImage) updatedUser.userImage = ''
-      else if (profileImageFile) updatedUser.userImage = await uploadProfileImage(profileImageFile)
-      // DB 업데이트
-      mutationUpdateUser.mutate(updatedUser)
+      // DB에 userName 업데이트
+      await updateUser(userData?.id, name);
+
+      // 회원가입 시 firebase에 저장한 displayName도 변경
+      await updateProfile(auth.currentUser, { displayName: name });
+
       // userSlice에 userName 업데이트
+      dispatch(changeUser(name));
+      if (data?.userName !== name) {
+        alert('이름이 성공적으로 변경되었습니다.');
+      }
+      // 로그인 세션을 유지하는 세션 스토리지에서도 정보 변경 필요
+      const sessionKey = `firebase:authUser:${apiKey}:[DEFAULT]`;
+      let sessionUserData = JSON.parse(sessionStorage.getItem(sessionKey));
+      sessionUserData.displayName = name;
+      sessionStorage.setItem(sessionKey, JSON.stringify(sessionUserData));
+
+      setIsOpen(false);
     } catch (error) {
       console.log('프로필 수정 에러', error);
     }
