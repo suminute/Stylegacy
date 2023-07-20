@@ -10,7 +10,6 @@ import Button from './Button';
 import ProfileAvatar from './ProfileAvatar';
 
 const Comment = ({comment}) => {
-  console.log(comment)
   const [isUpdating,setUpdating] = useState(false)
   const [inputComment,setInputComment] = useState(comment.content)
   const user = useSelector(({user}) => user.user);

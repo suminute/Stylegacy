@@ -19,7 +19,7 @@ const MyPage = () => {
     if (!userId) navigate('/');
   }, [navigate, userId]);
 
-  const user = useQuery({ queryKey: ['likedStores'], queryFn: getCurrentUser });
+  const user = useQuery({ queryKey: ['myPage'], queryFn: getCurrentUser });
   const likedStores = useQuery({ queryKey: ['likedStores'], queryFn: getLikedStoresByUser });
 
   if (user.isLoading) {

@@ -11,7 +11,7 @@ import StaticMap from '../components/StaticMap';
 import Comment from '../components/Comment';
 
 const StoreDetail = () => {
-  const [inputComment, setInputComment] = useInput('');
+  const [inputComment, handleInputComment,setInputComment] = useInput('');
   const { id } = useParams();
   const queryClient = useQueryClient();
   const { isLoading, error, data } = useQuery(['storeDetail', id], () => getStoreData(id));
@@ -89,7 +89,7 @@ const StoreDetail = () => {
                 name="comment"
                 id="comment"
                 value={inputComment}
-                onChange={setInputComment}
+                onChange={handleInputComment}
               />
               <Button size="large" color="pink1">
                 작성
