@@ -85,7 +85,7 @@ const PostItem = ({ post }) => {
   };
 
   return (
-    <StCard key={post.id}>
+    <StCard key={post.id} onClick={() => setOpenMenu(!openMenu)}>
       <Link to={`/store/${post.id}`} state={{ location: post.location }}>
         <img src={post.image} />
         <StCardContents className="contents">
@@ -196,21 +196,29 @@ const StLikeButton = styled.button`
 
 const StButtonBox = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 120px;
-  height: 20%;
+  width: 50px;
+  height: 50%;
   position: absolute;
-  top: 30px;
-  right: -10px;
-  /* border: 1px solid var(--color_gray2); */
-  border: none;
+  top: 35px;
+  right: 0;
+  border: 1px solid var(--color_gray2);
   border-radius: 8px;
+  box-shadow: 0px 0px 9px 2px #00000014;
+  padding: 7px;
   & button {
-    margin: 5px;
-    padding: 4px;
-    border: 2px solid var(--color_gray2);
+    margin: 5px 5px 5px 5px;
+    padding: 5px;
+    border: 1px solid var(--color_pink1);
+    color: var(--color_pink1);
+    font-weight: 700;
     border-radius: 8px;
     background-color: white;
+  }
+  & button:hover {
+    color: white;
+    background-color: var(--color_pink1);
   }
 `;

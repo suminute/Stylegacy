@@ -30,7 +30,7 @@ const Mapcontents = () => {
   );
 };
 
-export default Mapcontents;
+export default React.memo(Mapcontents);
 
 const StDiv = styled.div`
   bottom: 0;

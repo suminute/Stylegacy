@@ -29,20 +29,21 @@ export default Checkbox;
 
 const StCheckbox = styled.input`
   appearance: none;
+  display: none;
 `;
 
 const StLabel = styled.label`
   cursor: pointer;
-  margin: 10px;
+  margin-left: 10px;
   padding: 8px;
   border-radius: 8px;
 
   background-color: ${(ischecked) => {
     const { checked } = ischecked.children[0].props;
     if (checked) {
-      return '#ffffff';
+      return `var(--color_pink2)`;
     } else {
-      return `var(--color_gray2)`;
+      return `var(--color_gray1)`;
     }
   }};
 `;
