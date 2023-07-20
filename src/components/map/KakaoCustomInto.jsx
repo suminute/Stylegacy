@@ -37,7 +37,6 @@ function KakaoCustomInto({ data, index }) {
 }
 
 export default React.memo(KakaoCustomInto);
-// export default KakaoCustomInto;
 
 const StCustomInfoBox = styled.div`
   position: relative;
