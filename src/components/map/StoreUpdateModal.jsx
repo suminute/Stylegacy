@@ -5,14 +5,13 @@ import { useMutation, useQueryClient } from 'react-query';
 import { addStore, storageUpload, updateStore } from '../../api/stores';
 import useInput from '../../hooks/useInput';
 import Checkbox from './Checkbox';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { storage } from '../../firebase';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { createPortal } from 'react-dom';
+import { closeStoreModal } from '../../redux/modules/storeAddSlice';
 
 export const PORTAL_MODAL = 'portal-root';
 
-const StoreUpdateModal = ({ type, closeModal, id, post }) => {
+const StoreUpdateModal = ({ type, id, post }) => {
   const [disabled, setDisabled] = useState(true);
   const [store, storeHandler, setStore] = useInput('');
   const [openTime, openTimeHandler, setOpenTime] = useInput('');
@@ -27,6 +26,10 @@ const StoreUpdateModal = ({ type, closeModal, id, post }) => {
   console.log(storeModal);
   const basicImgURL =
     'https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20220815_97%2F166056034235103u8W_JPEG%2F45553d3b7e8e7d2e2dacfceb2c62a5da.jpg';
+  const dispatch = useDispatch();
+  const closeModal = () => {
+    dispatch(closeStoreModal(false));
+  };
 
   useEffect(() => {
     if (type === 'add') {
@@ -189,7 +192,7 @@ const StoreUpdateModal = ({ type, closeModal, id, post }) => {
     setSelectedFile(null);
   };
 
-  return storeModal.state
+  return storeModal
     ? createPortal(
         <StBackground type={type}>
           <Inner type={type}>
