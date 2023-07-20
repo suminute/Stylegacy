@@ -110,13 +110,20 @@ function KakaoMap() {
               lat: event.latLng.getLat(),
               lng: event.latLng.getLng()
             });
-            dispatch(markerAddress({ lat, lng }));
+            // dispatch(markerAddress({ lat, lng }));
             getCoor2Address(event.latLng.getLat(), event.latLng.getLng());
           }}
         >
           <ZoomControl position={window.kakao.maps.ControlPosition.TOPRIGHT} />
           {position && (
             <MapMarker
+              onClick={() => {
+                setLatitude(position.lat);
+                setLongitude(position.lng);
+              }}
+              style={{
+                pointerEvents: 'none'
+              }}
               position={position}
               image={{
                 src: MarkerGray,
@@ -126,7 +133,7 @@ function KakaoMap() {
                 },
                 options: {
                   offset: {
-                    x: 27,
+                    x: 32,
                     y: 69
                   }
                 }
@@ -159,6 +166,8 @@ function KakaoMap() {
                     onClick={() => {
                       dispatch(toggleMap({ ...toggleCustom, state: true, index }));
                       setToggleCustom({ ...toggleCustom, state: true, index });
+                      setLatitude(latlng.lat);
+                      setLongitude(latlng.lng);
                     }}
                     key={id + index}
                     position={latlng}
