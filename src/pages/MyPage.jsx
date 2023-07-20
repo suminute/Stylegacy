@@ -7,10 +7,12 @@ import { useEffect, useState } from 'react';
 import ProfileModal from '../components/Auth/ProfileModal';
 import { getCurrentUser } from '../api/users';
 import ProfileAvatar from '../components/ProfileAvatar';
+import PasswordModal from '../components/Auth/PasswordModal';
 
 const MyPage = () => {
   const { userId, userName, userEmail } = useSelector(({ user }) => user.user);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isPasswordOpen, setIsPasswordOpen] = useState(false);
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -31,15 +33,19 @@ const MyPage = () => {
       <ProfileContainer>
         <Profile>
           <ProfileImageContainer>
-          <ProfileAvatar  width='150' height='150' src={user.data.userImage} />
+            <ProfileAvatar width="150" height="150" src={user.data.userImage} />
           </ProfileImageContainer>
           <ProfileInfoContainer>
             <p>{userName}님, 안녕하세요!</p>
             <p>{userEmail}</p>
           </ProfileInfoContainer>
         </Profile>
-        <ProfileUpdateButton onClick={() => setIsProfileOpen(true)}>프로필 수정</ProfileUpdateButton>
-        {isProfileOpen && <ProfileModal isOpen={isProfileOpen} setIsOpen={setIsProfileOpen} />}
+        <div>
+          <ProfileUpdateButton onClick={() => setIsProfileOpen(true)}>프로필 수정</ProfileUpdateButton>
+          {isProfileOpen && <ProfileModal isOpen={isProfileOpen} setIsOpen={setIsProfileOpen} />}
+          <ProfileUpdateButton onClick={() => setIsPasswordOpen(true)}>비밀번호 수정</ProfileUpdateButton>
+          {isPasswordOpen && <PasswordModal isOpen={isPasswordOpen} setIsOpen={setIsPasswordOpen} />}
+        </div>
       </ProfileContainer>
       <MyLikeTitleContainer>
         <MyLikeTitle>내가 찜한 가게</MyLikeTitle>
@@ -70,6 +76,10 @@ const ProfileContainer = styled.div`
   gap: 2rem;
   @media (max-width: 1200px) {
     flex-direction: column;
+  }
+  div {
+    display: flex;
+    gap: 5px;
   }
 `;
 
