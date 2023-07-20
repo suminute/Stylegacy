@@ -33,8 +33,6 @@ const StCheckbox = styled.input`
 
 const StLabel = styled.label`
   cursor: pointer;
-  /* display: flex; */
-  /* align-items: center;*/
   margin: 10px;
   padding: 8px;
   border-radius: 8px;

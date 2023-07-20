@@ -1,4 +1,4 @@
-import { doc, getDoc  } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Link, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
@@ -11,17 +11,20 @@ import StaticMap from '../components/StaticMap';
 import Comment from '../components/Comment';
 
 const StoreDetail = () => {
-  const [inputComment,setInputComment] = useInput('')
+  const [inputComment, setInputComment] = useInput('');
   const { id } = useParams();
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   const { isLoading, error, data } = useQuery(['storeDetail', id], () => getStoreData(id));
-  const { isLoading: isLoadingComment, data: dataComment } = useQuery(['storeDetailComment', id], () => getStoreComments(id));
-  
-  const mutationAddComment = useMutation(addComment,{
-    onSuccess: () => queryClient.invalidateQueries({queryKey:['storeDetailComment']}),
-    onError: (error) => { alert(error.message)},
-  })
+  const { isLoading: isLoadingComment, data: dataComment } = useQuery(['storeDetailComment', id], () =>
+    getStoreComments(id)
+  );
 
+  const mutationAddComment = useMutation(addComment, {
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['storeDetailComment'] }),
+    onError: (error) => {
+      alert(error.message);
+    }
+  });
 
   const getStoreData = async (id) => {
     const docSnap = await getDoc(doc(db, 'stores', id));
@@ -30,9 +33,9 @@ const StoreDetail = () => {
 
   const handleAddComment = async (e) => {
     e.preventDefault();
-    if(!inputComment) return
-    mutationAddComment.mutate({ storeId: id, content: inputComment })
-  }
+    if (!inputComment) return;
+    mutationAddComment.mutate({ storeId: id, content: inputComment });
+  };
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error</div>;
@@ -42,11 +45,15 @@ const StoreDetail = () => {
         <StStore>
           <StStoreCol>
             <StoreImage src={data.image} alt={data.store} width="500" height="625" />
-            <StoreButton to={data.site || '#'}>{data.site ? '웹 사이트': '웹 사이트가 없습니다'}</StoreButton>
+            <StoreButton to={data.site || '#'}>{data.site ? '웹 사이트' : '웹 사이트가 없습니다'}</StoreButton>
           </StStoreCol>
           <StStoreCol>
             <StStoreInfo>
               <StStoreTitle>{data.store}</StStoreTitle>
+              <div>
+                <StStoreInfoLabel>영업일</StStoreInfoLabel>
+                <StStoreInfoContent>{data.day}</StStoreInfoContent>
+              </div>
               <div>
                 <StStoreInfoLabel>영업시간</StStoreInfoLabel>
                 <StStoreInfoContent>{data.time}</StStoreInfoContent>
@@ -57,7 +64,7 @@ const StoreDetail = () => {
               </div>
             </StStoreInfo>
             <div>
-               <StStoreInfoLabel>지도보기</StStoreInfoLabel>
+              <StStoreInfoLabel>지도보기</StStoreInfoLabel>
               <Link to={`https://map.kakao.com/link/search/${data.store}`}>
                 <StaticMap lng={data.marker.x} lat={data.marker.y} title={data.location} />
               </Link>
@@ -66,18 +73,27 @@ const StoreDetail = () => {
         </StStore>
         <StDivider />
         <StCommentsTitle>
-          댓글<StCommentsCount>{dataComment?.length || 0 }</StCommentsCount>
+          댓글<StCommentsCount>{dataComment?.length || 0}</StCommentsCount>
         </StCommentsTitle>
         <StCommentsList>
           <form onSubmit={handleAddComment}>
             <StCommentFormInner>
-            <InputText placeholder='댓글을 입력하세요.' full size='small' type="text" name="comment" id="comment" value={inputComment} onChange={setInputComment}/>
-            <Button size='large' color='pink1'>작성</Button>
+              <InputText
+                placeholder="댓글을 입력하세요."
+                full
+                size="small"
+                type="text"
+                name="comment"
+                id="comment"
+                value={inputComment}
+                onChange={setInputComment}
+              />
+              <Button size="large" color="pink1">
+                작성
+              </Button>
             </StCommentFormInner>
           </form>
-          {!isLoadingComment && dataComment.map((comment)=> (
-            <Comment key={comment.id} comment={comment}/>
-          ))}
+          {!isLoadingComment && dataComment.map((comment) => <Comment key={comment.id} comment={comment} />)}
         </StCommentsList>
       </StBox>
     </StContainer>
@@ -92,7 +108,7 @@ const StBox = styled.div`
   display: flex;
   align-items: center;
   flex-direction: column;
-`
+`;
 
 const StCommentsList = styled.ul`
   box-sizing: border-box;
@@ -103,9 +119,6 @@ const StCommentsList = styled.ul`
   width: 100%;
   max-width: 1100px;
 `;
-
-
-
 
 const StCommentsTitle = styled.h3`
   font-size: 2.25rem;
@@ -179,7 +192,6 @@ const StoreImage = styled.img`
   box-shadow: rgb(50 50 93 / 37%) 0px 6px 12px -2px, rgb(0 0 0 / 42%) 0px 3px 7px -3px;
 `;
 
-
 const StDivider = styled.div`
   width: 100%;
   margin: 4rem 0;
@@ -191,4 +203,4 @@ const StCommentFormInner = styled.div`
   display: flex;
   align-items: center;
   gap: 20px;
-`
+`;

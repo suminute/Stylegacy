@@ -102,19 +102,21 @@ const PostItem = ({ post }) => {
         </StCardContents>
       </Link>
       <StButtonContainer>
-        {userId && (
+        {userId ? (
           <StLikeButton onClick={handleLikeClick}>
             {isLiked ? <FaHeart size="25" color="#ce7777" /> : <FaRegHeart size="25" color="#ce7777" />}
           </StLikeButton>
+        ) : (
+          <StLikeButton disabled={true}></StLikeButton>
         )}
         <StLikeButton onClick={() => setOpenMenu(!openMenu)}>
           <FaEllipsisV size="20" color="#ce7777" />
         </StLikeButton>
         {openMenu && (
-          <div>
+          <StButtonBox>
             <button onClick={openModal}>수정</button>
             <button onClick={() => deleteOnClickHandler(post.id)}>삭제</button>
-          </div>
+          </StButtonBox>
         )}
         {isOpen && <StoreUpdateModal type="update" closeModal={closeModal} id={post.id} post={post}></StoreUpdateModal>}
       </StButtonContainer>
@@ -139,6 +141,7 @@ const StCard = styled.div`
     height: 165px;
     grid-column: 1 / 2;
     border-radius: 8px;
+    object-fit: cover;
   }
   & a > .contents {
     grid-column: 2 / 3;
@@ -180,6 +183,8 @@ const StButtonContainer = styled.div`
   display: grid;
   grid-template-columns: 30px 30px;
   grid-template-rows: 30px 1fr;
+  position: relative;
+  right: 0;
 `;
 
 const StLikeButton = styled.button`
@@ -187,4 +192,25 @@ const StLikeButton = styled.button`
   background-color: transparent;
   border: none;
   padding: 0;
+`;
+
+const StButtonBox = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 20%;
+  position: absolute;
+  top: 30px;
+  right: -10px;
+  /* border: 1px solid var(--color_gray2); */
+  border: none;
+  border-radius: 8px;
+  & button {
+    margin: 5px;
+    padding: 4px;
+    border: 2px solid var(--color_gray2);
+    border-radius: 8px;
+    background-color: white;
+  }
 `;
