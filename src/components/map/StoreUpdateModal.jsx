@@ -190,9 +190,8 @@ const StoreUpdateModal = ({ type, id, post, closeUpdateModal }) => {
 
   // 이미지 삭제
   const deleteImgHandler = () => {
-    post.image = null;
     setImageURL(null);
-    setImgSrc(null);
+    setImgSrc(basicImgURL);
     setSelectedFile(null);
   };
 
@@ -266,7 +265,7 @@ const StoreUpdateModal = ({ type, id, post, closeUpdateModal }) => {
                         </div>
                       )}
                     </StImagePreview>
-                    {/* {imgSrc || imageURL ? <button onClick={deleteImgHandler}>이미지 삭제</button> : null} */}
+                    {imgSrc !== basicImgURL ? <button onClick={deleteImgHandler}>이미지 삭제</button> : null}
                   </StInputFileContainer>
                 </>
               )}
