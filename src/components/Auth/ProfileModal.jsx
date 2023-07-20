@@ -2,9 +2,9 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { styled } from 'styled-components';
 import Button from '../Button';
-import { uploadProfileImage, updateUser, getCurrentUser } from '../../api/users';
+import { uploadProfileImage, updateUser, getCurrentUser, getUsers } from '../../api/users';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import ProfileAvatar from '../ProfileAvatar';
 import { changeUser } from '../../redux/modules/userSlice';
 import { apiKey, auth } from '../../firebase';
@@ -14,18 +14,22 @@ export const PORTAL_MODAL = 'portal-root';
 
 const ProfileModal = ({ isOpen, setIsOpen }) => {
   const dispatch = useDispatch();
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   const mutationUpdateUser = useMutation(updateUser, {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['myPage'] });
       dispatch(changeUser(name));
+
+      if (data?.userName !== name) {
+        alert('이름이 성공적으로 변경되었습니다.');
+      }
+
       setIsOpen(false);
     },
     onError: (error) => {
       alert(error.message);
     }
   });
-
 
   // 로그인한 userId
   const { user } = useSelector((state) => state.user);
@@ -47,12 +51,12 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
   const nameCheck = useCallback((name) => {
     const nameRegEx = /^(?=.*[a-zA-Z가-힣])[a-zA-Z가-힣]{2,16}$/;
     setCheckName(nameRegEx.test(name));
-  },[]);
+  }, []);
 
   // 수정 모달 처음 열렸을 때, 초기 사용자 이름이 유효한지 확인
   useEffect(() => {
     nameCheck(data?.userName);
-  }, [data?.userName,nameCheck]);
+  }, [data?.userName, nameCheck]);
 
   // input 관리
   const nameController = (e) => {
@@ -66,24 +70,23 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // DB에 userName 업데이트
-      await updateUser(userData?.id, name);
+      const updatedUser = {};
+      if (name !== data?.userName) {
+        updatedUser.userName = name;
+      }
+      if (isResetProfileImage) updatedUser.userImage = '';
+      else if (profileImageFile) updatedUser.userImage = await uploadProfileImage(profileImageFile);
+      // DB 업데이트
+      mutationUpdateUser.mutate(updatedUser);
 
-      // 회원가입 시 firebase에 저장한 displayName도 변경
+      // 회원가입 시 firebase auth에 저장한 displayName도 변경
       await updateProfile(auth.currentUser, { displayName: name });
 
-      // userSlice에 userName 업데이트
-      dispatch(changeUser(name));
-      if (data?.userName !== name) {
-        alert('이름이 성공적으로 변경되었습니다.');
-      }
       // 로그인 세션을 유지하는 세션 스토리지에서도 정보 변경 필요
       const sessionKey = `firebase:authUser:${apiKey}:[DEFAULT]`;
       let sessionUserData = JSON.parse(sessionStorage.getItem(sessionKey));
       sessionUserData.displayName = name;
       sessionStorage.setItem(sessionKey, JSON.stringify(sessionUserData));
-
-      setIsOpen(false);
     } catch (error) {
       console.log('프로필 수정 에러', error);
     }
@@ -116,8 +119,8 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
   };
 
   useEffect(() => {
-    if(!isLoading && data.userImage) setProfileImage(data.userImage)
-  },[isLoading, data])
+    if (!isLoading && data.userImage) setProfileImage(data.userImage);
+  }, [isLoading, data]);
 
   if (isLoading) return null;
   if (error) return null;
@@ -141,7 +144,7 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
             />
             <StButtonSet>
               <Button color="navy" size="small" type="button" onClick={() => inputImageRef.current.click()}>
-                변경
+                선택
               </Button>
               <Button color="pink3" size="small" type="button" onClick={handleDeleteImage}>
                 삭제
