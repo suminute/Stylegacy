@@ -22,8 +22,7 @@ const StoreUpdateModal = ({ type, id, post, closeUpdateModal }) => {
   const [checkItems, setCheckItems] = useState(new Set());
   const [selectedFile, setSelectedFile] = useState(null);
   const [imageURL, setImageURL] = useState(null);
-  const basicImgURL =
-    'https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20220815_97%2F166056034235103u8W_JPEG%2F45553d3b7e8e7d2e2dacfceb2c62a5da.jpg';
+  const basicImgURL = 'https://github.com/suminute/Stylegacy/assets/92218638/9824667b-e8b9-4a4e-a271-a9d3d8341089';
 
   const storeModal = useSelector((state) => state.storeAddSlice);
   const dispatch = useDispatch();

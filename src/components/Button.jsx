@@ -19,6 +19,7 @@ const StButton = styled.button`
   border-radius: 8px;
   padding: 0.1rem;
   white-space: nowrap;
+  transition: all 0.3s ease-in-out;
   ${({ color }) =>
     color === 'pink1' &&
     css`
