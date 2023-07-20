@@ -2,13 +2,21 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { styled } from 'styled-components';
 import Button from '../Button';
-import { getUsers } from '../../api/users';
+import { getUsers, updateUser } from '../../api/users';
 import { useQuery } from 'react-query';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { EmailAuthProvider, getAuth, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
+import { changeUser } from '../../redux/modules/userSlice';
 
 export const PORTAL_MODAL = 'portal-root';
 
 const ProfileModal = ({ isOpen, setIsOpen }) => {
+  const dispatch = useDispatch();
+
+  // userSlice 변경 값 확인 콘솔
+  // const userName = useSelector((state) => state.user.user.userName);
+  // console.log('userName', userName);
+
   // 로그인한 userId
   const { user } = useSelector((state) => state.user);
   const userId = user.userId;
@@ -68,7 +76,34 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
   };
 
   // 수정 버튼 클릭 시
-  // firebase auth 비밀번호 수정 & DB에 userName 업데이트 & userSlice에 userName 업데이트
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      // firebase auth 비밀번호 수정
+      const auth = getAuth();
+      const user = auth.currentUser;
+      const credentials = EmailAuthProvider.credential(user.email, currentPassword);
+      await reauthenticateWithCredential(user, credentials);
+      await updatePassword(user, newPassword);
+      // DB에 userName 업데이트
+      await updateUser(data?.id, name);
+      // userSlice에 userName 업데이트
+      dispatch(changeUser(name));
+
+      if (data?.userName === name) {
+        alert('비밀번호가 성공적으로 변경되었습니다.');
+      } else if (data?.userName !== name) {
+        alert('이름과 비밀번호가 성공적으로 변경되었습니다.');
+      }
+      setIsOpen(false);
+    } catch (error) {
+      // firebase auth 비밀번호 수정
+      if (error.code === 'auth/wrong-password') {
+        alert('현재 비밀번호가 틀렸습니다.');
+      }
+      console.log('비밀번호 변경 실패', error);
+    }
+  };
 
   // 수정 모달창 닫기
   const closeHandler = () => {
@@ -84,10 +119,17 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
   return isOpen
     ? createPortal(
         <Outer onClick={closeHandler}>
-          <Inner onClick={stopPropagation}>
+          <Inner onClick={stopPropagation} onSubmit={handleSubmit}>
             <p>프로필을 수정해볼까요?</p>
 
-            <Input type="text" name="name" value={name} onChange={nameController} placeholder="이름" autoFocus />
+            <Input
+              type="text"
+              name="name"
+              value={name}
+              onChange={nameController}
+              placeholder={data?.userName}
+              autoFocus
+            />
             {checkName === true ? (
               <StP style={{ color: 'var(--color_black)' }}>사용 가능한 이름입니다.</StP>
             ) : name ? (
@@ -229,29 +271,3 @@ const StP = styled.h2`
   font-size: 13px;
   color: var(--color_pink1);
 `;
-
-// auth 비밀번호 변경 코드
-
-// const handleSubmit = async (e) => {
-//   e.preventDefault();
-
-//       try {
-//         const auth = getAuth();
-//         const user = auth.currentUser;
-//         const credentials = EmailAuthProvider.credential(user.email, currentPassword);
-
-//         await reauthenticateWithCredential(user, credentials);
-//         await updatePassword(user, newPassword);
-
-//         setCurrentPassword('');
-//         setNewPassword('');
-//         setConfirmPassword('');
-//         setErrorMessage('');
-//         alert('비밀번호를 변경했습니다');
-//         window.location.reload();
-//       } catch (error) {
-//         setErrorMessage('비밀번호 변경에 실패했습니다. 현재 비밀번호를 확인해주세요.');
-//         console.log('비밀번호 변경 실패', error);
-//       }
-
-//   };
