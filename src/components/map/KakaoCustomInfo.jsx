@@ -1,0 +1,96 @@
+import React, { useState } from 'react';
+import MarkerRed from '../../images/footprint_marker_red.svg';
+import { MapMarker } from 'react-kakao-maps-sdk';
+import Button from '../Button';
+import { useNavigate } from 'react-router-dom';
+import { styled } from 'styled-components';
+
+function KakaoCustomInfo({ setLatitude, setLongitude, data }) {
+  const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <>
+      <MapMarker
+        onClick={() => {
+          isOpen === false ? setIsOpen(true) : setIsOpen(false);
+
+          setLatitude(+data.marker.y);
+          setLongitude(+data.marker.x);
+        }}
+        clickable={true}
+        key={data.id}
+        position={{ lat: data.marker.y, lng: data.marker.x }}
+        image={{
+          src: MarkerRed,
+          size: {
+            width: 64,
+            height: 69
+          },
+          options: {
+            offset: {
+              x: 32,
+              y: 35
+            }
+          }
+        }}
+      >
+        {isOpen && (
+          <StInfobox>
+            <StInfoContainer>
+              <h3>{data.store}</h3>
+              <br />
+              {data.location}
+              <br />
+              {data.time && ''}
+            </StInfoContainer>
+
+            <StButtonWrap>
+              <Button
+                color="pink2"
+                size="small"
+                full
+                onClick={() => navigate(`/store/${data.id}`)}
+                style={{ fontSize: '10px' }}
+              >
+                Detail
+              </Button>
+              <Button
+                color="pink3"
+                size="small"
+                full
+                onClick={() => setIsOpen(false)}
+                style={{ fontSize: '10px', marginLeft: '5px' }}
+              >
+                Close
+              </Button>
+            </StButtonWrap>
+          </StInfobox>
+        )}
+      </MapMarker>
+    </>
+  );
+}
+
+export default React.memo(KakaoCustomInfo);
+
+const StInfobox = styled.div`
+  min-width: 210px;
+  padding: 0.5rem;
+  box-sizing: border-box;
+`;
+const StInfoContainer = styled.div`
+  padding: 5px;
+  color: #363636;
+  text-align: left;
+  font-size: 14px;
+  line-height: 1;
+  & h3 {
+    margin-bottom: 2px;
+    color: #000;
+    font-size: 18px;
+  }
+`;
+const StButtonWrap = styled.div`
+  display: flex;
+  align-items: center;
+`;

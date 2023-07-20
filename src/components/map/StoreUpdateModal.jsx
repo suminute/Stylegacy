@@ -29,6 +29,8 @@ const StoreUpdateModal = ({ type, id, post }) => {
   const basicImgURL =
     'https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20220815_97%2F166056034235103u8W_JPEG%2F45553d3b7e8e7d2e2dacfceb2c62a5da.jpg';
 
+  const [latLng, setLatLng] = useState('');
+
   useEffect(() => {
     if (type === 'add') {
       setStore('');
@@ -81,8 +83,10 @@ const StoreUpdateModal = ({ type, id, post }) => {
   });
 
   // 저장 버튼과 수정 버튼
-  const addButtonHandler = (e) => {
+  const addButtonHandler = async (e) => {
     e.preventDefault();
+    await changeAddress;
+
     const newStore = {
       store,
       checkedDay: [...checkItems],
@@ -91,7 +95,7 @@ const StoreUpdateModal = ({ type, id, post }) => {
       location,
       site: null,
       phoneNumber: null,
-      marker: { x: 0, y: 0 },
+      marker: { x: latLng.x, y: latLng.y },
       image: basicImgURL,
       likeCount: 0
     };
@@ -192,6 +196,15 @@ const StoreUpdateModal = ({ type, id, post }) => {
   const closeModal = () => {
     dispatch(openStoreModal(false));
   };
+
+  // 홍민이 추가한 코드 주소 => lat, lng
+  // => 주소를 받아서 위도 경도 변환후 => setLatLng 으로 담음
+  const geocoder = new window.kakao.maps.services.Geocoder();
+  const changeAddress = geocoder.addressSearch(location, (result, status) => {
+    if (status === window.kakao.maps.services.Status.OK) {
+      setLatLng(result[0]);
+    }
+  });
 
   return storeModal.state
     ? createPortal(
