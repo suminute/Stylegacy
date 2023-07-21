@@ -1,90 +1,88 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { styled } from 'styled-components';
 import Button from '../shared/Button';
 import SignUpModal from '../Auth/SignUpModal';
 import LogInModal from '../Auth/LogInModal';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 // import { auth } from '../firebase';
 import { Link, useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase';
+import Button from './Button';
+import AlertModal from './AlertModal';
+import { clearUser } from '../../redux/modules/userSlice';
+import { setAlertMessage, toggleAlertModal, toggleLogInModal, toggleSignUpModal } from '../../redux/modules/modalSlice';
 
 
 const Header = () => {
   const users = useSelector((state) => state.user);
   const { user } = users;
 
-  const navigate = useNavigate();
+  const modals = useSelector((state) => state.modals);
 
-  const [isLogInOpen, setIsLogInOpen] = useState(false);
-  const [isSignUpOpen, setIsSignUpOpen] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const logOut = async (event) => {
     event.preventDefault();
-    await signOut(auth);
-    alert('로그아웃되었습니다.');
-    window.location.href = '/';
+    try {
+      await signOut(auth);
+      dispatch(clearUser());
+      dispatch(setAlertMessage('로그아웃되었습니다.'));
+      dispatch(toggleAlertModal());
+    } catch (error) {
+      console.log('error', error);
+    }
   };
 
   const goToMyPage = () => {
     navigate('/mypage');
   };
 
-  if (user.userId === null) {
-    return (
-      <>
-        <StDiv>
-          <LinkDiv>
-            <Link to={'/'} style={{ color: 'var(--color_white)' }}>
-              StyLEgacy
-            </Link>
-          </LinkDiv>
-          <ButtonDiv>
-            <Button
-              color="gray1"
-              size="medium"
-              onClick={() => {
-                setIsLogInOpen((prev) => !prev);
-              }}
-            >
-              로그인
-            </Button>
-            {isLogInOpen && <LogInModal isOpen={isLogInOpen} setIsOpen={setIsLogInOpen} />}
-            <Button
-              color="pink1"
-              size="medium"
-              onClick={() => {
-                setIsSignUpOpen((prev) => !prev);
-              }}
-            >
-              회원가입
-            </Button>
-            {isSignUpOpen && <SignUpModal isOpen={isSignUpOpen} setIsOpen={setIsSignUpOpen} />}
-          </ButtonDiv>
-        </StDiv>
-      </>
-    );
-  } else {
-    return (
-      <>
-        <StDiv>
-          <LinkDiv>
-            <Link to={'/'} style={{ color: 'var(--color_white)' }}>
-              StyLEgacy
-            </Link>
-          </LinkDiv>
-          <ButtonDiv>
-            <Button color="gray1" size="medium" onClick={logOut}>
-              로그아웃
-            </Button>
-            <Button color="pink1" size="medium" onClick={goToMyPage}>
-              마이페이지
-            </Button>
-          </ButtonDiv>
-        </StDiv>
-      </>
-    );
-  }
+  return (
+    <>
+      <AlertModal
+        isOpen={modals.isAlertModalOpen}
+        setIsOpen={() => dispatch(toggleAlertModal())}
+        message={modals.alertMessage}
+      />
+      <StDiv>
+        <LinkDiv>
+          <Link to={'/'} style={{ color: 'var(--color_white)' }}>
+            StyLEgacy
+          </Link>
+        </LinkDiv>
+        <ButtonDiv>
+          {user.userId === null ? (
+            <>
+              <Button color="gray1" size="medium" onClick={() => dispatch(toggleLogInModal())}>
+                로그인
+              </Button>
+              {modals.isLogInModalOpen && (
+                <LogInModal isOpen={modals.isLogInModalOpen} setIsOpen={() => dispatch(toggleLogInModal())} />
+              )}
+              <Button color="pink1" size="medium" onClick={() => dispatch(toggleSignUpModal())}>
+                회원가입
+              </Button>
+              {modals.isSignUpModalOpen && (
+                <SignUpModal isOpen={modals.isSignUpModalOpen} setIsOpen={() => dispatch(toggleSignUpModal())} />
+              )}
+            </>
+          ) : (
+            <>
+              <Button color="gray1" size="medium" onClick={logOut}>
+                로그아웃
+              </Button>
+              <Button color="pink1" size="medium" onClick={goToMyPage}>
+                마이페이지
+              </Button>
+            </>
+          )}
+        </ButtonDiv>
+      </StDiv>
+    </>
+  );
 };
 
 export default Header;

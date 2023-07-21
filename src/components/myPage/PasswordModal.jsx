@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { styled } from 'styled-components';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { EmailAuthProvider, getAuth, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
 import Button from '../shared/Button';
+import { setAlertMessage, toggleAlertModal } from '../../redux/modules/modalSlice';
+import AlertModal from '../shared/AlertModal';
 
 export const PORTAL_MODAL = 'portal-root';
 
 const PasswordModal = ({ isOpen, setIsOpen }) => {
+  // alert 모달 관리를 위한 redux store 사용
+  const dispatch = useDispatch();
+  const modals = useSelector((state) => state.modals);
   // 로그인한 user 정보
   const { user } = useSelector((state) => state.user);
   const data = user;
@@ -62,12 +67,14 @@ const PasswordModal = ({ isOpen, setIsOpen }) => {
       const credentials = EmailAuthProvider.credential(user.email, currentPassword);
       await reauthenticateWithCredential(user, credentials);
       await updatePassword(user, newPassword);
-      alert('비밀번호가 성공적으로 변경되었습니다.');
+      dispatch(setAlertMessage('비밀번호가 성공적으로 변경되었습니다.'));
+      dispatch(toggleAlertModal());
       setIsOpen(false);
     } catch (error) {
       // firebase auth 비밀번호 수정
       if (error.code === 'auth/wrong-password') {
-        alert('현재 비밀번호가 틀렸습니다.');
+        dispatch(setAlertMessage('현재 비밀번호가 틀렸습니다.'));
+        dispatch(toggleAlertModal());
       }
       console.log('비밀번호 변경 실패', error);
     }
@@ -81,80 +88,91 @@ const PasswordModal = ({ isOpen, setIsOpen }) => {
     e.stopPropagation();
   };
 
-  return isOpen
-    ? createPortal(
-        <Outer onClick={closeHandler}>
-          <Inner onClick={stopPropagation} onSubmit={handleSubmit}>
-            <p>비밀번호를 수정해볼까요?</p>
+  return (
+    <>
+      {modals.isAlertModalOpen && (
+        <AlertModal
+          message={modals.alertMessage}
+          isOpen={modals.isAlertModalOpen}
+          setIsOpen={() => dispatch(toggleAlertModal())}
+        />
+      )}
+      {isOpen
+        ? createPortal(
+            <Outer onClick={closeHandler}>
+              <Inner onClick={stopPropagation} onSubmit={handleSubmit}>
+                <p>비밀번호를 수정해볼까요?</p>
 
-            <Input type="email" name="email" value={data?.userEmail} disabled />
-            <br />
+                <Input type="email" name="email" value={data?.userEmail} disabled />
+                <br />
 
-            <Input
-              type="password"
-              name="currentPassword"
-              value={currentPassword}
-              onChange={currentPasswordController}
-              placeholder="현재 비밀번호"
-            />
-            {checkCurrentPassword === true ? (
-              <br />
-            ) : currentPassword ? (
-              <StP>영문, 숫자, 특수문자를 조합하여 8-16자 로 입력해주세요.</StP>
-            ) : (
-              <br />
-            )}
+                <Input
+                  type="password"
+                  name="currentPassword"
+                  value={currentPassword}
+                  onChange={currentPasswordController}
+                  placeholder="현재 비밀번호"
+                />
+                {checkCurrentPassword === true ? (
+                  <br />
+                ) : currentPassword ? (
+                  <StP>영문, 숫자, 특수문자를 조합하여 8-16자 로 입력해주세요.</StP>
+                ) : (
+                  <br />
+                )}
 
-            <Input
-              type="password"
-              name="newPassword"
-              value={newPassword}
-              onChange={newPasswordController}
-              placeholder="새로운 비밀번호"
-            />
-            {checkNewPassword === true ? (
-              <StP style={{ color: 'var(--color_black)' }}>사용 가능한 비밀번호입니다.</StP>
-            ) : newPassword && newPassword === currentPassword ? (
-              <StP>현재 비밀번호와 입력값이 동일합니다.</StP>
-            ) : newPassword ? (
-              <StP>영문, 숫자, 특수문자를 조합하여 8-16자 로 입력해주세요.</StP>
-            ) : (
-              <br />
-            )}
+                <Input
+                  type="password"
+                  name="newPassword"
+                  value={newPassword}
+                  onChange={newPasswordController}
+                  placeholder="새로운 비밀번호"
+                />
+                {checkNewPassword === true ? (
+                  <StP style={{ color: 'var(--color_black)' }}>사용 가능한 비밀번호입니다.</StP>
+                ) : newPassword && newPassword === currentPassword ? (
+                  <StP>현재 비밀번호와 입력값이 동일합니다.</StP>
+                ) : newPassword ? (
+                  <StP>영문, 숫자, 특수문자를 조합하여 8-16자 로 입력해주세요.</StP>
+                ) : (
+                  <br />
+                )}
 
-            <Input
-              type="password"
-              name="confirmPassword"
-              value={confirmPassword}
-              onChange={confirmPasswordController}
-              placeholder="비밀번호 확인"
-            />
-            {confirmPassword && checkConfirmPassword === true ? (
-              <StP style={{ color: 'var(--color_black)' }}>비밀번호가 일치합니다.</StP>
-            ) : confirmPassword && confirmPassword !== newPassword ? (
-              <StP>비밀번호가 일치하지 않습니다.</StP>
-            ) : (
-              <br />
-            )}
+                <Input
+                  type="password"
+                  name="confirmPassword"
+                  value={confirmPassword}
+                  onChange={confirmPasswordController}
+                  placeholder="비밀번호 확인"
+                />
+                {confirmPassword && checkConfirmPassword === true ? (
+                  <StP style={{ color: 'var(--color_black)' }}>비밀번호가 일치합니다.</StP>
+                ) : confirmPassword && confirmPassword !== newPassword ? (
+                  <StP>비밀번호가 일치하지 않습니다.</StP>
+                ) : (
+                  <br />
+                )}
 
-            <StButtonSet>
-              <SignUpButton
-                type="submit"
-                color="navy"
-                size="small"
-                disabled={checkCurrentPassword && checkNewPassword && checkConfirmPassword ? false : true}
-              >
-                수정
-              </SignUpButton>
-              <Button color="navy" size="small" onClick={closeHandler}>
-                닫기
-              </Button>
-            </StButtonSet>
-          </Inner>
-        </Outer>,
-        document.getElementById(PORTAL_MODAL)
-      )
-    : null;
+                <StButtonSet>
+                  <SignUpButton
+                    type="submit"
+                    color="navy"
+                    size="small"
+                    disabled={checkCurrentPassword && checkNewPassword && checkConfirmPassword ? false : true}
+                  >
+                    수정
+                  </SignUpButton>
+                  <Button color="navy" size="small" onClick={closeHandler}>
+                    닫기
+                  </Button>
+                </StButtonSet>
+              </Inner>
+            </Outer>,
+            document.getElementById(PORTAL_MODAL)
+          )
+        : null}
+    </>
+  );
 };
 
 export default PasswordModal;
