@@ -3,13 +3,19 @@ import { styled } from 'styled-components';
 
 import { useCallback, useEffect } from 'react';
 import Button from './Button';
+import { useDispatch } from 'react-redux';
+import { clearAlertMessage } from '../../redux/modules/modalSlice';
 
 export const PORTAL_MODAL = 'portal-root';
 
 const AlertModal = ({ isOpen, setIsOpen, message }) => {
+  // 모달 닫힐 때 alertMessage 초기화
+  const dispatch = useDispatch();
+
   // 모달 닫기
   const closeHandler = useCallback(() => {
     setIsOpen(false);
+    dispatch(clearAlertMessage());
   }, [setIsOpen]);
 
   // 엔터 키 눌렀을 때도 모달창 닫히도록

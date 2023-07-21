@@ -1,23 +1,19 @@
 import { useQuery } from 'react-query';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { getLikedStoresByUser } from '../api/likes';
-import { useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import ProfileModal from '../components/myPage/ProfileModal';
 import { getCurrentUser } from '../api/users';
 import PasswordModal from '../components/myPage/PasswordModal';
 import ProfileAvatar from './../components/myPage/ProfileAvatar';
+import { togglePasswordModal, toggleProfileModal } from '../redux/modules/modalSlice';
 
 const MyPage = () => {
-  const { userId, userName, userEmail } = useSelector(({ user }) => user.user);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isPasswordOpen, setIsPasswordOpen] = useState(false);
+  const { userName, userEmail } = useSelector(({ user }) => user.user);
 
-  // const navigate = useNavigate();
-  // useEffect(() => {
-  //   if (!userId) navigate('/');
-  // }, [navigate, userId]);
+  const modals = useSelector((state) => state.modals);
+  const dispatch = useDispatch();
 
   const user = useQuery({ queryKey: ['myPage'], queryFn: getCurrentUser });
   const likedStores = useQuery({ queryKey: ['likedStores'], queryFn: getLikedStoresByUser });
@@ -42,10 +38,14 @@ const MyPage = () => {
           </ProfileInfoContainer>
         </Profile>
         <div>
-          <ProfileUpdateButton onClick={() => setIsProfileOpen(true)}>프로필 수정</ProfileUpdateButton>
-          {isProfileOpen && <ProfileModal isOpen={isProfileOpen} setIsOpen={setIsProfileOpen} />}
-          <ProfileUpdateButton onClick={() => setIsPasswordOpen(true)}>비밀번호 수정</ProfileUpdateButton>
-          {isPasswordOpen && <PasswordModal isOpen={isPasswordOpen} setIsOpen={setIsPasswordOpen} />}
+          <ProfileUpdateButton onClick={() => dispatch(toggleProfileModal())}>프로필 수정</ProfileUpdateButton>
+          {modals.isProfileModalOpen && (
+            <ProfileModal isOpen={modals.isProfileModalOpen} setIsOpen={() => dispatch(toggleProfileModal())} />
+          )}
+          <ProfileUpdateButton onClick={() => dispatch(togglePasswordModal())}>비밀번호 수정</ProfileUpdateButton>
+          {modals.isPasswordModalOpen && (
+            <PasswordModal isOpen={modals.isPasswordModalOpen} setIsOpen={() => dispatch(togglePasswordModal())} />
+          )}
         </div>
       </ProfileContainer>
       <MyLikeTitleContainer>
