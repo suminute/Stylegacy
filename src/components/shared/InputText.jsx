@@ -1,6 +1,12 @@
+import { useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
 
 const InputText = ({ full, size, type, name, id, value, onChange, placeholder, ...props }) => {
+  const inputRef = useRef('');
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []);
+
   return (
     <StInputText
       full={full ? 'true' : 'false'}
@@ -11,6 +17,7 @@ const InputText = ({ full, size, type, name, id, value, onChange, placeholder, .
       value={value}
       onChange={onChange}
       placeholder={placeholder}
+      ref={inputRef}
       {...props}
     ></StInputText>
   );

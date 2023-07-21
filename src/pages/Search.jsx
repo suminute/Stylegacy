@@ -29,9 +29,7 @@ const Search = () => {
             ))}
         </div>
       </Mapcontents>
-      <Stdiv>
-        <KakaoMap />
-      </Stdiv>
+      <KakaoMap />
     </Container>
   );
 };
@@ -40,12 +38,4 @@ export default Search;
 
 const Container = styled.div`
   display: flex;
-`;
-
-const Stdiv = styled.div`
-  width: 100%;
-  /* position: absolute; */
-  /* top: 0; */
-  /* left: 0; */
-  /* z-index: 0; */
 `;
