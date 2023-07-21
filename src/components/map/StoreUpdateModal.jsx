@@ -74,6 +74,7 @@ const StoreUpdateModal = () => {
   const updateMutation = useMutation(updateStore, {
     onSuccess: () => {
       queryClient.invalidateQueries('stores');
+      queryClient.invalidateQueries('storeDetail');
     }
   });
 
