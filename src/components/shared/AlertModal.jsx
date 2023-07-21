@@ -7,7 +7,7 @@ import Button from './Button';
 export const PORTAL_MODAL = 'portal-root';
 
 const AlertModal = ({ isOpen, setIsOpen, message }) => {
-  // 모달창 닫기
+  // 모달 닫기
   const closeHandler = useCallback(() => {
     setIsOpen(false);
   }, [setIsOpen]);

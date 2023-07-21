@@ -5,10 +5,10 @@ import useInput from '../../hooks/useInput';
 import Button from '../shared/Button';
 import { browserSessionPersistence, setPersistence, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getUser } from '../../redux/modules/userSlice';
-import { useState } from 'react';
 import AlertModal from '../shared/AlertModal';
+import { setAlertMessage, toggleAlertModal } from '../../redux/modules/modalSlice';
 
 export const PORTAL_MODAL = 'portal-root';
 
@@ -18,9 +18,7 @@ const LogInModal = ({ isOpen, setIsOpen }) => {
 
   const dispatch = useDispatch();
 
-  // AlertModal창 관리를 위한 alert message
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
+  const modals = useSelector((state) => state.modals);
 
   const logIn = async (e) => {
     e.preventDefault();
@@ -35,32 +33,29 @@ const LogInModal = ({ isOpen, setIsOpen }) => {
           userEmail: userCredential.user.email
         })
       );
-      // [문제] 현재 이 알람창이 안뜹니다ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ
-      setAlertMessage('로그인되었습니다.');
-      console.log('로그인되었니??????', alertMessage);
-      setIsAlertOpen(true);
-      console.log('로그인 알림창 모달 열었니?????', isAlertOpen);
-      setIsOpen(false);
+      dispatch(setAlertMessage('로그인되었습니다.'));
+      dispatch(toggleAlertModal());
+      setIsOpen(true);
     } catch (error) {
       console.log('error', error);
       switch (error.code) {
         case 'auth/invalid-email':
-          setAlertMessage('올바른 이메일 형식을 입력하세요.');
+          dispatch(setAlertMessage('올바른 이메일 형식을 입력하세요.'));
           break;
         case 'auth/wrong-password':
-          setAlertMessage('비밀번호가 틀렸습니다.');
+          dispatch(setAlertMessage('비밀번호가 틀렸습니다.'));
           break;
         case 'auth/user-not-found':
-          setAlertMessage('존재하지 않는 이메일입니다.');
+          dispatch(setAlertMessage('존재하지 않는 이메일입니다.'));
           break;
         case 'auth/missing-password':
-          setAlertMessage('비밀번호를 입력해주세요.');
+          dispatch(setAlertMessage('비밀번호를 입력해주세요.'));
           break;
         default:
           return;
       }
-      setIsAlertOpen(true);
-      console.log('error시 알람창 모달 열렸니?', isAlertOpen);
+      dispatch(toggleAlertModal());
+      console.log('error시 알람창 모달 열렸니?', modals.isAlertModalOpen);
     }
   };
 
@@ -73,7 +68,13 @@ const LogInModal = ({ isOpen, setIsOpen }) => {
   };
   return (
     <>
-      {isAlertOpen && <AlertModal message={alertMessage} isOpen={isAlertOpen} setIsOpen={setIsAlertOpen} />}
+      {modals.isAlertModalOpen && (
+        <AlertModal
+          message={modals.alertMessage}
+          isOpen={modals.isAlertModalOpen}
+          setIsOpen={() => dispatch(toggleAlertModal())}
+        />
+      )}
       {isOpen
         ? createPortal(
             <Outer onClick={closeHandler}>

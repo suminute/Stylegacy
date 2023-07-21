@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { styled } from 'styled-components';
 import SignUpModal from '../Auth/SignUpModal';
 import LogInModal from '../Auth/LogInModal';
@@ -9,26 +9,24 @@ import { auth } from '../../firebase';
 import Button from './Button';
 import AlertModal from './AlertModal';
 import { clearUser } from '../../redux/modules/userSlice';
+import { setAlertMessage, toggleAlertModal, toggleLogInModal, toggleSignUpModal } from '../../redux/modules/modalSlice';
 
 const Header = () => {
   const users = useSelector((state) => state.user);
   const { user } = users;
 
+  const modals = useSelector((state) => state.modals);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const [isLogInOpen, setIsLogInOpen] = useState(false);
-  const [isSignUpOpen, setIsSignUpOpen] = useState(false);
-
-  // AlertModal창 관리를 위한 alert message
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   const logOut = async (event) => {
     event.preventDefault();
     try {
       await signOut(auth);
       dispatch(clearUser());
-      setIsAlertOpen(true);
+      dispatch(setAlertMessage('로그아웃되었습니다.'));
+      dispatch(toggleAlertModal());
     } catch (error) {
       console.log('error', error);
     }
@@ -40,7 +38,11 @@ const Header = () => {
 
   return (
     <>
-      <AlertModal isOpen={isAlertOpen} setIsOpen={setIsAlertOpen} message="로그아웃되었습니다." />
+      <AlertModal
+        isOpen={modals.isAlertModalOpen}
+        setIsOpen={() => dispatch(toggleAlertModal())}
+        message={modals.alertMessage}
+      />
       <StDiv>
         <LinkDiv>
           <Link to={'/'} style={{ color: 'var(--color_white)' }}>
@@ -50,26 +52,18 @@ const Header = () => {
         <ButtonDiv>
           {user.userId === null ? (
             <>
-              <Button
-                color="gray1"
-                size="medium"
-                onClick={() => {
-                  setIsLogInOpen((prev) => !prev);
-                }}
-              >
+              <Button color="gray1" size="medium" onClick={() => dispatch(toggleLogInModal())}>
                 로그인
               </Button>
-              {isLogInOpen && <LogInModal isOpen={isLogInOpen} setIsOpen={setIsLogInOpen} />}
-              <Button
-                color="pink1"
-                size="medium"
-                onClick={() => {
-                  setIsSignUpOpen((prev) => !prev);
-                }}
-              >
+              {modals.isLogInModalOpen && (
+                <LogInModal isOpen={modals.isLogInModalOpen} setIsOpen={() => dispatch(toggleLogInModal())} />
+              )}
+              <Button color="pink1" size="medium" onClick={() => dispatch(toggleSignUpModal())}>
                 회원가입
               </Button>
-              {isSignUpOpen && <SignUpModal isOpen={isSignUpOpen} setIsOpen={setIsSignUpOpen} />}
+              {modals.isSignUpModalOpen && (
+                <SignUpModal isOpen={modals.isSignUpModalOpen} setIsOpen={() => dispatch(toggleSignUpModal())} />
+              )}
             </>
           ) : (
             <>
