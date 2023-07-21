@@ -37,6 +37,9 @@ const Stdiv = styled.div`
   & input {
     box-shadow: 0px 0px 9px 5px #0000005b;
   }
+  & input:focus {
+    outline: none;
+  }
 `;
 
 const StTitleDiv = styled.div`

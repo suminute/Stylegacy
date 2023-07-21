@@ -69,6 +69,9 @@ const Form = styled.form`
   justify-content: center;
   gap: 10px;
   padding: 20px 30px;
+  & input:focus {
+    outline: none;
+  }
 `;
 
 const StPostDiv = styled.div`
