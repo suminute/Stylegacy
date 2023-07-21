@@ -7,6 +7,8 @@ import { browserSessionPersistence, setPersistence, signInWithEmailAndPassword }
 import { auth } from '../../firebase';
 import { useDispatch } from 'react-redux';
 import { getUser } from '../../redux/modules/userSlice';
+import { useState } from 'react';
+import AlertModal from '../shared/AlertModal';
 
 export const PORTAL_MODAL = 'portal-root';
 
@@ -15,6 +17,10 @@ const LogInModal = ({ isOpen, setIsOpen }) => {
   const [password, passwordChangeHandler] = useInput('');
 
   const dispatch = useDispatch();
+
+  // AlertModal창 관리를 위한 alert message
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
 
   const logIn = async (e) => {
     e.preventDefault();
@@ -29,22 +35,32 @@ const LogInModal = ({ isOpen, setIsOpen }) => {
           userEmail: userCredential.user.email
         })
       );
-      alert('로그인되었습니다.');
+      // [문제] 현재 이 알람창이 안뜹니다ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ
+      setAlertMessage('로그인되었습니다.');
+      console.log('로그인되었니??????', alertMessage);
+      setIsAlertOpen(true);
+      console.log('로그인 알림창 모달 열었니?????', isAlertOpen);
       setIsOpen(false);
     } catch (error) {
       console.log('error', error);
       switch (error.code) {
         case 'auth/invalid-email':
-          return alert('올바른 이메일 형식을 입력하세요.');
+          setAlertMessage('올바른 이메일 형식을 입력하세요.');
+          break;
         case 'auth/wrong-password':
-          return alert('비밀번호가 틀렸습니다.');
+          setAlertMessage('비밀번호가 틀렸습니다.');
+          break;
         case 'auth/user-not-found':
-          return alert('존재하지 않는 이메일입니다.');
+          setAlertMessage('존재하지 않는 이메일입니다.');
+          break;
         case 'auth/missing-password':
-          return alert('비밀번호를 입력해주세요.');
+          setAlertMessage('비밀번호를 입력해주세요.');
+          break;
         default:
           return;
       }
+      setIsAlertOpen(true);
+      console.log('error시 알람창 모달 열렸니?', isAlertOpen);
     }
   };
 
@@ -55,40 +71,44 @@ const LogInModal = ({ isOpen, setIsOpen }) => {
   const stopPropagation = (e) => {
     e.stopPropagation();
   };
-
-  return isOpen
-    ? createPortal(
-        <Outer onClick={closeHandler}>
-          <Inner onClick={stopPropagation} onSubmit={logIn}>
-            <p>로그인이 필요해요 :)</p>
-            <Input
-              type="email"
-              name="email"
-              value={email}
-              onChange={emailChangeHandler}
-              placeholder="이메일"
-              autoFocus
-            />
-            <Input
-              type="password"
-              name="password"
-              value={password}
-              onChange={passwordChangeHandler}
-              placeholder="비밀번호"
-            />
-            <StButtonSet>
-              <Button type="submit" color="navy" size="small">
-                로그인
-              </Button>
-              <Button color="navy" size="small" onClick={closeHandler}>
-                닫기
-              </Button>
-            </StButtonSet>
-          </Inner>
-        </Outer>,
-        document.getElementById(PORTAL_MODAL)
-      )
-    : null;
+  return (
+    <>
+      {isAlertOpen && <AlertModal message={alertMessage} isOpen={isAlertOpen} setIsOpen={setIsAlertOpen} />}
+      {isOpen
+        ? createPortal(
+            <Outer onClick={closeHandler}>
+              <Inner onClick={stopPropagation} onSubmit={logIn}>
+                <p>로그인이 필요해요 :)</p>
+                <Input
+                  type="email"
+                  name="email"
+                  value={email}
+                  onChange={emailChangeHandler}
+                  placeholder="이메일"
+                  autoFocus
+                />
+                <Input
+                  type="password"
+                  name="password"
+                  value={password}
+                  onChange={passwordChangeHandler}
+                  placeholder="비밀번호"
+                />
+                <StButtonSet>
+                  <Button type="submit" color="navy" size="small">
+                    로그인
+                  </Button>
+                  <Button color="navy" size="small" onClick={closeHandler}>
+                    닫기
+                  </Button>
+                </StButtonSet>
+              </Inner>
+            </Outer>,
+            document.getElementById(PORTAL_MODAL)
+          )
+        : null}
+    </>
+  );
 };
 
 export default LogInModal;
