@@ -6,6 +6,8 @@ import { getStores } from '../api/stores';
 import { useSelector } from 'react-redux';
 import KakaoMap from '../components/map/KakaoMap';
 import StoreAddModal from '../components/map/StoreAddModal';
+import Loading from '../components/shared/Loading/Loading/Loading';
+import NotFound from '../components/shared/NotFound/NotFound';
 
 const Search = () => {
   const [searchParams] = useSearchParams();
@@ -13,8 +15,8 @@ const Search = () => {
   const { isLoading, error, data } = useQuery(['stores', name], getStores);
   const { isOpen } = useSelector((state) => state.storeAddSlice);
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error...</div>;
+  if (isLoading) return <Loading />;
+  if (error) return <NotFound />;
   return (
     <Container>
       {isOpen && <StoreAddModal></StoreAddModal>}
@@ -22,7 +24,7 @@ const Search = () => {
         <div>
           {data.length > 0 &&
             data.map((place) => (
-              <li key={place.objectID}>
+              <li key={place.id}>
                 {place.name} : {place.address}
               </li>
             ))}

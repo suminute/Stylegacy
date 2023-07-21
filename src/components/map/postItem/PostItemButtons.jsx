@@ -1,29 +1,35 @@
 import React, { useState } from 'react';
+import StoreUpdateModal from './StoreUpdateModal';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { deleteStore } from '../../../api/stores';
+import { deleteStore } from '../../api/stores';
 import { styled } from 'styled-components';
+import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { addLike, decreaseLikeCount, getLikes, increaseLikeCount, removeAllLike, removeLike } from '../../../api/likes';
+import { addLike, decreaseLikeCount, getLikes, increaseLikeCount, removeAllLike, removeLike } from '../../api/likes';
 import { FaHeart, FaRegHeart, FaEllipsisV } from 'react-icons/fa';
-import { openStoreUpdateModal } from '../../../redux/modules/storeUpdateSlice';
+import DeleteUpdateButton from './DeleteUpdateButton';
+import { openStoreModal, closeStoreModal } from '../../redux/modules/storeAddSlice';
 
-const PostItemButtons = ({ post }) => {
-  const queryClient = useQueryClient();
-  const dispatch = useDispatch();
+const PostItem = ({ post }) => {
+  // user 정보
   const { user } = useSelector((state) => state.user);
+  const storeModal = useSelector((state) => state.storeAddSlice);
+  const dispatch = useDispatch();
   const userId = user.userId;
-  const [openMenu, setOpenMenu] = useState(false);
-
-  // 좋아요
-  const { isLoading, data: likes } = useQuery(['likes', post.id], () => getLikes(post.id));
-  const isLiked = likes ? likes.includes(userId) : undefined;
-
-  // 모달창 open dispatch
+  // const [isOpen, setIsOpen] = useState(false);
   const openUpdateModal = () => {
-    setOpenMenu(false);
-    dispatch(openStoreUpdateModal({ post: post }));
+    // setIsOpen(true);
+    dispatch(openStoreModal(true));
+  };
+  const closeUpdateModal = () => {
+    dispatch(closeStoreModal(false));
+    // setIsOpen(false);
   };
 
+  const [openMenu, setOpenMenu] = useState(false);
+
+  // 리액트 쿼리 (항상 컴포넌트 최상위에서 동일한 순서로 호출되어야 한다.)
+  const queryClient = useQueryClient();
   // 게시글 삭제
   const deleteMutation = useMutation(deleteStore, {
     onSuccess: () => {
@@ -68,6 +74,11 @@ const PostItemButtons = ({ post }) => {
     }
   };
 
+  // 좋아요
+  const { isLoading, data: likes } = useQuery(['likes', post.id], () => getLikes(post.id));
+  const isLiked = likes ? likes.includes(userId) : undefined;
+  if (isLoading) return <div>Loading...</div>;
+
   // 좋아요 버튼
   const handleLikeClick = () => {
     if (isLiked) {
@@ -79,31 +90,107 @@ const PostItemButtons = ({ post }) => {
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
-
   return (
-    <StButtonContainer>
-      {userId ? (
-        <StLikeButton onClick={handleLikeClick}>
-          {isLiked ? <FaHeart size="25" color="#ce7777" /> : <FaRegHeart size="25" color="#ce7777" />}
+    <StCard key={post.id}>
+      <Link to={`/store/${post.id}`} state={{ location: post.location }}>
+        <img src={post.image} />
+        <StCardContents className="contents">
+          <span className="storeName">{post.store}</span>
+          <p>{post.location}</p>
+          <div>
+            <p className="day">{post.day}</p>
+            <p>{post.time}</p>
+          </div>
+          <div className="like">
+            <FaHeart size="18" color="#ce7777" />
+            <p>{post.likeCount}</p>
+          </div>
+        </StCardContents>
+      </Link>
+      <StButtonContainer>
+        {userId ? (
+          <StLikeButton onClick={handleLikeClick}>
+            {isLiked ? <FaHeart size="25" color="#ce7777" /> : <FaRegHeart size="25" color="#ce7777" />}
+          </StLikeButton>
+        ) : (
+          <StLikeButton disabled={true}></StLikeButton>
+        )}
+        <StLikeButton onClick={() => setOpenMenu(!openMenu)}>
+          <FaEllipsisV size="20" color="#ce7777" display={userId ? 'display' : 'none'} />
         </StLikeButton>
-      ) : (
-        <StLikeButton disabled={true}></StLikeButton>
-      )}
-      <StLikeButton onClick={() => setOpenMenu(!openMenu)}>
-        <FaEllipsisV size="20" color="#ce7777" display={userId ? 'display' : 'none'} />
-      </StLikeButton>
-      {openMenu && (
-        <StButtonBox>
-          <StButton onClick={openUpdateModal}>수정</StButton>
-          <StButton onClick={() => deleteOnClickHandler(post.id)}>삭제</StButton>
-        </StButtonBox>
-      )}
-    </StButtonContainer>
+        {openMenu && (
+          <StButtonBox>
+            <DeleteUpdateButton
+              openUpdateModal={openUpdateModal}
+              deleteOnClickHandler={deleteOnClickHandler}
+              postId={post.id}
+            ></DeleteUpdateButton>
+          </StButtonBox>
+        )}
+        {storeModal.state && (
+          <StoreUpdateModal
+            type="update"
+            closeUpdateModal={closeUpdateModal}
+            id={post.id}
+            post={post}
+          ></StoreUpdateModal>
+        )}
+      </StButtonContainer>
+    </StCard>
   );
 };
 
-export default PostItemButtons;
+export default PostItem;
+
+const StCard = styled.div`
+  padding: 20px 10px;
+  display: grid;
+  grid-template-columns: 1fr 100px;
+
+  & a {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  & a > img {
+    width: 100%;
+    height: 165px;
+    grid-column: 1 / 2;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+  & a > .contents {
+    grid-column: 2 / 3;
+    padding-left: 10px;
+  }
+
+  &:hover {
+    box-shadow: 0px 0px 9px 5px #00000014;
+  }
+`;
+
+const StCardContents = styled.div`
+  display: grid;
+  grid-template-rows: 35px 50px 1fr 20px;
+  & .storeName {
+    margin: 5px;
+    font-size: larger;
+  }
+
+  & p {
+    margin: 5px;
+    color: #777;
+  }
+
+  & div > .day {
+    color: var(--color_navy);
+  }
+
+  & .like {
+    display: flex;
+    margin-left: 5px;
+    align-items: center;
+  }
+`;
 
 const StButtonContainer = styled.div`
   grid-column: 2 / 3;
@@ -136,19 +223,4 @@ const StButtonBox = styled.div`
   border-radius: 8px;
   box-shadow: 0px 0px 9px 2px #00000014;
   padding: 7px;
-`;
-
-const StButton = styled.button`
-  margin: 5px 5px 5px 5px;
-  padding: 5px;
-  border: 1px solid var(--color_pink1);
-  color: var(--color_pink1);
-  font-weight: 700;
-  border-radius: 8px;
-  background-color: white;
-
-  &:hover {
-    color: white;
-    background-color: var(--color_pink1);
-  }
 `;

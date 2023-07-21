@@ -64,7 +64,7 @@ const StDiv = styled.div`
   }
 `;
 
-const Form = styled.form`
+const Form = styled.div`
   display: flex;
   justify-content: center;
   gap: 10px;

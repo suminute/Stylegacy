@@ -1,33 +1,29 @@
 import { useQuery } from 'react-query';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { getLikedStoresByUser } from '../api/likes';
-import { useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import ProfileModal from '../components/myPage/ProfileModal';
 import { getCurrentUser } from '../api/users';
 import PasswordModal from '../components/myPage/PasswordModal';
 import ProfileAvatar from './../components/myPage/ProfileAvatar';
+import { togglePasswordModal, toggleProfileModal } from '../redux/modules/modalSlice';
+import Loading from '../components/shared/Loading/Loading/Loading';
+import NotFound from '../components/shared/NotFound/NotFound';
+
 
 const MyPage = () => {
-  const { userId, userName, userEmail } = useSelector(({ user }) => user.user);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isPasswordOpen, setIsPasswordOpen] = useState(false);
+  const { userName, userEmail } = useSelector(({ user }) => user.user);
 
-  // const navigate = useNavigate();
-  // useEffect(() => {
-  //   if (!userId) navigate('/');
-  // }, [navigate, userId]);
+  const modals = useSelector((state) => state.modals);
+  const dispatch = useDispatch();
 
   const user = useQuery({ queryKey: ['myPage'], queryFn: getCurrentUser });
   const likedStores = useQuery({ queryKey: ['likedStores'], queryFn: getLikedStoresByUser });
   console.log(likedStores.data);
-  if (user.isLoading) {
-    return <span>Loading...</span>;
-  }
-  if (user.isError) {
-    return <span>Error: {user.error.message}</span>;
-  }
+  if (user.isLoading) return <Loading />;
+  if (user.isError) return <NotFound />;
+
 
   return (
     <Container>
@@ -42,10 +38,14 @@ const MyPage = () => {
           </ProfileInfoContainer>
         </Profile>
         <div>
-          <ProfileUpdateButton onClick={() => setIsProfileOpen(true)}>프로필 수정</ProfileUpdateButton>
-          {isProfileOpen && <ProfileModal isOpen={isProfileOpen} setIsOpen={setIsProfileOpen} />}
-          <ProfileUpdateButton onClick={() => setIsPasswordOpen(true)}>비밀번호 수정</ProfileUpdateButton>
-          {isPasswordOpen && <PasswordModal isOpen={isPasswordOpen} setIsOpen={setIsPasswordOpen} />}
+          <ProfileUpdateButton onClick={() => dispatch(toggleProfileModal())}>프로필 수정</ProfileUpdateButton>
+          {modals.isProfileModalOpen && (
+            <ProfileModal isOpen={modals.isProfileModalOpen} setIsOpen={() => dispatch(toggleProfileModal())} />
+          )}
+          <ProfileUpdateButton onClick={() => dispatch(togglePasswordModal())}>비밀번호 수정</ProfileUpdateButton>
+          {modals.isPasswordModalOpen && (
+            <PasswordModal isOpen={modals.isPasswordModalOpen} setIsOpen={() => dispatch(togglePasswordModal())} />
+          )}
         </div>
       </ProfileContainer>
       <MyLikeTitleContainer>
@@ -129,7 +129,11 @@ const MyLikeListContainer = styled.div`
   grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
   row-gap: 2rem;
   column-gap: 1rem;
+  margin-bottom: 50px;
+  padding-top: 60px;
+  border-top: 1px solid var(--color_gray2);
 `;
+
 const MyLikeCard = styled.div`
   box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
   border-radius: 0.625rem;
@@ -163,13 +167,15 @@ const MyLikeCardInfo = styled.div`
 const LikedStoreCard = ({ store }) => {
   return (
     <MyLikeCard>
-      <MyLikeCardImageContainer>
-        <MyLikeCardImage src={store.image} alt="store" width="500" height="300" />
-      </MyLikeCardImageContainer>
-      <MyLikeCardInfo>
-        <p>{store.store}</p>
-        <CardInfoText>{store.location}</CardInfoText>
-      </MyLikeCardInfo>
+      <Link to={`/store/${store.id}`}>
+        <MyLikeCardImageContainer>
+          <MyLikeCardImage src={store.image} alt="store" width="500" height="300" />
+        </MyLikeCardImageContainer>
+        <MyLikeCardInfo>
+          <p>{store.store}</p>
+          <CardInfoText>{store.location}</CardInfoText>
+        </MyLikeCardInfo>
+      </Link>
     </MyLikeCard>
   );
 };
