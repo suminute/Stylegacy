@@ -7,6 +7,12 @@ const storeAddSlice = createSlice({
   name: 'storeAdd',
   initialState,
   reducers: {
+    openMarkerStoreModal: (state, action) => {
+      console.log(action);
+      const { bool, clickLocation } = action.payload;
+      console.log(bool, clickLocation);
+      return (state = { state: bool, clickLocation });
+    },
     openStoreModal: (state, action) => {
       state.state = action.payload;
       return state;
@@ -18,5 +24,5 @@ const storeAddSlice = createSlice({
   }
 });
 
-export const { openStoreModal, closeStoreModal } = storeAddSlice.actions;
+export const { openStoreModal, openMarkerStoreModal, closeStoreModal } = storeAddSlice.actions;
 export default storeAddSlice.reducer;

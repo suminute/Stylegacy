@@ -1,45 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <!-- 만든사람 -->
+    <meta name="author" content="윤수민, 박희연, 김슬기, 전동헌, 안홍민" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="icon" href="shoe-prints-solid.svg" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1, minimum-scale=1"
+    />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="오프라인 편집샵 위치 정보 제공" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 
-<head>
-  <meta charset="utf-8" />
-  <!-- 만든사람 -->
-  <meta name="author" content="윤수민, 박희연, 김슬기, 전동헌, 안홍민" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <link rel="icon" href="shoe-prints-solid.svg" />
-  <meta name="viewport"
-    content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1, minimum-scale=1" />
-  <meta name="theme-color" content="#000000" />
-  <meta name="description" content="오프라인 편집샵 위치 정보 제공" />
-  <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!-- 카카오맵 라이브러리 -->
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=188be1d87e6004afccadc3cb7c01351a&libraries=services,clusterer"
+    ></script>
+    <!-- 리셋 css -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css@5.0.1/reset.min.css" />
+    <!-- 노토산스 폰트 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;500;900&display=swap" rel="stylesheet" />
+    <title>StyleGacy</title>
+  </head>
 
-  <!-- 리셋 css -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css@5.0.1/reset.min.css" />
-  <!-- 노토산스 폰트 -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;500;900&display=swap" rel="stylesheet" />
-  <title>StyleGacy</title>
-</head>
-
-
-<!-- 카카오맵 라이브러리 -->
-<script type="text/javascript"
-  src="//dapi.kakao.com/v2/maps/sdk.js?appkey=188be1d87e6004afccadc3cb7c01351a&libraries=services"></script>
-<!-- 리셋 css -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css@5.0.1/reset.min.css">
-<!-- 노토산스 폰트 -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;500;900&display=swap" rel="stylesheet">
-<title>StyleGacy</title>
-</head>
-
-<body>
-  <noscript>You need to enable JavaScript to run this app.</noscript>
-  <div id="root"></div>
-  <div id="portal-root"></div>
-</body>
-
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <div id="portal-root"></div>
+  </body>
 </html>

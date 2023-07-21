@@ -18,7 +18,9 @@ const Mapcontents = () => {
       <Form>
         <SearchBar size="small" />
       </Form>
+      <Button color="pink2" size="medium" full onClick={() => openModal()}>
       <Button className="addBTN" color="pink2" size="large" full onClick={openModal}>
+
         장소 추가하기
       </Button>
       <StPostDiv>
