@@ -4,6 +4,8 @@ const initialState = {
   isLogInModalOpen: false,
   isSignUpModalOpen: false,
   isAlertModalOpen: false,
+  isProfileModalOpen: false,
+  isPasswordModalOpen: false,
   alertMessage: ''
 };
 
@@ -20,6 +22,12 @@ const modalsSlice = createSlice({
     toggleAlertModal: (state) => {
       state.isAlertModalOpen = !state.isAlertModalOpen;
     },
+    toggleProfileModal: (state) => {
+      state.isProfileModalOpen = !state.isProfileModalOpen;
+    },
+    togglePasswordModal: (state) => {
+      state.isPasswordModalOpen = !state.isPasswordModalOpen;
+    },
     setAlertMessage: (state, action) => {
       state.alertMessage = action.payload;
     },
@@ -29,7 +37,14 @@ const modalsSlice = createSlice({
   }
 });
 
-export const { toggleLogInModal, toggleSignUpModal, toggleAlertModal, setAlertMessage, clearAlertMessage } =
-  modalsSlice.actions;
+export const {
+  toggleLogInModal,
+  toggleSignUpModal,
+  toggleAlertModal,
+  toggleProfileModal,
+  togglePasswordModal,
+  setAlertMessage,
+  clearAlertMessage
+} = modalsSlice.actions;
 
 export default modalsSlice.reducer;
