@@ -51,7 +51,6 @@ function KakaoMap() {
     },
     [lat, lng]
   );
-
   const openModal = useCallback(
     (clickLocation) => {
       dispatch(openMarkerStoreModal({ bool: true, clickLocation }));
@@ -61,6 +60,7 @@ function KakaoMap() {
 
   if (isLoading) return <Loading />;
   if (isError) return <NotFound />;
+
   return (
     <>
       <Map

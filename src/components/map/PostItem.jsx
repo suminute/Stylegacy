@@ -11,6 +11,7 @@ import DeleteUpdateButton from './DeleteUpdateButton';
 import { openStoreModal, closeStoreModal } from '../../redux/modules/storeAddSlice';
 import SkeletonUi from '../shared/Loading/SkeletonUi/SkeletonUi';
 
+
 const PostItem = ({ post }) => {
   // user 정보
   const { user } = useSelector((state) => state.user);

@@ -11,6 +11,7 @@ import { togglePasswordModal, toggleProfileModal } from '../redux/modules/modalS
 import Loading from '../components/shared/Loading/Loading/Loading';
 import NotFound from '../components/shared/NotFound/NotFound';
 
+
 const MyPage = () => {
   const { userName, userEmail } = useSelector(({ user }) => user.user);
 
@@ -22,6 +23,7 @@ const MyPage = () => {
   console.log(likedStores.data);
   if (user.isLoading) return <Loading />;
   if (user.isError) return <NotFound />;
+
 
   return (
     <Container>
@@ -127,7 +129,11 @@ const MyLikeListContainer = styled.div`
   grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
   row-gap: 2rem;
   column-gap: 1rem;
+  margin-bottom: 50px;
+  padding-top: 60px;
+  border-top: 1px solid var(--color_gray2);
 `;
+
 const MyLikeCard = styled.div`
   box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
   border-radius: 0.625rem;
@@ -161,13 +167,15 @@ const MyLikeCardInfo = styled.div`
 const LikedStoreCard = ({ store }) => {
   return (
     <MyLikeCard>
-      <MyLikeCardImageContainer>
-        <MyLikeCardImage src={store.image} alt="store" width="500" height="300" />
-      </MyLikeCardImageContainer>
-      <MyLikeCardInfo>
-        <p>{store.store}</p>
-        <CardInfoText>{store.location}</CardInfoText>
-      </MyLikeCardInfo>
+      <Link to={`/store/${store.id}`}>
+        <MyLikeCardImageContainer>
+          <MyLikeCardImage src={store.image} alt="store" width="500" height="300" />
+        </MyLikeCardImageContainer>
+        <MyLikeCardInfo>
+          <p>{store.store}</p>
+          <CardInfoText>{store.location}</CardInfoText>
+        </MyLikeCardInfo>
+      </Link>
     </MyLikeCard>
   );
 };
