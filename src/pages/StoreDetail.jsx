@@ -7,16 +7,14 @@ import InputText from '../components/shared/InputText';
 import useInput from '../hooks/useInput';
 import { addComment, getStoreComments } from '../api/comments';
 import Comment from '../components/detailPage/Comment';
-import DeleteUpdateButton from '../components/map/DeleteUpdateButton';
-import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import StoreUpdateModal from '../components/map/StoreUpdateModal';
-import { deleteStore } from '../api/stores';
 import { removeAllLike } from '../api/likes';
 import Button from './../components/shared/Button';
 import StaticMap from './../components/detailPage/StaticMap';
 import { setAlertMessage, toggleAlertModal } from '../redux/modules/modalSlice';
 import AlertModal from '../components/shared/AlertModal';
+import { openStoreUpdateModal } from '../redux/modules/storeUpdateSlice';
+import { deleteStore } from '../api/stores';
 import Loading from '../components/shared/Loading/Loading/Loading';
 import NotFound from '../components/shared/NotFound/NotFound';
 import SkeletonUi from '../components/shared/Loading/SkeletonUi/SkeletonUi';
@@ -37,14 +35,11 @@ const StoreDetail = () => {
   const userId = user.userId;
   const modals = useSelector((state) => state.modals);
 
-  const [isOpen, setIsOpen] = useState(false);
-
+  // 모달창 open dispatch
   const openUpdateModal = () => {
-    setIsOpen(true);
+    dispatch(openStoreUpdateModal({ post: data }));
   };
-  const closeUpdateModal = () => {
-    setIsOpen(false);
-  };
+
   // 게시글 삭제 버튼
   const deleteMutation = useMutation(deleteStore, {
     onSuccess: () => {
@@ -114,19 +109,8 @@ const StoreDetail = () => {
                   {data.store}
                   {userId && (
                     <StDelUpButton>
-                      <DeleteUpdateButton
-                        openUpdateModal={openUpdateModal}
-                        deleteOnClickHandler={deleteOnClickHandler}
-                        postId={data.id}
-                      ></DeleteUpdateButton>
-                      {isOpen && (
-                        <StoreUpdateModal
-                          type="update"
-                          closeUpdateModal={closeUpdateModal}
-                          id={data.id}
-                          post={data}
-                        ></StoreUpdateModal>
-                      )}
+                      <StButton onClick={openUpdateModal}>수정</StButton>
+                      <StButton onClick={() => deleteOnClickHandler(data.id)}>삭제</StButton>
                     </StDelUpButton>
                   )}
                 </StStoreTitle>
@@ -293,4 +277,19 @@ const StDelUpButton = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+const StButton = styled.button`
+  margin: 5px 5px 5px 5px;
+  padding: 5px;
+  border: 1px solid var(--color_pink1);
+  color: var(--color_pink1);
+  font-weight: 700;
+  border-radius: 8px;
+  background-color: white;
+
+  &:hover {
+    color: white;
+    background-color: var(--color_pink1);
+  }
 `;

@@ -1,26 +1,31 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  state: false
+  isOpen: false,
+  type: null,
+  clickLocation: null
 };
 const storeAddSlice = createSlice({
   name: 'storeAdd',
   initialState,
   reducers: {
-    openMarkerStoreModal: (state, action) => {
-      const { bool, clickLocation } = action.payload;
-      return (state = { state: bool, clickLocation });
-    },
     openStoreModal: (state, action) => {
-      state.state = action.payload;
+      if (action.payload.clickLocation) {
+        console.log('payload', action.payload);
+        const isOpen = true;
+        const clickLocation = action.payload.clickLocation;
+        const type = action.payload.type;
+        return { ...state, isOpen, type, clickLocation };
+      }
+      state.isOpen = true;
+      state.type = action.payload.type;
       return state;
     },
     closeStoreModal: (state, action) => {
-      state = action.payload;
-      return state;
+      return initialState;
     }
   }
 });
 
-export const { openStoreModal, openMarkerStoreModal, closeStoreModal } = storeAddSlice.actions;
+export const { openStoreModal, closeStoreModal } = storeAddSlice.actions;
 export default storeAddSlice.reducer;
