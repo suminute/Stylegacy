@@ -32,7 +32,8 @@ const StoreUpdateModal = ({ type, id, post, closeUpdateModal }) => {
 
   const [latLng, setLatLng] = useState('');
   const closeModal = () => {
-    dispatch(closeStoreModal(false));
+    setLocation('');
+    dispatch(closeStoreModal({ state: false }));
   };
 
   useEffect(() => {
@@ -70,9 +71,7 @@ const StoreUpdateModal = ({ type, id, post, closeUpdateModal }) => {
   }, []);
 
   useEffect(() => {
-    // 마커찍고 storeAdd 버튼 클릭시 location input 값 수정
-    setLocation(storeModal.clickLocation);
-    if (location && store) {
+    if ((location || storeModal.clickLocation) && store) {
       setDisabled(false);
     } else if (!location) {
       setDisabled(true);
@@ -97,22 +96,30 @@ const StoreUpdateModal = ({ type, id, post, closeUpdateModal }) => {
   // 저장 버튼과 수정 버튼
   const addButtonHandler = async (e) => {
     e.preventDefault();
-    await changeAddress;
+    //await changeAddress(location);
+    console.log(location);
+    console.log(storeModal.clickLocation);
+    try {
+      const latLng = await changeAddress(location || storeModal.clickLocation);
+      const newStore = {
+        store,
+        checkedDay: [...checkItems],
+        day: openDay(),
+        time: `${openTime} - ${closeTime}`,
+        location: storeModal.clickLocation || location,
+        site: null,
+        phoneNumber: null,
+        marker: { x: latLng.x, y: latLng.y },
+        image: basicImgURL,
+        likeCount: 0
+      };
 
-    const newStore = {
-      store,
-      checkedDay: [...checkItems],
-      day: openDay(),
-      time: `${openTime} - ${closeTime}`,
-      location,
-      site: null,
-      phoneNumber: null,
-      marker: { x: latLng.x, y: latLng.y },
-      image: basicImgURL,
-      likeCount: 0
-    };
-    addMutation.mutate(newStore);
-    dispatch(openStoreModal(false));
+      addMutation.mutate(newStore);
+      setLocation('');
+      dispatch(openStoreModal(false));
+    } catch (error) {
+      console.error(error);
+    }
   };
   const updateButtonHandler = async (e) => {
     e.preventDefault();
@@ -212,11 +219,36 @@ const StoreUpdateModal = ({ type, id, post, closeUpdateModal }) => {
 
   // => 주소를 받아서 위도 경도 변환후 => setLatLng 으로 담음
   const geocoder = new window.kakao.maps.services.Geocoder();
-  const changeAddress = geocoder.addressSearch(location, (result, status) => {
-    if (status === window.kakao.maps.services.Status.OK) {
-      setLatLng(result[0]);
-    }
-  });
+
+  // const changeAddress = new Promise((resolve, reject) => {
+  //   // geocoder.addressSearch(location, (result, status) => {
+  //   //   if (status === window.kakao.maps.services.Status.OK) {
+  //   //     console.log(result[0]);
+  //   //     setLatLng(result[0]);
+  //   //     resolve();
+  //   //   } else {
+  //   //     reject();
+  //   //   }
+  //   // });
+  //   resolve();
+  // });
+
+  const changeAddress = (location) => {
+    return new Promise((resolve, reject) => {
+      geocoder.addressSearch(location, (result, status) => {
+        if (status === window.kakao.maps.services.Status.OK) {
+          console.log(result[0]);
+          resolve(result[0]);
+        } else {
+          reject('Failed to get address');
+        }
+      });
+    });
+  };
+
+  console.log('반복확인');
+  console.log(latLng);
+
 
  return (
     <>
@@ -266,6 +298,7 @@ const StoreUpdateModal = ({ type, id, post, closeUpdateModal }) => {
               </StInputContainer>
               <StInputContainer>
                 <label>상세주소</label>
+                {/* <input value={location} onChange={locationHandler} /> */}
                 <input value={storeModal.clickLocation || location} onChange={locationHandler} />
               </StInputContainer>
               {type === 'update' && (
