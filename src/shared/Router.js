@@ -4,6 +4,7 @@ import Header from '../components/shared/Header';
 import Search from '../pages/Search';
 import StoreDetail from '../pages/StoreDetail';
 import MyPage from '../pages/MyPage';
+import NotFound from '../components/shared/NotFound';
 
 const Router = () => {
   return (
@@ -14,6 +15,7 @@ const Router = () => {
         <Route path="/search" element={<Search />} />
         <Route path="/store/:id" element={<StoreDetail />} />
         <Route path="/mypage" element={<MyPage />} />
+        <Route path="/*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
