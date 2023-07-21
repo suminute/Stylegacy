@@ -1,6 +1,5 @@
 import { createPortal } from 'react-dom';
 import { styled } from 'styled-components';
-import '../../color.css';
 import useInput from '../../hooks/useInput';
 import Button from '../shared/Button';
 import { browserSessionPersistence, setPersistence, signInWithEmailAndPassword } from 'firebase/auth';
@@ -55,7 +54,6 @@ const LogInModal = ({ isOpen, setIsOpen }) => {
           return;
       }
       dispatch(toggleAlertModal());
-      console.log('error시 알람창 모달 열렸니?', modals.isAlertModalOpen);
     }
   };
 

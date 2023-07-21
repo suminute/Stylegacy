@@ -10,6 +10,8 @@ import { storage } from '../../firebase';
 import { useDispatch, useSelector } from 'react-redux';
 import { createPortal } from 'react-dom';
 import { openStoreModal, closeStoreModal } from '../../redux/modules/storeAddSlice';
+import AlertModal from '../shared/AlertModal';
+import { setAlertMessage, toggleAlertModal } from '../../redux/modules/modalSlice';
 
 export const PORTAL_MODAL = 'portal-root';
 
@@ -26,6 +28,7 @@ const StoreUpdateModal = ({ type, id, post, closeUpdateModal }) => {
   const [imageURL, setImageURL] = useState(null);
 
   const storeModal = useSelector((state) => state.storeAddSlice);
+  const modals = useSelector((state) => state.modals);
   const dispatch = useDispatch();
   const basicImgURL = 'https://github.com/suminute/Stylegacy/assets/92218638/9824667b-e8b9-4a4e-a271-a9d3d8341089';
 
@@ -127,7 +130,8 @@ const StoreUpdateModal = ({ type, id, post, closeUpdateModal }) => {
       };
       updateMutation.mutate({ id, modifiedStore });
       closeUpdateModal();
-      alert('수정되었습니다!');
+      dispatch(setAlertMessage('수정되었습니다!'));
+      dispatch(toggleAlertModal());
     } else {
       const modifiedStore = {
         store,
@@ -142,7 +146,8 @@ const StoreUpdateModal = ({ type, id, post, closeUpdateModal }) => {
       };
       updateMutation.mutate({ id, modifiedStore });
       closeUpdateModal();
-      alert('수정되었습니다!');
+      dispatch(setAlertMessage('수정되었습니다!'));
+      dispatch(toggleAlertModal());
     }
   };
 
@@ -213,108 +218,131 @@ const StoreUpdateModal = ({ type, id, post, closeUpdateModal }) => {
     }
   });
 
-  return storeModal
-    ? createPortal(
-        <StBackground type={type}>
-          <Inner type={type}>
-            <StForm>
-              <StInputContainer>
-                <label>가게 이름</label>
-                <input value={store} onChange={storeHandler} />
-              </StInputContainer>
-              <StInputContainer>
-                <label>영업일</label>
-                <StCheckboxDiv>
-                  {type === 'add' &&
-                    days.map((day, index) => {
-                      return <Checkbox key={index} day={day} index={index} checkHandler={checkHandler} />;
-                    })}
-                  {type === 'update' &&
-                    days.map((day, index) => {
-                      return (
-                        <Checkbox
-                          key={index}
-                          day={day}
-                          index={index}
-                          checkHandler={checkHandler}
-                          checkedDay={post.checkedDay}
-                          setCheckItems={setCheckItems}
-                        />
-                      );
-                    })}
-                </StCheckboxDiv>
-              </StInputContainer>
-              <StInputContainer>
-                <label>영업시간</label>
-                <input className="time" type="time" value={openTime} onChange={openTimeHandler} />
-                ~
-                <input className="time" type="time" value={closeTime} onChange={closeTimeHandler} />
-              </StInputContainer>
-              <StInputContainer>
-                <label>상세주소</label>
-                <input value={storeModal.clickLocation || location} onChange={locationHandler} />
-              </StInputContainer>
-              {type === 'update' && (
-                <>
+  return (
+    <>
+      {modals.isAlertModalOpen && (
+        <AlertModal
+          message={modals.alertMessage}
+          isOpen={modals.isAlertModalOpen}
+          setIsOpen={() => dispatch(toggleAlertModal())}
+        />
+      )}
+      {storeModal
+        ? createPortal(
+            <StBackground type={type}>
+              <Inner type={type}>
+                <StForm>
                   <StInputContainer>
-                    <label>전화번호</label>
-                    <input value={phoneNumber} onChange={phoneNumberHandler} />
+                    <label>가게 이름</label>
+                    <input value={store} onChange={storeHandler} />
                   </StInputContainer>
                   <StInputContainer>
-                    <label>웹사이트</label>
-                    <input value={site} onChange={siteHandler} />
+                    <label>영업일</label>
+                    <StCheckboxDiv>
+                      {type === 'add' &&
+                        days.map((day, index) => {
+                          return <Checkbox key={index} day={day} index={index} checkHandler={checkHandler} />;
+                        })}
+                      {type === 'update' &&
+                        days.map((day, index) => {
+                          return (
+                            <Checkbox
+                              key={index}
+                              day={day}
+                              index={index}
+                              checkHandler={checkHandler}
+                              checkedDay={post.checkedDay}
+                              setCheckItems={setCheckItems}
+                            />
+                          );
+                        })}
+                    </StCheckboxDiv>
                   </StInputContainer>
-                  <StInputFileContainer>
-                    <div>
-                      <label className="title">가게 이미지</label>
-                      <label className="file" for="file">
-                        파일찾기
-                      </label>
-                    </div>
-                    <input id="file" type="file" accept="image/*" onChange={handleFileSelect} />
-                    <StImagePreview>
-                      {imgSrc ? (
+                  <StInputContainer>
+                    <label>영업시간</label>
+                    <input className="time" type="time" value={openTime} onChange={openTimeHandler} />
+                    ~
+                    <input className="time" type="time" value={closeTime} onChange={closeTimeHandler} />
+                  </StInputContainer>
+                  <StInputContainer>
+                    <label>상세주소</label>
+                    <input value={storeModal.clickLocation || location} onChange={locationHandler} />
+                  </StInputContainer>
+                  {type === 'update' && (
+                    <>
+                      <StInputContainer>
+                        <label>전화번호</label>
+                        <input value={phoneNumber} onChange={phoneNumberHandler} />
+                      </StInputContainer>
+                      <StInputContainer>
+                        <label>웹사이트</label>
+                        <input value={site} onChange={siteHandler} />
+                      </StInputContainer>
+                      <StInputFileContainer>
                         <div>
-                          <img src={imgSrc} alt="이미지 미리보기" style={{ width: '300px' }} />
+                          <label className="title">가게 이미지</label>
+                          <label className="file" for="file">
+                            파일찾기
+                          </label>
                         </div>
-                      ) : (
-                        <div>
-                          <img src={imageURL} alt="이미지 미리보기" style={{ width: '300px' }} />
-                        </div>
-                      )}
-                    </StImagePreview>
-                    {imgSrc !== basicImgURL ? <button onClick={deleteImgHandler}>이미지 삭제</button> : null}
-                  </StInputFileContainer>
-                </>
-              )}
-              <StButtonContaioner>
-                {type === 'add' && (
-                  <>
-                    <Button type="submit" color="pink2" size="medium" disabled={disabled} onClick={addButtonHandler}>
-                      저장
-                    </Button>
-                    <Button type="button" color="white" size="medium" onClick={closeModal}>
-                      닫기
-                    </Button>
-                  </>
-                )}
-                {type === 'update' && (
-                  <>
-                    <Button type="submit" color="pink2" size="medium" disabled={disabled} onClick={updateButtonHandler}>
-                      수정
-                    </Button>
-                    <Button type="button" color="white" size="medium" onClick={closeUpdateModal}>
-                      닫기
-                    </Button>
-                  </>
-                )}
-              </StButtonContaioner>
-            </StForm>
-          </Inner>
-        </StBackground>,
-        document.getElementById(PORTAL_MODAL)
-      )
-    : null;
+                        <input id="file" type="file" accept="image/*" onChange={handleFileSelect} />
+                        <StImagePreview>
+                          {imgSrc ? (
+                            <div>
+                              <img src={imgSrc} alt="이미지 미리보기" style={{ width: '300px' }} />
+                            </div>
+                          ) : (
+                            <div>
+                              <img src={imageURL} alt="이미지 미리보기" style={{ width: '300px' }} />
+                            </div>
+                          )}
+                        </StImagePreview>
+                        {imgSrc !== basicImgURL ? <button onClick={deleteImgHandler}>이미지 삭제</button> : null}
+                      </StInputFileContainer>
+                    </>
+                  )}
+                  <StButtonContaioner>
+                    {type === 'add' && (
+                      <>
+                        <Button
+                          type="submit"
+                          color="pink2"
+                          size="medium"
+                          disabled={disabled}
+                          onClick={addButtonHandler}
+                        >
+                          저장
+                        </Button>
+                        <Button type="button" color="white" size="medium" onClick={closeModal}>
+                          닫기
+                        </Button>
+                      </>
+                    )}
+                    {type === 'update' && (
+                      <>
+                        <Button
+                          type="submit"
+                          color="pink2"
+                          size="medium"
+                          disabled={disabled}
+                          onClick={updateButtonHandler}
+                        >
+                          수정
+                        </Button>
+                        <Button type="button" color="white" size="medium" onClick={closeUpdateModal}>
+                          닫기
+                        </Button>
+                      </>
+                    )}
+                  </StButtonContaioner>
+                </StForm>
+              </Inner>
+            </StBackground>,
+            document.getElementById(PORTAL_MODAL)
+          )
+        : null}
+    </>
+  );
 };
 
 export default StoreUpdateModal;
