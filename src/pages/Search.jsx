@@ -25,7 +25,7 @@ const Search = () => {
         <div>
           {data.length > 0 &&
             data.map((place) => (
-              <li key={place.objectID}>
+              <li key={place.id}>
                 {place.name} : {place.address}
               </li>
             ))}
