@@ -107,8 +107,8 @@ const PostItem = ({ post }) => {
           </div>
         </StCardContents>
       </Link>
-      {userId && (
-        <StButtonContainer>
+      <StButtonContainer>
+        {userId ? (
           <StLikeButton onClick={handleLikeClick}>
             {isLiked ? <FaHeart size="25" color="#ce7777" /> : <FaRegHeart size="25" color="#ce7777" />}
           </StLikeButton>

@@ -6,14 +6,10 @@ import LogInModal from '../Auth/LogInModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
-// import { auth } from '../firebase';
-import { Link, useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase';
-import Button from './Button';
 import AlertModal from './AlertModal';
 import { clearUser } from '../../redux/modules/userSlice';
 import { setAlertMessage, toggleAlertModal, toggleLogInModal, toggleSignUpModal } from '../../redux/modules/modalSlice';
-
 
 const Header = () => {
   const users = useSelector((state) => state.user);
