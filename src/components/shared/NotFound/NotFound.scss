@@ -12,6 +12,7 @@
     justify-content: flex-end;
     align-items: flex-end;
     transition: all 0.2s ease;
+    overflow: hidden;
  
     .bg_links {
        width: $size;
@@ -208,7 +209,12 @@
  }
  
  
- body {
+ .NotFoundPage {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
      margin: 0;
      padding: 0;
      height: 100vh;
@@ -383,15 +389,16 @@
  }
 
  .wrapper {
-
-     display: grid;
-     grid-template-columns: 1fr;
-     justify-content: center;
-     align-items: center;
-     height: 100vh;
-     overflow-x: hidden;
+    transform: translateY(75px);
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-content: center;
+    align-items: center;
+    height: 800px;
+    overflow: hidden;
  
      .container {
+        
          margin: 0 auto;
          transition: all 0.4s ease;
          display: flex;
@@ -505,7 +512,9 @@
              position: absolute;
              margin: 40px 0;
              animation: text 0.6s 1.8s ease backwards;
- 
+            .warning-text {
+                font-size: 24px;
+            }
              @keyframes text {
                  0% {
                      opacity: 0;
