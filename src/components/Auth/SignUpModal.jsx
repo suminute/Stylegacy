@@ -1,7 +1,7 @@
 import { createPortal } from 'react-dom';
 import { styled } from 'styled-components';
 import '../../color.css';
-import Button from '../Button';
+import Button from '../shared/Button';
 import { useState } from 'react';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth } from '../../firebase';
@@ -75,11 +75,11 @@ const SignUpModal = ({ isOpen, setIsOpen }) => {
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
       console.log('회원가입한 유저', user);
       await updateProfile(auth.currentUser, { displayName: name });
-      const newUser = { 
-        userEmail: email, 
-        userName: name, 
-        userId: user.uid, 
-        userImage: '' 
+      const newUser = {
+        userEmail: email,
+        userName: name,
+        userId: user.uid,
+        userImage: ''
       };
       console.log('newUser', newUser);
       // react-query로 users 컬렉션에 추가함

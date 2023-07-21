@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { styled } from 'styled-components';
-import Button from '../Button';
 import { useSelector } from 'react-redux';
 import { EmailAuthProvider, getAuth, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
+import Button from '../shared/Button';
 
 export const PORTAL_MODAL = 'portal-root';
 

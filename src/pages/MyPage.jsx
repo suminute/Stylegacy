@@ -4,10 +4,10 @@ import styled from 'styled-components';
 import { getLikedStoresByUser } from '../api/likes';
 import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import ProfileModal from '../components/Auth/ProfileModal';
+import ProfileModal from '../components/myPage/ProfileModal';
 import { getCurrentUser } from '../api/users';
-import ProfileAvatar from '../components/ProfileAvatar';
-import PasswordModal from '../components/Auth/PasswordModal';
+import PasswordModal from '../components/myPage/PasswordModal';
+import ProfileAvatar from './../components/myPage/ProfileAvatar';
 
 const MyPage = () => {
   const { userId, userName, userEmail } = useSelector(({ user }) => user.user);

@@ -1,6 +1,5 @@
 import React from 'react';
 import { styled, css } from 'styled-components';
-import './../color.css';
 const Button = ({ onClick, color, full, size, children, ...props }) => {
   return (
     <StButton onClick={onClick} color={color} size={size} full={full ? 'true' : 'false'} {...props}>

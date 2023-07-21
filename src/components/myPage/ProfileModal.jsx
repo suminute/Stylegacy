@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { styled } from 'styled-components';
-import Button from '../Button';
+import Button from '../shared/Button';
 import { uploadProfileImage, updateUser, getCurrentUser, getUsers } from '../../api/users';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
-import ProfileAvatar from '../ProfileAvatar';
+import ProfileAvatar from './ProfileAvatar';
 import { changeUser } from '../../redux/modules/userSlice';
 import { apiKey, auth } from '../../firebase';
 import { updateProfile } from 'firebase/auth';

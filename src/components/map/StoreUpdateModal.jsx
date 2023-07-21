@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { css, styled } from 'styled-components';
-import Button from '../Button';
+import Button from '../shared/Button';
 import { useMutation, useQueryClient } from 'react-query';
 import { addStore, storageUpload, updateStore } from '../../api/stores';
 import useInput from '../../hooks/useInput';
@@ -27,7 +27,7 @@ const StoreUpdateModal = ({ type, id, post, closeUpdateModal }) => {
 
   const storeModal = useSelector((state) => state.storeAddSlice);
   const dispatch = useDispatch();
- const basicImgURL = 'https://github.com/suminute/Stylegacy/assets/92218638/9824667b-e8b9-4a4e-a271-a9d3d8341089';
+  const basicImgURL = 'https://github.com/suminute/Stylegacy/assets/92218638/9824667b-e8b9-4a4e-a271-a9d3d8341089';
 
   const [latLng, setLatLng] = useState('');
   const closeModal = () => {
@@ -201,9 +201,9 @@ const StoreUpdateModal = ({ type, id, post, closeUpdateModal }) => {
     setImgSrc(basicImgURL);
     setSelectedFile(null);
   };
-  const closeModal = () => {
-    dispatch(openStoreModal(false));
-  };
+  // const closeModal = () => {
+  //   dispatch(openStoreModal(false));
+  // };
 
   // => 주소를 받아서 위도 경도 변환후 => setLatLng 으로 담음
   const geocoder = new window.kakao.maps.services.Geocoder();

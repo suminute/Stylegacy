@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import MarkerRed from '../../images/footprint_marker_red.svg';
 import { MapMarker } from 'react-kakao-maps-sdk';
-import Button from '../Button';
 import { useNavigate } from 'react-router-dom';
 import { styled } from 'styled-components';
+import Button from './../shared/Button';
 
 function KakaoCustomInfo({ setLatitude, setLongitude, data }) {
   const navigate = useNavigate();

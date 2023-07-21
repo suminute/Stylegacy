@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { styled } from 'styled-components';
-import Button from './Button';
+import Button from './shared/Button';
 import SignUpModal from './Auth/SignUpModal';
 import LogInModal from './Auth/LogInModal';
 import { useSelector } from 'react-redux';

@@ -3,22 +3,21 @@ import { db } from '../firebase';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import styled from 'styled-components';
-import InputText from '../components/InputText';
-import Button from '../components/Button';
+import InputText from '../components/shared/InputText';
 import useInput from '../hooks/useInput';
 import { addComment, getStoreComments } from '../api/comments';
-import StaticMap from '../components/StaticMap';
-import Comment from '../components/Comment';
+import Comment from '../components/detailPage/Comment';
 import DeleteUpdateButton from '../components/map/DeleteUpdateButton';
 import { useState } from 'react';
-import { FaHeart, FaRegHeart, FaEllipsisV } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import StoreUpdateModal from '../components/map/StoreUpdateModal';
 import { deleteStore } from '../api/stores';
 import { removeAllLike } from '../api/likes';
+import Button from './../components/shared/Button';
+import StaticMap from './../components/detailPage/StaticMap';
 
 const StoreDetail = () => {
-  const [inputComment, handleInputComment,setInputComment] = useInput('');
+  const [inputComment, handleInputComment, setInputComment] = useInput('');
   const { id } = useParams();
   const queryClient = useQueryClient();
   const { isLoading, error, data } = useQuery(['storeDetail', id], () => getStoreData(id));

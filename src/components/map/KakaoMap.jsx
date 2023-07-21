@@ -1,15 +1,14 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Map, MapInfoWindow, MapMarker, ZoomControl, CustomOverlayMap, MarkerClusterer } from 'react-kakao-maps-sdk';
 import { useQuery } from 'react-query';
-import { getStores } from '../api/stores';
+import { getStores } from '../../api/stores';
 import { useDispatch, useSelector } from 'react-redux';
-import { markerAddress } from '../redux/modules/mapSlice';
-import MarkerGray from '../images/footprint_marker_navy.svg';
-import KakaoCustomInto from './map/KakaoCustomInto';
-import Button from './Button';
-import toggleSlice, { toggleMap } from '../redux/modules/toggleSlice';
-import { openMarkerStoreModal, openStoreModal } from '../redux/modules/storeAddSlice';
-import KakaoCustomInfo from './map/KakaoCustomInfo';
+import { markerAddress } from '../../redux/modules/mapSlice';
+import MarkerGray from '../../images/footprint_marker_navy.svg';
+import toggleSlice, { toggleMap } from '../../redux/modules/toggleSlice';
+import { openMarkerStoreModal, openStoreModal } from '../../redux/modules/storeAddSlice';
+import KakaoCustomInfo from './KakaoCustomInfo';
+import Button from './../shared/Button';
 
 function KakaoMap() {
   const { kakao } = window;

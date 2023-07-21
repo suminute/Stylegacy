@@ -2,12 +2,11 @@ import { useSearchParams } from 'react-router-dom/dist';
 import { storeSearch } from '../algoiasearch';
 import { useQuery } from 'react-query';
 import Mapcontents from '../components/map/MapContents';
-import Map from '../components/Map';
 import { styled } from 'styled-components';
 import { getStores } from '../api/stores';
 import StoreUpdateModal from '../components/map/StoreUpdateModal';
 import { useSelector } from 'react-redux';
-import KakaoMap from '../components/KakaoMap';
+import KakaoMap from '../components/map/KakaoMap';
 
 const Search = () => {
   const [searchParams] = useSearchParams();

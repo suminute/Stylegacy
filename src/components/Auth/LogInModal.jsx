@@ -2,7 +2,7 @@ import { createPortal } from 'react-dom';
 import { styled } from 'styled-components';
 import '../../color.css';
 import useInput from '../../hooks/useInput';
-import Button from '../Button';
+import Button from '../shared/Button';
 import { browserSessionPersistence, setPersistence, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase';
 import { useDispatch } from 'react-redux';
