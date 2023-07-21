@@ -102,35 +102,33 @@ const PostItem = ({ post }) => {
           </div>
         </StCardContents>
       </Link>
-      <StButtonContainer>
-        {userId ? (
+      {userId && (
+        <StButtonContainer>
           <StLikeButton onClick={handleLikeClick}>
             {isLiked ? <FaHeart size="25" color="#ce7777" /> : <FaRegHeart size="25" color="#ce7777" />}
           </StLikeButton>
-        ) : (
-          <StLikeButton disabled={true}></StLikeButton>
-        )}
-        <StLikeButton onClick={() => setOpenMenu(!openMenu)}>
-          <FaEllipsisV size="20" color="#ce7777" display={userId ? 'display' : 'none'} />
-        </StLikeButton>
-        {openMenu && (
-          <StButtonBox>
-            <DeleteUpdateButton
-              openUpdateModal={openUpdateModal}
-              deleteOnClickHandler={deleteOnClickHandler}
-              postId={post.id}
-            ></DeleteUpdateButton>
-          </StButtonBox>
-        )}
-        {isOpen && (
-          <StoreUpdateModal
-            type="update"
-            closeUpdateModal={closeUpdateModal}
-            id={post.id}
-            post={post}
-          ></StoreUpdateModal>
-        )}
-      </StButtonContainer>
+          <StLikeButton onClick={() => setOpenMenu(!openMenu)}>
+            <FaEllipsisV size="20" color="#ce7777" />
+          </StLikeButton>
+          {openMenu && (
+            <StButtonBox>
+              <DeleteUpdateButton
+                openUpdateModal={openUpdateModal}
+                deleteOnClickHandler={deleteOnClickHandler}
+                postId={post.id}
+              ></DeleteUpdateButton>
+            </StButtonBox>
+          )}
+          {isOpen && (
+            <StoreUpdateModal
+              type="update"
+              closeUpdateModal={closeUpdateModal}
+              id={post.id}
+              post={post}
+            ></StoreUpdateModal>
+          )}
+        </StButtonContainer>
+      )}
     </StCard>
   );
 };
