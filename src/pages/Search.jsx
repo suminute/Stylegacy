@@ -13,11 +13,13 @@ const Search = () => {
   const [searchParams] = useSearchParams();
   const name = searchParams.get('name') || '';
   const { isLoading, error, data } = useQuery(['stores', name], getStores);
+  const storeModal = useSelector((state) => state.storeAddSlice);
+
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error...</div>;
   return (
     <Container>
-      <StoreUpdateModal type="add"></StoreUpdateModal>
+      {storeModal.state && <StoreUpdateModal type="add"></StoreUpdateModal>}
       <Mapcontents>
         <div>
           {data.length > 0 &&

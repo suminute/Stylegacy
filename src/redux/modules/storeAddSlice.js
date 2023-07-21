@@ -14,11 +14,15 @@ const storeAddSlice = createSlice({
       return (state = { state: bool, clickLocation });
     },
     openStoreModal: (state, action) => {
-      state = action.payload;
-      return { state: state };
+      state.state = action.payload;
+      return state;
+    },
+    closeStoreModal: (state, action) => {
+      state.state = action.payload;
+      return state;
     }
   }
 });
 
-export const { openStoreModal, openMarkerStoreModal } = storeAddSlice.actions;
+export const { openStoreModal, openMarkerStoreModal, closeStoreModal } = storeAddSlice.actions;
 export default storeAddSlice.reducer;

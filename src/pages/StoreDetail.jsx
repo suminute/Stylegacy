@@ -1,6 +1,6 @@
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import styled from 'styled-components';
 import InputText from '../components/InputText';
@@ -9,15 +9,53 @@ import useInput from '../hooks/useInput';
 import { addComment, getStoreComments } from '../api/comments';
 import StaticMap from '../components/StaticMap';
 import Comment from '../components/Comment';
+import DeleteUpdateButton from '../components/map/DeleteUpdateButton';
+import { useState } from 'react';
+import { FaHeart, FaRegHeart, FaEllipsisV } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
+import StoreUpdateModal from '../components/map/StoreUpdateModal';
+import { deleteStore } from '../api/stores';
+import { removeAllLike } from '../api/likes';
 
 const StoreDetail = () => {
-  const [inputComment, setInputComment] = useInput('');
+  const [inputComment, handleInputComment,setInputComment] = useInput('');
   const { id } = useParams();
   const queryClient = useQueryClient();
   const { isLoading, error, data } = useQuery(['storeDetail', id], () => getStoreData(id));
   const { isLoading: isLoadingComment, data: dataComment } = useQuery(['storeDetailComment', id], () =>
     getStoreComments(id)
   );
+
+  const navigate = useNavigate();
+  const { user } = useSelector((state) => state.user);
+  const userId = user.userId;
+  const [isOpen, setIsOpen] = useState(false);
+  const openUpdateModal = () => {
+    setIsOpen(true);
+  };
+  const closeUpdateModal = () => {
+    setIsOpen(false);
+  };
+  // 게시글 삭제 버튼
+  const deleteMutation = useMutation(deleteStore, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('stores');
+    }
+  });
+  const removeAllLikeMutation = useMutation(removeAllLike, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['likes'], data.id);
+    }
+  });
+  const deleteOnClickHandler = (id) => {
+    const deleteConf = window.confirm('정말 삭제하시겠습니까?');
+    if (deleteConf) {
+      deleteMutation.mutate(id);
+      removeAllLikeMutation.mutate(data.id);
+      alert('삭제되었습니다!');
+      navigate('/search');
+    }
+  };
 
   const mutationAddComment = useMutation(addComment, {
     onSuccess: () => {
@@ -52,7 +90,26 @@ const StoreDetail = () => {
           </StStoreCol>
           <StStoreCol>
             <StStoreInfo>
-              <StStoreTitle>{data.store}</StStoreTitle>
+              <StStoreTitle>
+                {data.store}
+                {userId && (
+                  <StDelUpButton>
+                    <DeleteUpdateButton
+                      openUpdateModal={openUpdateModal}
+                      deleteOnClickHandler={deleteOnClickHandler}
+                      postId={data.id}
+                    ></DeleteUpdateButton>
+                    {isOpen && (
+                      <StoreUpdateModal
+                        type="update"
+                        closeUpdateModal={closeUpdateModal}
+                        id={data.id}
+                        post={data}
+                      ></StoreUpdateModal>
+                    )}
+                  </StDelUpButton>
+                )}
+              </StStoreTitle>
               <div>
                 <StStoreInfoLabel>영업일</StStoreInfoLabel>
                 <StStoreInfoContent>{data.day}</StStoreInfoContent>
@@ -89,7 +146,7 @@ const StoreDetail = () => {
                 name="comment"
                 id="comment"
                 value={inputComment}
-                onChange={setInputComment}
+                onChange={handleInputComment}
               />
               <Button size="large" color="pink1">
                 작성
@@ -171,6 +228,8 @@ const StStoreCol = styled.div`
 const StStoreTitle = styled.h2`
   margin: 2rem 0;
   font-size: 2rem;
+  display: flex;
+  justify-content: space-between;
 `;
 
 const StStoreInfo = styled.div`
@@ -206,4 +265,11 @@ const StCommentFormInner = styled.div`
   display: flex;
   align-items: center;
   gap: 20px;
+`;
+
+const StDelUpButton = styled.div`
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
