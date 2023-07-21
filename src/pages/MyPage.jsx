@@ -8,6 +8,9 @@ import { getCurrentUser } from '../api/users';
 import PasswordModal from '../components/myPage/PasswordModal';
 import ProfileAvatar from './../components/myPage/ProfileAvatar';
 import { togglePasswordModal, toggleProfileModal } from '../redux/modules/modalSlice';
+import Loading from '../components/shared/Loading/Loading/Loading';
+import NotFound from '../components/shared/NotFound/NotFound';
+
 
 const MyPage = () => {
   const { userName, userEmail } = useSelector(({ user }) => user.user);
@@ -17,13 +20,10 @@ const MyPage = () => {
 
   const user = useQuery({ queryKey: ['myPage'], queryFn: getCurrentUser });
   const likedStores = useQuery({ queryKey: ['likedStores'], queryFn: getLikedStoresByUser });
-  console.log('likedStores.data', likedStores.data);
-  if (user.isLoading) {
-    return <span>Loading...</span>;
-  }
-  if (user.isError) {
-    return <span>Error: {user.error.message}</span>;
-  }
+  console.log(likedStores.data);
+  if (user.isLoading) return <Loading />;
+  if (user.isError) return <NotFound />;
+
 
   return (
     <Container>

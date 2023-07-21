@@ -9,6 +9,8 @@ import toggleSlice, { toggleMap } from '../../redux/modules/toggleSlice';
 import { openMarkerStoreModal, openStoreModal } from '../../redux/modules/storeAddSlice';
 import KakaoCustomInfo from './KakaoCustomInfo';
 import Button from './../shared/Button';
+import Loading from '../shared/Loading/Loading/Loading';
+import NotFound from '../shared/NotFound/NotFound';
 
 function KakaoMap() {
   const { kakao } = window;
@@ -49,7 +51,6 @@ function KakaoMap() {
     },
     [lat, lng]
   );
-
   const openModal = useCallback(
     (clickLocation) => {
       dispatch(openMarkerStoreModal({ bool: true, clickLocation }));
@@ -57,8 +58,9 @@ function KakaoMap() {
     [clickAddress]
   );
 
-  if (isLoading) return '123';
-  if (isError) return '123';
+  if (isLoading) return <Loading />;
+  if (isError) return <NotFound />;
+
   return (
     <>
       <Map

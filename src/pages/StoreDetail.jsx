@@ -17,6 +17,9 @@ import Button from './../components/shared/Button';
 import StaticMap from './../components/detailPage/StaticMap';
 import { setAlertMessage, toggleAlertModal } from '../redux/modules/modalSlice';
 import AlertModal from '../components/shared/AlertModal';
+import Loading from '../components/shared/Loading/Loading/Loading';
+import NotFound from '../components/shared/NotFound/NotFound';
+import SkeletonUi from '../components/shared/Loading/SkeletonUi/SkeletonUi';
 
 const StoreDetail = () => {
   const [inputComment, handleInputComment, setInputComment] = useInput('');
@@ -86,8 +89,9 @@ const StoreDetail = () => {
     mutationAddComment.mutate({ storeId: id, content: inputComment });
   };
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error</div>;
+  if (isLoading) return <Loading />;
+  if (isLoadingComment) return <SkeletonUi />;
+  if (error) return <NotFound />;
   return (
     <>
       {modals.isAlertModalOpen && (

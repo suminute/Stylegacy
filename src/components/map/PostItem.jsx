@@ -9,6 +9,8 @@ import { addLike, decreaseLikeCount, getLikes, increaseLikeCount, removeAllLike,
 import { FaHeart, FaRegHeart, FaEllipsisV } from 'react-icons/fa';
 import DeleteUpdateButton from './DeleteUpdateButton';
 import { openStoreModal, closeStoreModal } from '../../redux/modules/storeAddSlice';
+import SkeletonUi from '../shared/Loading/SkeletonUi/SkeletonUi';
+
 
 const PostItem = ({ post }) => {
   // user 정보
@@ -77,7 +79,7 @@ const PostItem = ({ post }) => {
   // 좋아요
   const { isLoading, data: likes } = useQuery(['likes', post.id], () => getLikes(post.id));
   const isLiked = likes ? likes.includes(userId) : undefined;
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <SkeletonUi />;
 
   // 좋아요 버튼
   const handleLikeClick = () => {
