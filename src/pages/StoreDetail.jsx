@@ -9,12 +9,17 @@ import { addComment, getStoreComments } from '../api/comments';
 import Comment from '../components/detailPage/Comment';
 import DeleteUpdateButton from '../components/map/DeleteUpdateButton';
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import StoreUpdateModal from '../components/map/StoreUpdateModal';
 import { deleteStore } from '../api/stores';
 import { removeAllLike } from '../api/likes';
 import Button from './../components/shared/Button';
 import StaticMap from './../components/detailPage/StaticMap';
+import { setAlertMessage, toggleAlertModal } from '../redux/modules/modalSlice';
+import AlertModal from '../components/shared/AlertModal';
+import Loading from '../components/shared/Loading/Loading/Loading';
+import NotFound from '../components/shared/NotFound/NotFound';
+import SkeletonUi from '../components/shared/Loading/SkeletonUi/SkeletonUi';
 
 const StoreDetail = () => {
   const [inputComment, handleInputComment, setInputComment] = useInput('');
@@ -26,9 +31,14 @@ const StoreDetail = () => {
   );
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const { user } = useSelector((state) => state.user);
   const userId = user.userId;
+  const modals = useSelector((state) => state.modals);
+
   const [isOpen, setIsOpen] = useState(false);
+
   const openUpdateModal = () => {
     setIsOpen(true);
   };
@@ -51,7 +61,8 @@ const StoreDetail = () => {
     if (deleteConf) {
       deleteMutation.mutate(id);
       removeAllLikeMutation.mutate(data.id);
-      alert('삭제되었습니다!');
+      dispatch(setAlertMessage('삭제되었습니다!'));
+      dispatch(toggleAlertModal());
       navigate('/search');
     }
   };
@@ -62,7 +73,8 @@ const StoreDetail = () => {
       setInputComment('');
     },
     onError: (error) => {
-      alert(error.message);
+      dispatch(setAlertMessage(error.message));
+      dispatch(toggleAlertModal());
     }
   });
 
@@ -77,85 +89,95 @@ const StoreDetail = () => {
     mutationAddComment.mutate({ storeId: id, content: inputComment });
   };
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error</div>;
+  if (isLoading) return <Loading />;
+  if (isLoadingComment) return <SkeletonUi />;
+  if (error) return <NotFound />;
   return (
-    <StContainer>
-      <StBox>
-        <StStore>
-          <StStoreCol>
-            <StoreImage src={data.image} alt={data.store} width="500" height="625" />
-            <StoreButton to={data.site || '#'}>{data.site ? '웹 사이트' : '웹 사이트가 없습니다'}</StoreButton>
-          </StStoreCol>
-          <StStoreCol>
-            <StStoreInfo>
-              <StStoreTitle>
-                {data.store}
-                {userId && (
-                  <StDelUpButton>
-                    <DeleteUpdateButton
-                      openUpdateModal={openUpdateModal}
-                      deleteOnClickHandler={deleteOnClickHandler}
-                      postId={data.id}
-                    ></DeleteUpdateButton>
-                    {isOpen && (
-                      <StoreUpdateModal
-                        type="update"
-                        closeUpdateModal={closeUpdateModal}
-                        id={data.id}
-                        post={data}
-                      ></StoreUpdateModal>
-                    )}
-                  </StDelUpButton>
-                )}
-              </StStoreTitle>
+    <>
+      {modals.isAlertModalOpen && (
+        <AlertModal
+          message={modals.alertMessage}
+          isOpen={modals.isAlertModalOpen}
+          setIsOpen={() => dispatch(toggleAlertModal())}
+        />
+      )}
+      <StContainer>
+        <StBox>
+          <StStore>
+            <StStoreCol>
+              <StoreImage src={data.image} alt={data.store} width="500" height="625" />
+              <StoreButton to={data.site || '#'}>{data.site ? '웹 사이트' : '웹 사이트가 없습니다'}</StoreButton>
+            </StStoreCol>
+            <StStoreCol>
+              <StStoreInfo>
+                <StStoreTitle>
+                  {data.store}
+                  {userId && (
+                    <StDelUpButton>
+                      <DeleteUpdateButton
+                        openUpdateModal={openUpdateModal}
+                        deleteOnClickHandler={deleteOnClickHandler}
+                        postId={data.id}
+                      ></DeleteUpdateButton>
+                      {isOpen && (
+                        <StoreUpdateModal
+                          type="update"
+                          closeUpdateModal={closeUpdateModal}
+                          id={data.id}
+                          post={data}
+                        ></StoreUpdateModal>
+                      )}
+                    </StDelUpButton>
+                  )}
+                </StStoreTitle>
+                <div>
+                  <StStoreInfoLabel>영업일</StStoreInfoLabel>
+                  <StStoreInfoContent>{data.day}</StStoreInfoContent>
+                </div>
+                <div>
+                  <StStoreInfoLabel>영업시간</StStoreInfoLabel>
+                  <StStoreInfoContent>{data.time}</StStoreInfoContent>
+                </div>
+                <div>
+                  <StStoreInfoLabel>전화번호</StStoreInfoLabel>
+                  <StStoreInfoContent>{data.phoneNumber}</StStoreInfoContent>
+                </div>
+              </StStoreInfo>
               <div>
-                <StStoreInfoLabel>영업일</StStoreInfoLabel>
-                <StStoreInfoContent>{data.day}</StStoreInfoContent>
+                <StStoreInfoLabel>지도보기</StStoreInfoLabel>
+                <Link to={`https://map.kakao.com/link/search/${data.store}`}>
+                  <StaticMap lng={data.marker.x} lat={data.marker.y} title={data.location} />
+                </Link>
               </div>
-              <div>
-                <StStoreInfoLabel>영업시간</StStoreInfoLabel>
-                <StStoreInfoContent>{data.time}</StStoreInfoContent>
-              </div>
-              <div>
-                <StStoreInfoLabel>전화번호</StStoreInfoLabel>
-                <StStoreInfoContent>{data.phoneNumber}</StStoreInfoContent>
-              </div>
-            </StStoreInfo>
-            <div>
-              <StStoreInfoLabel>지도보기</StStoreInfoLabel>
-              <Link to={`https://map.kakao.com/link/search/${data.store}`}>
-                <StaticMap lng={data.marker.x} lat={data.marker.y} title={data.location} />
-              </Link>
-            </div>
-          </StStoreCol>
-        </StStore>
-        <StDivider />
-        <StCommentsTitle>
-          댓글<StCommentsCount>{dataComment?.length || 0}</StCommentsCount>
-        </StCommentsTitle>
-        <StCommentsList>
-          <form onSubmit={handleAddComment}>
-            <StCommentFormInner>
-              <InputText
-                placeholder="댓글을 입력하세요."
-                full
-                size="small"
-                type="text"
-                name="comment"
-                id="comment"
-                value={inputComment}
-                onChange={handleInputComment}
-              />
-              <Button size="large" color="pink1">
-                작성
-              </Button>
-            </StCommentFormInner>
-          </form>
-          {!isLoadingComment && dataComment.map((comment) => <Comment key={comment.id} comment={comment} />)}
-        </StCommentsList>
-      </StBox>
-    </StContainer>
+            </StStoreCol>
+          </StStore>
+          <StDivider />
+          <StCommentsTitle>
+            댓글<StCommentsCount>{dataComment?.length || 0}</StCommentsCount>
+          </StCommentsTitle>
+          <StCommentsList>
+            <form onSubmit={handleAddComment}>
+              <StCommentFormInner>
+                <InputText
+                  placeholder="댓글을 입력하세요."
+                  full
+                  size="small"
+                  type="text"
+                  name="comment"
+                  id="comment"
+                  value={inputComment}
+                  onChange={handleInputComment}
+                />
+                <Button size="large" color="pink1">
+                  작성
+                </Button>
+              </StCommentFormInner>
+            </form>
+            {!isLoadingComment && dataComment.map((comment) => <Comment key={comment.id} comment={comment} />)}
+          </StCommentsList>
+        </StBox>
+      </StContainer>
+    </>
   );
 };
 

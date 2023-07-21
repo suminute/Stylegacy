@@ -4,21 +4,27 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { deleteStore } from '../../api/stores';
 import { styled } from 'styled-components';
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { addLike, decreaseLikeCount, getLikes, increaseLikeCount, removeAllLike, removeLike } from '../../api/likes';
 import { FaHeart, FaRegHeart, FaEllipsisV } from 'react-icons/fa';
 import DeleteUpdateButton from './DeleteUpdateButton';
+import { openStoreModal, closeStoreModal } from '../../redux/modules/storeAddSlice';
+import SkeletonUi from '../shared/Loading/SkeletonUi/SkeletonUi';
 
 const PostItem = ({ post }) => {
   // user 정보
   const { user } = useSelector((state) => state.user);
+  const storeModal = useSelector((state) => state.storeAddSlice);
+  const dispatch = useDispatch();
   const userId = user.userId;
-  const [isOpen, setIsOpen] = useState(false);
+  // const [isOpen, setIsOpen] = useState(false);
   const openUpdateModal = () => {
-    setIsOpen(true);
+    // setIsOpen(true);
+    dispatch(openStoreModal(true));
   };
   const closeUpdateModal = () => {
-    setIsOpen(false);
+    dispatch(closeStoreModal(false));
+    // setIsOpen(false);
   };
 
   const [openMenu, setOpenMenu] = useState(false);
@@ -72,7 +78,7 @@ const PostItem = ({ post }) => {
   // 좋아요
   const { isLoading, data: likes } = useQuery(['likes', post.id], () => getLikes(post.id));
   const isLiked = likes ? likes.includes(userId) : undefined;
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <SkeletonUi />;
 
   // 좋아요 버튼
   const handleLikeClick = () => {
@@ -102,33 +108,35 @@ const PostItem = ({ post }) => {
           </div>
         </StCardContents>
       </Link>
-      {userId && (
-        <StButtonContainer>
+      <StButtonContainer>
+        {userId ? (
           <StLikeButton onClick={handleLikeClick}>
             {isLiked ? <FaHeart size="25" color="#ce7777" /> : <FaRegHeart size="25" color="#ce7777" />}
           </StLikeButton>
-          <StLikeButton onClick={() => setOpenMenu(!openMenu)}>
-            <FaEllipsisV size="20" color="#ce7777" />
-          </StLikeButton>
-          {openMenu && (
-            <StButtonBox>
-              <DeleteUpdateButton
-                openUpdateModal={openUpdateModal}
-                deleteOnClickHandler={deleteOnClickHandler}
-                postId={post.id}
-              ></DeleteUpdateButton>
-            </StButtonBox>
-          )}
-          {isOpen && (
-            <StoreUpdateModal
-              type="update"
-              closeUpdateModal={closeUpdateModal}
-              id={post.id}
-              post={post}
-            ></StoreUpdateModal>
-          )}
-        </StButtonContainer>
-      )}
+        ) : (
+          <StLikeButton disabled={true}></StLikeButton>
+        )}
+        <StLikeButton onClick={() => setOpenMenu(!openMenu)}>
+          <FaEllipsisV size="20" color="#ce7777" display={userId ? 'display' : 'none'} />
+        </StLikeButton>
+        {openMenu && (
+          <StButtonBox>
+            <DeleteUpdateButton
+              openUpdateModal={openUpdateModal}
+              deleteOnClickHandler={deleteOnClickHandler}
+              postId={post.id}
+            ></DeleteUpdateButton>
+          </StButtonBox>
+        )}
+        {storeModal.state && (
+          <StoreUpdateModal
+            type="update"
+            closeUpdateModal={closeUpdateModal}
+            id={post.id}
+            post={post}
+          ></StoreUpdateModal>
+        )}
+      </StButtonContainer>
     </StCard>
   );
 };

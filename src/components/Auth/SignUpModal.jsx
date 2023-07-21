@@ -1,16 +1,21 @@
 import { createPortal } from 'react-dom';
 import { styled } from 'styled-components';
-import '../../color.css';
 import Button from '../shared/Button';
 import { useState } from 'react';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth } from '../../firebase';
 import { useMutation, useQueryClient } from 'react-query';
 import { addUser } from '../../api/users';
+import { useDispatch, useSelector } from 'react-redux';
+import { setAlertMessage, toggleAlertModal } from '../../redux/modules/modalSlice';
+import AlertModal from '../shared/AlertModal';
 
 export const PORTAL_MODAL = 'portal-root';
 
 const SignUpModal = ({ isOpen, setIsOpen }) => {
+  const dispatch = useDispatch();
+  const modals = useSelector((state) => state.modals);
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -84,14 +89,16 @@ const SignUpModal = ({ isOpen, setIsOpen }) => {
       console.log('newUser', newUser);
       // react-query로 users 컬렉션에 추가함
       addUserMutation.mutate(newUser);
-      alert('회원가입에 성공하였습니다.');
+      dispatch(setAlertMessage('회원가입에 성공하였습니다.'));
+      dispatch(toggleAlertModal());
       setIsOpen(false);
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
       console.log('회원가입 에러', errorCode, errorMessage);
       if (errorCode === 'auth/email-already-in-use')
-        alert('이미 존재하는 이메일 주소 입니다. 다른 이메일 주소를 이용해 주세요!');
+        dispatch(setAlertMessage('이미 존재하는 이메일 주소 입니다. 다른 이메일 주소를 이용해 주세요!'));
+      dispatch(toggleAlertModal());
     }
   };
 
@@ -103,75 +110,86 @@ const SignUpModal = ({ isOpen, setIsOpen }) => {
     e.stopPropagation();
   };
 
-  return isOpen
-    ? createPortal(
-        <Outer onClick={closeHandler}>
-          <Inner onClick={stopPropagation} onSubmit={signUp}>
-            <p>회원가입을 해볼까요?</p>
-            <Input type="text" name="name" value={name} onChange={nameController} placeholder="이름" autoFocus />
-            {checkName === true ? (
-              <StP style={{ color: 'var(--color_black)' }}>사용 가능한 이름입니다.</StP>
-            ) : name ? (
-              <StP>2자 이상 16자 내 영어, 한글로 구성해주세요.</StP>
-            ) : (
-              <br />
-            )}
-            <Input type="email" name="email" value={email} onChange={emailController} placeholder="이메일" />
-            {checkEmail === true ? (
-              <StP style={{ color: 'var(--color_black)' }}>사용 가능한 이메일입니다.</StP>
-            ) : email ? (
-              <StP>이메일 주소를 정확히 입력해주세요.</StP>
-            ) : (
-              <br />
-            )}
-            <Input
-              type="password"
-              name="password"
-              value={password}
-              onChange={passwordController}
-              placeholder="비밀번호"
-            />
-            {checkPassword === true ? (
-              <StP style={{ color: 'var(--color_black)' }}>사용 가능한 비밀번호입니다.</StP>
-            ) : password ? (
-              <StP>영문, 숫자, 특수문자를 조합하여 8-16자 로 입력해주세요.</StP>
-            ) : (
-              <br />
-            )}
+  return (
+    <>
+      {modals.isAlertModalOpen && (
+        <AlertModal
+          message={modals.alertMessage}
+          isOpen={modals.isAlertModalOpen}
+          setIsOpen={() => dispatch(toggleAlertModal())}
+        />
+      )}
+      {isOpen
+        ? createPortal(
+            <Outer onClick={closeHandler}>
+              <Inner onClick={stopPropagation} onSubmit={signUp}>
+                <p>회원가입을 해볼까요?</p>
+                <Input type="text" name="name" value={name} onChange={nameController} placeholder="이름" autoFocus />
+                {checkName === true ? (
+                  <StP style={{ color: 'var(--color_black)' }}>사용 가능한 이름입니다.</StP>
+                ) : name ? (
+                  <StP>2자 이상 16자 내 영어, 한글로 구성해주세요.</StP>
+                ) : (
+                  <br />
+                )}
+                <Input type="email" name="email" value={email} onChange={emailController} placeholder="이메일" />
+                {checkEmail === true ? (
+                  <StP style={{ color: 'var(--color_black)' }}>사용 가능한 이메일입니다.</StP>
+                ) : email ? (
+                  <StP>이메일 주소를 정확히 입력해주세요.</StP>
+                ) : (
+                  <br />
+                )}
+                <Input
+                  type="password"
+                  name="password"
+                  value={password}
+                  onChange={passwordController}
+                  placeholder="비밀번호"
+                />
+                {checkPassword === true ? (
+                  <StP style={{ color: 'var(--color_black)' }}>사용 가능한 비밀번호입니다.</StP>
+                ) : password ? (
+                  <StP>영문, 숫자, 특수문자를 조합하여 8-16자 로 입력해주세요.</StP>
+                ) : (
+                  <br />
+                )}
 
-            <Input
-              type="password"
-              name="confirmPassword"
-              value={confirmPassword}
-              onChange={confirmPasswordController}
-              placeholder="비밀번호 확인"
-            />
-            {confirmPassword && checkConfirmPassword === true ? (
-              <StP style={{ color: 'var(--color_black)' }}>비밀번호가 일치합니다.</StP>
-            ) : confirmPassword && confirmPassword !== password ? (
-              <StP>비밀번호가 일치하지 않습니다.</StP>
-            ) : (
-              <br />
-            )}
+                <Input
+                  type="password"
+                  name="confirmPassword"
+                  value={confirmPassword}
+                  onChange={confirmPasswordController}
+                  placeholder="비밀번호 확인"
+                />
+                {confirmPassword && checkConfirmPassword === true ? (
+                  <StP style={{ color: 'var(--color_black)' }}>비밀번호가 일치합니다.</StP>
+                ) : confirmPassword && confirmPassword !== password ? (
+                  <StP>비밀번호가 일치하지 않습니다.</StP>
+                ) : (
+                  <br />
+                )}
 
-            <StButtonSet>
-              <SignUpButton
-                type="submit"
-                color="navy"
-                size="small"
-                disabled={checkName && checkEmail && checkPassword && checkConfirmPassword ? false : true}
-              >
-                회원가입
-              </SignUpButton>
-              <Button color="navy" size="small" onClick={closeHandler}>
-                닫기
-              </Button>
-            </StButtonSet>
-          </Inner>
-        </Outer>,
-        document.getElementById(PORTAL_MODAL)
-      )
-    : null;
+                <StButtonSet>
+                  <SignUpButton
+                    type="submit"
+                    color="navy"
+                    size="small"
+                    disabled={checkName && checkEmail && checkPassword && checkConfirmPassword ? false : true}
+                  >
+                    회원가입
+                  </SignUpButton>
+                  <Button color="navy" size="small" onClick={closeHandler}>
+                    닫기
+                  </Button>
+                </StButtonSet>
+              </Inner>
+            </Outer>,
+            document.getElementById(PORTAL_MODAL)
+          )
+        : null}
+    </>
+  );
 };
 
 export default SignUpModal;

@@ -2,13 +2,15 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { styled } from 'styled-components';
 import Button from '../shared/Button';
-import { uploadProfileImage, updateUser, getCurrentUser, getUsers } from '../../api/users';
+import { uploadProfileImage, updateUser, getUsers } from '../../api/users';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import ProfileAvatar from './ProfileAvatar';
 import { changeUser } from '../../redux/modules/userSlice';
 import { apiKey, auth } from '../../firebase';
 import { updateProfile } from 'firebase/auth';
+import { setAlertMessage, toggleAlertModal } from '../../redux/modules/modalSlice';
+import AlertModal from '../shared/AlertModal';
 
 export const PORTAL_MODAL = 'portal-root';
 
@@ -21,15 +23,20 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
       dispatch(changeUser(name));
 
       if (data?.userName !== name) {
-        alert('이름이 성공적으로 변경되었습니다.');
+        dispatch(setAlertMessage('이름이 성공적으로 변경되었습니다.'));
+        dispatch(toggleAlertModal());
       }
 
       setIsOpen(false);
     },
     onError: (error) => {
-      alert(error.message);
+      dispatch(setAlertMessage(error.message));
+      dispatch(toggleAlertModal());
     }
   });
+
+  // redux store에서 모달 상태 관리
+  const modals = useSelector((state) => state.modals);
 
   // 로그인한 userId
   const { user } = useSelector((state) => state.user);
@@ -97,8 +104,15 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
     const file = e.target.files[0];
     if (!file) return;
     const { type, size } = file;
-    if (size > 5 * 1048576) return alert('5MB 이하의 이미지를 선택해주세요.');
-    if (!fileTypes.includes(type)) return alert('지원하지 않는 파일 형식입니다. 지원 형식: jpeg, png');
+    if (size > 5 * 1048576) {
+      dispatch(setAlertMessage('5MB 이하의 이미지를 선택해주세요.'));
+      dispatch(toggleAlertModal());
+    }
+    // if (!fileTypes.includes(type)) return alert('지원하지 않는 파일 형식입니다. 지원 형식: jpeg, png');
+    if (!fileTypes.includes(type)) {
+      dispatch(setAlertMessage('지원하지 않는 파일 형식입니다. 지원 형식: jpeg, png'));
+      dispatch(toggleAlertModal());
+    }
     setProfileImageFile(file);
     setProfileImage(URL.createObjectURL(file));
     setResetProfileImage(false);
@@ -124,64 +138,76 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
 
   if (isLoading) return null;
   if (error) return null;
-  return isOpen
-    ? createPortal(
-        <Outer onClick={closeHandler}>
-          <Inner onClick={stopPropagation} onSubmit={handleSubmit}>
-            <p>프로필을 수정해볼까요?</p>
-            <ProfileAvatarButton type="button" onClick={() => inputImageRef.current.click()}>
-              <ProfileAvatar width="100" height="100" src={profileImage || data.profileImage} />
-              <ProfileAvatarButtonText>변경</ProfileAvatarButtonText>
-            </ProfileAvatarButton>
-            <input
-              ref={inputImageRef}
-              onChange={handleUploadImage}
-              type="file"
-              name="profileImage"
-              id="profileImage"
-              accept="image/*"
-              hidden
-            />
-            <StButtonSet>
-              <Button color="navy" size="small" type="button" onClick={() => inputImageRef.current.click()}>
-                선택
-              </Button>
-              <Button color="pink3" size="small" type="button" onClick={handleDeleteImage}>
-                삭제
-              </Button>
-            </StButtonSet>
-            <Input
-              type="text"
-              name="name"
-              value={name}
-              onChange={nameController}
-              placeholder={data?.userName}
-              autoFocus
-            />
-            {checkName === true ? (
-              <StP style={{ color: 'var(--color_black)' }}>사용 가능한 이름입니다.</StP>
-            ) : name ? (
-              <StP>2자 이상 16자 내 영어, 한글로 구성해주세요.</StP>
-            ) : (
-              <br />
-            )}
 
-            <Input type="email" name="email" value={data?.userEmail} disabled />
-            <br />
+  return (
+    <>
+      {modals.isAlertModalOpen && (
+        <AlertModal
+          message={modals.alertMessage}
+          isOpen={modals.isAlertModalOpen}
+          setIsOpen={() => dispatch(toggleAlertModal())}
+        />
+      )}
+      {isOpen
+        ? createPortal(
+            <Outer onClick={closeHandler}>
+              <Inner onClick={stopPropagation} onSubmit={handleSubmit}>
+                <p>프로필을 수정해볼까요?</p>
+                <ProfileAvatarButton type="button" onClick={() => inputImageRef.current.click()}>
+                  <ProfileAvatar width="100" height="100" src={profileImage || data.profileImage} />
+                  <ProfileAvatarButtonText>변경</ProfileAvatarButtonText>
+                </ProfileAvatarButton>
+                <input
+                  ref={inputImageRef}
+                  onChange={handleUploadImage}
+                  type="file"
+                  name="profileImage"
+                  id="profileImage"
+                  accept="image/*"
+                  hidden
+                />
+                <StButtonSet>
+                  <Button color="navy" size="small" type="button" onClick={() => inputImageRef.current.click()}>
+                    선택
+                  </Button>
+                  <Button color="pink3" size="small" type="button" onClick={handleDeleteImage}>
+                    삭제
+                  </Button>
+                </StButtonSet>
+                <Input
+                  type="text"
+                  name="name"
+                  value={name}
+                  onChange={nameController}
+                  placeholder={data?.userName}
+                  autoFocus
+                />
+                {checkName === true ? (
+                  <StP style={{ color: 'var(--color_black)' }}>사용 가능한 이름입니다.</StP>
+                ) : name ? (
+                  <StP>2자 이상 16자 내 영어, 한글로 구성해주세요.</StP>
+                ) : (
+                  <br />
+                )}
 
-            <StButtonSet>
-              <SignUpButton type="submit" color="navy" size="small" disabled={!checkName}>
-                수정
-              </SignUpButton>
-              <Button color="navy" size="small" onClick={closeHandler}>
-                닫기
-              </Button>
-            </StButtonSet>
-          </Inner>
-        </Outer>,
-        document.getElementById(PORTAL_MODAL)
-      )
-    : null;
+                <Input type="email" name="email" value={data?.userEmail} disabled />
+                <br />
+
+                <StButtonSet>
+                  <SignUpButton type="submit" color="navy" size="small" disabled={!checkName}>
+                    수정
+                  </SignUpButton>
+                  <Button color="navy" size="small" onClick={closeHandler}>
+                    닫기
+                  </Button>
+                </StButtonSet>
+              </Inner>
+            </Outer>,
+            document.getElementById(PORTAL_MODAL)
+          )
+        : null}
+    </>
+  );
 };
 
 export default ProfileModal;

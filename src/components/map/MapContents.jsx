@@ -1,16 +1,24 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { styled } from 'styled-components';
 import Button from '../shared/Button';
 import Posts from './Posts';
-// import StoreUpdateModal from './StoreUpdateModal';
 import SearchBar from '../shared/SearchBar';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { openStoreModal } from '../../redux/modules/storeAddSlice';
 
 const Mapcontents = () => {
+  const user = useSelector(({ user }) => user.user);
   const dispatch = useDispatch();
   const openModal = () => {
     dispatch(openStoreModal(true));
+  };
+
+  const onClickAddButton = () => {
+    if (user.userId) {
+      openModal();
+    } else {
+      window.alert('로그인 후 사용 가능합니다!');
+    }
   };
 
   return (
@@ -18,7 +26,7 @@ const Mapcontents = () => {
       <Form>
         <SearchBar size="small" />
       </Form>
-      <Button className="addBTN" color="pink2" size="large" full onClick={openModal}>
+      <Button className="addBTN" color="pink2" size="large" full onClick={onClickAddButton}>
         장소 추가하기
       </Button>
       <StPostDiv>
@@ -50,6 +58,10 @@ const StDiv = styled.div`
     background-color: var(--color_pink1);
     color: white;
   }
+  & .addBTN:disabled {
+    background-color: var(--color_gray2);
+    color: black;
+  }
 `;
 
 const Form = styled.form`
@@ -57,6 +69,9 @@ const Form = styled.form`
   justify-content: center;
   gap: 10px;
   padding: 20px 30px;
+  & input:focus {
+    outline: none;
+  }
 `;
 
 const StPostDiv = styled.div`

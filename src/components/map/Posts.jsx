@@ -2,17 +2,14 @@ import { getStores } from '../../api/stores';
 import { useQuery } from 'react-query';
 import PostItem from './PostItem';
 import { styled } from 'styled-components';
+import Loading from '../shared/Loading/Loading/Loading';
+import NotFound from '../shared/NotFound/NotFound';
 
 const Posts = () => {
   const { isLoading, isError, data: posts } = useQuery('stores', getStores);
 
-  if (isLoading) {
-    return <p>로딩중입니다....!</p>;
-  }
-
-  if (isError) {
-    return <p>오류가 발생했습니다...!</p>;
-  }
+  if (isLoading) return <Loading />;
+  if (isError) return <NotFound />;
 
   return (
     <>
