@@ -1,7 +1,6 @@
 import { getStores } from '../../api/stores';
 import { useQuery } from 'react-query';
 import PostItem from './PostItem';
-import { styled } from 'styled-components';
 
 const Posts = () => {
   const { isLoading, isError, data: posts } = useQuery('stores', getStores);
