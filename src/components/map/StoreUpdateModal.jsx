@@ -5,8 +5,6 @@ import { useMutation, useQueryClient } from 'react-query';
 import { addStore, storageUpload, updateStore } from '../../api/stores';
 import useInput from '../../hooks/useInput';
 import Checkbox from './Checkbox';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { storage } from '../../firebase';
 import { useDispatch, useSelector } from 'react-redux';
 import { createPortal } from 'react-dom';
 import { openStoreModal, closeStoreModal } from '../../redux/modules/storeAddSlice';
@@ -72,6 +70,8 @@ const StoreUpdateModal = ({ type, id, post, closeUpdateModal }) => {
   }, []);
 
   useEffect(() => {
+    // 마커찍고 storeAdd 버튼 클릭시 location input 값 수정
+    setLocation(storeModal.clickLocation);
     if (location && store) {
       setDisabled(false);
     } else if (!location) {
@@ -218,7 +218,7 @@ const StoreUpdateModal = ({ type, id, post, closeUpdateModal }) => {
     }
   });
 
-  return (
+ return (
     <>
       {modals.isAlertModalOpen && (
         <AlertModal
@@ -232,44 +232,44 @@ const StoreUpdateModal = ({ type, id, post, closeUpdateModal }) => {
             <StBackground type={type}>
               <Inner type={type}>
                 <StForm>
-                  <StInputContainer>
-                    <label>가게 이름</label>
-                    <input value={store} onChange={storeHandler} />
-                  </StInputContainer>
-                  <StInputContainer>
-                    <label>영업일</label>
-                    <StCheckboxDiv>
-                      {type === 'add' &&
-                        days.map((day, index) => {
-                          return <Checkbox key={index} day={day} index={index} checkHandler={checkHandler} />;
-                        })}
-                      {type === 'update' &&
-                        days.map((day, index) => {
-                          return (
-                            <Checkbox
-                              key={index}
-                              day={day}
-                              index={index}
-                              checkHandler={checkHandler}
-                              checkedDay={post.checkedDay}
-                              setCheckItems={setCheckItems}
-                            />
-                          );
-                        })}
-                    </StCheckboxDiv>
-                  </StInputContainer>
-                  <StInputContainer>
-                    <label>영업시간</label>
-                    <input className="time" type="time" value={openTime} onChange={openTimeHandler} />
-                    ~
-                    <input className="time" type="time" value={closeTime} onChange={closeTimeHandler} />
-                  </StInputContainer>
-                  <StInputContainer>
-                    <label>상세주소</label>
-                    <input value={storeModal.clickLocation || location} onChange={locationHandler} />
-                  </StInputContainer>
-                  {type === 'update' && (
-                    <>
+              <StInputContainer>
+                <label>가게 이름</label>
+                <input value={store} onChange={storeHandler} />
+              </StInputContainer>
+              <StInputContainer>
+                <label>영업일</label>
+                <StCheckboxDiv>
+                  {type === 'add' &&
+                    days.map((day, index) => {
+                      return <Checkbox key={index} day={day} index={index} checkHandler={checkHandler} />;
+                    })}
+                  {type === 'update' &&
+                    days.map((day, index) => {
+                      return (
+                        <Checkbox
+                          key={index}
+                          day={day}
+                          index={index}
+                          checkHandler={checkHandler}
+                          checkedDay={post.checkedDay}
+                          setCheckItems={setCheckItems}
+                        />
+                      );
+                    })}
+                </StCheckboxDiv>
+              </StInputContainer>
+              <StInputContainer>
+                <label>영업시간</label>
+                <input className="time" type="time" value={openTime} onChange={openTimeHandler} />
+                ~
+                <input className="time" type="time" value={closeTime} onChange={closeTimeHandler} />
+              </StInputContainer>
+              <StInputContainer>
+                <label>상세주소</label>
+                <input value={storeModal.clickLocation || location} onChange={locationHandler} />
+              </StInputContainer>
+              {type === 'update' && (
+                <>
                       <StInputContainer>
                         <label>전화번호</label>
                         <input value={phoneNumber} onChange={phoneNumberHandler} />
