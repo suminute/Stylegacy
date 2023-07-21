@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { styled } from 'styled-components';
-import Button from './shared/Button';
-import SignUpModal from './Auth/SignUpModal';
-import LogInModal from './Auth/LogInModal';
+import Button from '../shared/Button';
+import SignUpModal from '../Auth/SignUpModal';
+import LogInModal from '../Auth/LogInModal';
 import { useSelector } from 'react-redux';
 import { signOut } from 'firebase/auth';
-import { auth } from '../firebase';
+// import { auth } from '../firebase';
 import { Link, useNavigate } from 'react-router-dom';
+import { auth } from '../../firebase';
 
 const Header = () => {
   const users = useSelector((state) => state.user);

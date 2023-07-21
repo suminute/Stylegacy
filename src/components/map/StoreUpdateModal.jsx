@@ -69,6 +69,8 @@ const StoreUpdateModal = ({ type, id, post, closeUpdateModal }) => {
   }, []);
 
   useEffect(() => {
+    // 마커찍고 storeAdd 버튼 클릭시 location input 값 수정
+    setLocation(storeModal.clickLocation);
     if (location && store) {
       setDisabled(false);
     } else if (!location) {
@@ -213,6 +215,7 @@ const StoreUpdateModal = ({ type, id, post, closeUpdateModal }) => {
     }
   });
 
+  // setLocation(storeModal.clickLocation);
   return storeModal
     ? createPortal(
         <StBackground type={type}>
