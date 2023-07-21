@@ -9,6 +9,7 @@ import { signOut } from 'firebase/auth';
 import { Link, useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase';
 
+
 const Header = () => {
   const users = useSelector((state) => state.user);
   const { user } = users;
