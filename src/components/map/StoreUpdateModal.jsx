@@ -5,8 +5,6 @@ import { useMutation, useQueryClient } from 'react-query';
 import { addStore, storageUpload, updateStore } from '../../api/stores';
 import useInput from '../../hooks/useInput';
 import Checkbox from './Checkbox';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { storage } from '../../firebase';
 import { useDispatch, useSelector } from 'react-redux';
 import { createPortal } from 'react-dom';
 import { openStoreModal, closeStoreModal } from '../../redux/modules/storeAddSlice';
