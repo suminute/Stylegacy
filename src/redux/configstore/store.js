@@ -4,6 +4,7 @@ import user from '../modules/userSlice';
 import toggleSlice from '../modules/toggleSlice';
 import storeAddSlice from '../modules/storeAddSlice';
 import modals from '../modules/modalSlice';
+import storeUpdateSlice from '../modules/storeUpdateSlice';
 
 const store = configureStore({
   reducer: {
@@ -11,7 +12,8 @@ const store = configureStore({
     user,
     toggleSlice,
     storeAddSlice,
-    modals
+    modals,
+    storeUpdateSlice
   }
 });
 

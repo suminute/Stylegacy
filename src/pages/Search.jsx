@@ -1,24 +1,23 @@
 import { useSearchParams } from 'react-router-dom/dist';
-import { storeSearch } from '../algoiasearch';
 import { useQuery } from 'react-query';
 import Mapcontents from '../components/map/MapContents';
 import { styled } from 'styled-components';
 import { getStores } from '../api/stores';
-import StoreUpdateModal from '../components/map/StoreUpdateModal';
 import { useSelector } from 'react-redux';
 import KakaoMap from '../components/map/KakaoMap';
+import StoreAddModal from '../components/map/StoreAddModal';
 
 const Search = () => {
   const [searchParams] = useSearchParams();
   const name = searchParams.get('name') || '';
   const { isLoading, error, data } = useQuery(['stores', name], getStores);
-  const storeModal = useSelector((state) => state.storeAddSlice);
+  const { isOpen } = useSelector((state) => state.storeAddSlice);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error...</div>;
   return (
     <Container>
-      {storeModal.state && <StoreUpdateModal type="add"></StoreUpdateModal>}
+      {isOpen && <StoreAddModal></StoreAddModal>}
       <Mapcontents>
         <div>
           {data.length > 0 &&
