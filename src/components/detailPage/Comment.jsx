@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { deleteComment, updateComment } from '../../api/comments';
 import IconButton from './IconButton';
 import styled from 'styled-components';
@@ -8,11 +8,17 @@ import { Pencil, Trash } from '@phosphor-icons/react';
 import InputText from '../shared/InputText';
 import ProfileAvatar from '../myPage/ProfileAvatar';
 import Button from '../shared/Button';
+import AlertModal from '../shared/AlertModal';
+import { setAlertMessage, toggleAlertModal } from '../../redux/modules/modalSlice';
 
 const Comment = ({ comment }) => {
   const [isUpdating, setUpdating] = useState(false);
   const [inputComment, setInputComment] = useState(comment.content);
   const user = useSelector(({ user }) => user.user);
+
+  const modals = useSelector((state) => state.modals);
+  const dispatch = useDispatch();
+
   const queryClient = useQueryClient();
 
   const formatDate = (dateString) => {
@@ -30,13 +36,15 @@ const Comment = ({ comment }) => {
       queryClient.invalidateQueries({ queryKey: ['storeDetailComment'] });
     },
     onError: (error) => {
-      alert(error.message);
+      dispatch(setAlertMessage(error.message));
+      dispatch(toggleAlertModal());
     }
   });
   const mutationDeleteComment = useMutation(deleteComment, {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['storeDetailComment'] }),
     onError: (error) => {
-      alert(error.message);
+      dispatch(setAlertMessage(error.message));
+      dispatch(toggleAlertModal());
     }
   });
 
@@ -62,60 +70,69 @@ const Comment = ({ comment }) => {
   };
 
   return (
-    <StComment>
-      <StCommentInner>
-        <StCommentUserContent>
-          <ProfileAvatar width="30" height="30" src={comment.userImage} />
-          <StCommentName>{comment.userName}</StCommentName>
-        </StCommentUserContent>
-        <div>
-          <StCommentDate>{formatDate(comment.createdAt)}</StCommentDate>
-          {comment.userId === user.userId && (
-            <>
-              <IconButton
-                onClick={() => handleUpdateStart()}
-                label="댓글 수정"
-                type="button"
-                icon={<Pencil />}
-                weight="bold"
-                size={24}
-                color="#777777"
-              />
-              <IconButton
-                onClick={() => handleDeleteComment(comment.id)}
-                label="댓글 삭제"
-                type="button"
-                icon={<Trash />}
-                weight="bold"
-                size={24}
-                color="#777777"
-              />
-            </>
-          )}
-        </div>
-      </StCommentInner>
-      {isUpdating ? (
-        <StCommentUpdateForm onSubmit={handleUpdateComment}>
-          <InputText
-            full
-            size="small"
-            type="text"
-            name="commentUpdate"
-            id="commentUpdate"
-            value={inputComment}
-            onChange={(e) => setInputComment(e.target.value)}
-          />
-          <Button type="submit" size="medium" color="pink1">
-            완료
-          </Button>
-          <Button type="button" onClick={handleUpdateCancel} size="medium" color="pink2">
-            취소
-          </Button>
-        </StCommentUpdateForm>
-      ) : (
-        <StCommentContent>{comment.content}</StCommentContent>
+    <>
+      {modals.isAlertModalOpen && (
+        <AlertModal
+          message={modals.alertMessage}
+          isOpen={modals.isAlertModalOpen}
+          setIsOpen={() => dispatch(toggleAlertModal())}
+        />
       )}
-    </StComment>
+      <StComment>
+        <StCommentInner>
+          <StCommentUserContent>
+            <ProfileAvatar width="30" height="30" src={comment.userImage} />
+            <StCommentName>{comment.userName}</StCommentName>
+          </StCommentUserContent>
+          <div>
+            <StCommentDate>{formatDate(comment.createdAt)}</StCommentDate>
+            {comment.userId === user.userId && (
+              <>
+                <IconButton
+                  onClick={() => handleUpdateStart()}
+                  label="댓글 수정"
+                  type="button"
+                  icon={<Pencil />}
+                  weight="bold"
+                  size={24}
+                  color="#777777"
+                />
+                <IconButton
+                  onClick={() => handleDeleteComment(comment.id)}
+                  label="댓글 삭제"
+                  type="button"
+                  icon={<Trash />}
+                  weight="bold"
+                  size={24}
+                  color="#777777"
+                />
+              </>
+            )}
+          </div>
+        </StCommentInner>
+        {isUpdating ? (
+          <StCommentUpdateForm onSubmit={handleUpdateComment}>
+            <InputText
+              full
+              size="small"
+              type="text"
+              name="commentUpdate"
+              id="commentUpdate"
+              value={inputComment}
+              onChange={(e) => setInputComment(e.target.value)}
+            />
+            <Button type="submit" size="medium" color="pink1">
+              완료
+            </Button>
+            <Button type="button" onClick={handleUpdateCancel} size="medium" color="pink2">
+              취소
+            </Button>
+          </StCommentUpdateForm>
+        ) : (
+          <StCommentContent>{comment.content}</StCommentContent>
+        )}
+      </StComment>
+    </>
   );
 };
 
