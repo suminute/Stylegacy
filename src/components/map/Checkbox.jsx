@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { styled } from 'styled-components';
 
-const Checkbox = ({ day, index, checkHandler, checkedDay, setCheckItems }) => {
+const Checkbox = ({ day, index, checkHandler, checkedDay }) => {
   const [ischecked, setischecked] = useState(false);
 
   const onChangeHandler = (e) => {

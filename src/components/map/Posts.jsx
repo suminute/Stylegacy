@@ -1,7 +1,8 @@
 import { getStores, getStoresByIdArray } from '../../api/stores';
 import { useInfiniteQuery, useQuery, useQueryClient } from 'react-query';
-import PostItem from './PostItem';
-import { styled } from 'styled-components';
+import PostItem from './postItem/PostItem';
+import Loading from '../shared/Loading/Loading/Loading';
+import NotFound from '../shared/NotFound/NotFound';
 import { useSearchParams } from 'react-router-dom';
 import { searchStores } from '../../algoiasearch';
 import useIntersect from '../../hooks/useIntersect';
@@ -62,13 +63,8 @@ const Posts = () => {
   },[isLoading,stores,data])
 
 
-  if (status==='loading' ||  stores.status==='loading') {
-    return <p>로딩중입니다....!</p>;
-  }
-
-  if (error || stores.status === 'error') {
-    return <p>오류가 발생했습니다...!</p>;
-  }
+  if (status==='loading' ||  stores.status==='loading') return <Loading />;
+  if (error || stores.status === 'error') return <NotFound />;
   return (
     <>
     <button onClick={()=>{console.log('invalid');queryClient.invalidateQueries('stores')}}>stores invalid</button>

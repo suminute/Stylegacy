@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { styled } from 'styled-components';
 import Button from '../shared/Button';
 import Posts from './Posts';
@@ -10,7 +10,7 @@ const Mapcontents = () => {
   const user = useSelector(({ user }) => user.user);
   const dispatch = useDispatch();
   const openModal = () => {
-    dispatch(openStoreModal(true));
+    dispatch(openStoreModal({ type: 'add' }));
   };
 
   const onClickAddButton = () => {
@@ -64,7 +64,7 @@ const StDiv = styled.div`
   }
 `;
 
-const Form = styled.form`
+const Form = styled.div`
   display: flex;
   justify-content: center;
   gap: 10px;

@@ -1,16 +1,16 @@
 .skeleton-loding{
-
 	*, *:after, *:before {
 		box-sizing: border-box;
 	}
-	
 	// THE CARD 
 	.card {
 		display: flex;
 		flex-direction: column;
 		flex-basis: 300px;
 		flex-shrink: 0;
-		flex-grow: 0;
+		flex-grow: 1;
+		box-sizing: border-box;
+		height: 205px;
 		max-width: 100%;
 		background-color: #FFF;
 		box-shadow: 0 5px 10px 0 rgba(#000, .15);
@@ -29,10 +29,14 @@
 	}
 	
 	.card-body {
+		display: flex;
 		padding: 1.5rem;
 	}
 	
 	.card-title {
+		width: 240px;
+		height: 165px;
+		margin-right: 10px;
 		font-size: 1.25rem;
 		line-height: 1.33;
 		font-weight: 700;
@@ -43,10 +47,14 @@
 	}
 	
 	.card-intro {
-		margin-top: .75rem;
+		width: 300px;
+		background: #000;
 		line-height: 1.5;
+		&:nth-child(1) {height:25px; margin-bottom: 5px;}
+		&:nth-child(2) {height:40px; margin-top: 5px; margin-bottom: 5px;}
+		&:nth-child(3) {height:65px	}
+		&:nth-child(4) {height:20px; margin-top: 5px;}
 		&.skeleton { // NOTICE THIS
-			min-height: 72px;
 			border-radius: 4px;
 		}
 	}
