@@ -13,9 +13,12 @@ const SearchBar = ({ size, ...props }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log(location)
     if (location.pathname === '/search') {
+      alert('search')
       return setSearchParams({ name: searchText });
     }
+    alert('navigate')
     return navigate(`/search?name=${searchText}`);
   };
 
@@ -31,6 +34,7 @@ const SearchBar = ({ size, ...props }) => {
   return (
     <StForm onSubmit={handleSubmit}>
       <InputText
+        onLoadFocus
         size={size}
         placeholder="원하는 브랜드를 찾아 보세요!"
         type="text"
