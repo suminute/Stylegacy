@@ -30,7 +30,7 @@ const Mapcontents = () => {
 
   return (
     <>
-          {modals.isAlertModalOpen && (
+      {modals.isAlertModalOpen && (
         <AlertModal
           message={modals.alertMessage}
           isOpen={modals.isAlertModalOpen}
@@ -66,8 +66,10 @@ const Mapcontents = () => {
 
 export default React.memo(Mapcontents);
 const StLeftBox = styled.div`
-  position: relative;
-  transition: transform ease-in 0.3s;
+  position: absolute;
+  left: 0;
+  top: 0;
+  transition: left ease-in 0.3s;
 `;
 const StToggleBtnBox = styled.div`
   position: absolute;
@@ -82,6 +84,11 @@ const StToggleBtnBox = styled.div`
   transform: translate(100%, -50%);
   z-index: 10;
   background: #fff;
+  & button {
+    width: 100%;
+    height: 100%;
+    background: none;
+  }
 `;
 const StToggleBtn = styled.div`
   position: relative;

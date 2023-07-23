@@ -1,13 +1,13 @@
 import { getStores } from '../../api/stores';
 import { useQuery } from 'react-query';
 import PostItem from './postItem/PostItem';
-import Loading from '../shared/Loading/Loading/Loading';
 import NotFound from '../shared/NotFound/NotFound';
+import SkeletonUi from '../shared/Loading/SkeletonUi/SkeletonUi';
 
 const Posts = () => {
   const { isLoading, isError, data: posts } = useQuery('stores', getStores);
 
-  if (isLoading) return <Loading />;
+  if (isLoading) return <SkeletonUi />;
   if (isError) return <NotFound />;
 
   return (

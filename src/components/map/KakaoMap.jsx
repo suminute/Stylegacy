@@ -4,7 +4,7 @@ import { useQuery } from 'react-query';
 import { getStores } from '../../api/stores';
 import { useDispatch, useSelector } from 'react-redux';
 import { markerAddress } from '../../redux/modules/mapSlice';
-import MarkerGray from '../../images/footprint_marker_navy.svg';
+import heartMarkerNavy from '../../images/heart_marker_navy.svg';
 import toggleSlice, { toggleMap } from '../../redux/modules/toggleSlice';
 import { openMarkerStoreModal, openStoreModal } from '../../redux/modules/storeAddSlice';
 import KakaoCustomInfo from './KakaoCustomInfo';
@@ -19,7 +19,7 @@ function KakaoMap() {
   const { isLoading, isError, data } = useQuery('stores', getStores);
   const mapRef = useRef(null);
   const [clickAddress, setClickAddress] = useState([]);
-  const [level, setLevel] = useState(13);
+  const [level, setLevel] = useState(12);
   // 이건 나중에 사용해서 맵 중앙을 바꿀 수 있는 useState 훅입니다.
   // 기본위치값은 강서구입니다.
   const [latitude, setLatitude] = useState(37.5543737621718);
@@ -38,7 +38,6 @@ function KakaoMap() {
   useEffect(() => {
     setPost(data);
   }, [data]);
-
   // 지도 클릭시 주소, 정보를 출력합니다
   const getCoor2Address = useCallback(
     (lat, lng) => {
@@ -65,7 +64,7 @@ function KakaoMap() {
     <>
       <Map
         ref={mapRef}
-        maxLevel={13}
+        maxLevel={12}
         // 지도 확대 축소 키보드 이벤트
         keyboardShortcuts={true}
         onRightClick={(e, event) => {
@@ -98,7 +97,7 @@ function KakaoMap() {
               }}
               position={position}
               image={{
-                src: MarkerGray,
+                src: heartMarkerNavy,
                 size: {
                   width: 64,
                   height: 69
@@ -133,7 +132,7 @@ function KakaoMap() {
                       STORE ADD
                     </Button>
                   )}
-                  <br />
+                  {/* <br /> */}
                 </div>
               )}
             </MapMarker>
@@ -162,9 +161,10 @@ function KakaoMap() {
 export default React.memo(KakaoMap);
 const StPGuide = styled.p`
   position: absolute;
-  left: 60%;
+  left: 50%;
   z-index: 10;
   background-color: var(--color_pink2);
   padding: 5px 10px;
   font-size: 14px;
+  transform: translate(-50%, 0px);
 `;
