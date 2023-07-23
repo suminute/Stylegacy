@@ -18,7 +18,7 @@ const Search = () => {
   if (isLoading) return <Loading />;
   if (error) return <NotFound />;
   return (
-    <Container>
+    <Container style={{ height: 'calc(100vh - 75px)', overflow: 'hidden' }}>
       {isOpen && <StoreAddModal></StoreAddModal>}
       <Mapcontents>
         <div>
