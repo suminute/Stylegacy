@@ -9,7 +9,6 @@ import { clearAlertMessage } from '../../redux/modules/modalSlice';
 export const PORTAL_MODAL = 'portal-root';
 
 const AlertModal = ({ isOpen, setIsOpen, message }) => {
-  // 모달 닫힐 때 alertMessage 초기화
   const dispatch = useDispatch();
 
   // 모달 닫기

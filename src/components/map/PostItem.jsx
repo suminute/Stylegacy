@@ -5,27 +5,26 @@ import { deleteStore } from '../../api/stores';
 import { styled } from 'styled-components';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { addLike, decreaseLikeCount, getLikes, increaseLikeCount, removeAllLike, removeLike } from '../../api/likes';
+import { addLike, getLikes, removeAllLike, removeLike } from '../../api/likes';
 import { FaHeart, FaRegHeart, FaEllipsisV } from 'react-icons/fa';
 import DeleteUpdateButton from './DeleteUpdateButton';
 import { openStoreModal, closeStoreModal } from '../../redux/modules/storeAddSlice';
 import SkeletonUi from '../shared/Loading/SkeletonUi/SkeletonUi';
 
-
 const PostItem = ({ post }) => {
   // user 정보
   const { user } = useSelector((state) => state.user);
+  const userId = user.userId;
   const storeModal = useSelector((state) => state.storeAddSlice);
   const dispatch = useDispatch();
-  const userId = user.userId;
-  // const [isOpen, setIsOpen] = useState(false);
+
+  const [likeProcessing, setLikeProcessing] = useState(false);
+
   const openUpdateModal = () => {
-    // setIsOpen(true);
     dispatch(openStoreModal(true));
   };
   const closeUpdateModal = () => {
     dispatch(closeStoreModal(false));
-    // setIsOpen(false);
   };
 
   const [openMenu, setOpenMenu] = useState(false);
@@ -42,22 +41,19 @@ const PostItem = ({ post }) => {
   const addLikeMutation = useMutation(addLike, {
     onSuccess: () => {
       queryClient.invalidateQueries(['likes', post.id]);
+      queryClient.invalidateQueries(['stores'], post.id);
+    },
+    onSettled: () => {
+      setLikeProcessing(false);
     }
   });
   const removeLikeMutation = useMutation(removeLike, {
     onSuccess: () => {
       queryClient.invalidateQueries(['likes', post.id]);
-    }
-  });
-  // 좋아요 수 카운트
-  const increaseLikeCountMutation = useMutation(increaseLikeCount, {
-    onSuccess: () => {
       queryClient.invalidateQueries(['stores'], post.id);
-    }
-  });
-  const decreaseLikeCountMutation = useMutation(decreaseLikeCount, {
-    onSuccess: () => {
-      queryClient.invalidateQueries(['stores'], post.id);
+    },
+    onSettled: () => {
+      setLikeProcessing(false);
     }
   });
   // 게시글 삭제 시, 해당 좋아요 문서 삭제
@@ -83,19 +79,21 @@ const PostItem = ({ post }) => {
 
   // 좋아요 버튼
   const handleLikeClick = () => {
+    if (likeProcessing) {
+      return;
+    }
+    setLikeProcessing(true);
     if (isLiked) {
       removeLikeMutation.mutate({ userId, storeId: post.id });
-      decreaseLikeCountMutation.mutate(post.id);
     } else {
       addLikeMutation.mutate({ userId, storeId: post.id });
-      increaseLikeCountMutation.mutate(post.id);
     }
   };
 
   return (
     <StCard key={post.id}>
       <Link to={`/store/${post.id}`} state={{ location: post.location }}>
-        <img src={post.image} />
+        <img src={post.image} alt={post.store} />
         <StCardContents className="contents">
           <span className="storeName">{post.store}</span>
           <p>{post.location}</p>
@@ -111,12 +109,13 @@ const PostItem = ({ post }) => {
       </Link>
       <StButtonContainer>
         {userId ? (
-          <StLikeButton onClick={handleLikeClick}>
+          <StLikeButton onClick={handleLikeClick} disabled={likeProcessing}>
             {isLiked ? <FaHeart size="25" color="#ce7777" /> : <FaRegHeart size="25" color="#ce7777" />}
           </StLikeButton>
         ) : (
           <StLikeButton disabled={true}></StLikeButton>
         )}
+
         <StLikeButton onClick={() => setOpenMenu(!openMenu)}>
           <FaEllipsisV size="20" color="#ce7777" display={userId ? 'display' : 'none'} />
         </StLikeButton>
