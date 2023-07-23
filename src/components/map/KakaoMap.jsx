@@ -11,6 +11,7 @@ import KakaoCustomInfo from './KakaoCustomInfo';
 import Button from './../shared/Button';
 import Loading from '../shared/Loading/Loading/Loading';
 import NotFound from '../shared/NotFound/NotFound';
+import { styled } from 'styled-components';
 
 function KakaoMap() {
   const { kakao } = window;
@@ -18,8 +19,7 @@ function KakaoMap() {
   const { isLoading, isError, data } = useQuery('stores', getStores);
   const mapRef = useRef(null);
   const [clickAddress, setClickAddress] = useState([]);
-  const [level, setLevel] = useState(14);
-
+  const [level, setLevel] = useState(13);
   // 이건 나중에 사용해서 맵 중앙을 바꿀 수 있는 useState 훅입니다.
   // 기본위치값은 강서구입니다.
   const [latitude, setLatitude] = useState(37.5543737621718);
@@ -65,6 +65,7 @@ function KakaoMap() {
     <>
       <Map
         ref={mapRef}
+        maxLevel={13}
         // 지도 확대 축소 키보드 이벤트
         keyboardShortcuts={true}
         onRightClick={(e, event) => {
@@ -75,9 +76,10 @@ function KakaoMap() {
           getCoor2Address(event.latLng.getLat(), event.latLng.getLng());
         }}
         center={{ lat: latitude, lng: longitude }}
-        style={{ width: '100%', height: '60vh', padding: '20px' }}
+        style={{ width: '100%', height: '100vh', padding: '20px' }}
         level={level}
       >
+        <StPGuide>마우스 우클릭을 클릭해 store을 추가해보세요</StPGuide>
         <MarkerClusterer
           // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
           averageCenter={true}
@@ -158,3 +160,11 @@ function KakaoMap() {
 }
 
 export default React.memo(KakaoMap);
+const StPGuide = styled.p`
+  position: absolute;
+  left: 60%;
+  z-index: 10;
+  background-color: var(--color_pink2);
+  padding: 5px 10px;
+  font-size: 14px;
+`;
