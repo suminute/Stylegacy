@@ -76,10 +76,10 @@ function KakaoMap() {
           getCoor2Address(event.latLng.getLat(), event.latLng.getLng());
         }}
         center={{ lat: latitude, lng: longitude }}
-        style={{ width: '100%', height: '100vh', padding: '20px' }}
+        style={{ width: '100%', height: '94vh', padding: '20px' }}
         level={level}
       >
-        <StPGuide>마우스 우클릭을 클릭해 store을 추가해보세요</StPGuide>
+        <StPGuide>마우스 우클릭을 해 store을 추가해보세요</StPGuide>
         <MarkerClusterer
           // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
           averageCenter={true}
