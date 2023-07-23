@@ -5,9 +5,12 @@ import Posts from './Posts';
 import SearchBar from '../shared/SearchBar';
 import { useDispatch, useSelector } from 'react-redux';
 import { openStoreModal } from '../../redux/modules/storeAddSlice';
+import AlertModal from '../shared/AlertModal';
+import { setAlertMessage, toggleAlertModal } from '../../redux/modules/modalSlice';
 
 const Mapcontents = () => {
   const user = useSelector(({ user }) => user.user);
+  const modals = useSelector((state) => state.modals);
   const dispatch = useDispatch();
   const openModal = () => {
     dispatch(openStoreModal({ type: 'add' }));
@@ -17,22 +20,32 @@ const Mapcontents = () => {
     if (user.userId) {
       openModal();
     } else {
-      window.alert('로그인 후 사용 가능합니다!');
+      dispatch(setAlertMessage('로그인 후 사용 가능합니다!'));
+      dispatch(toggleAlertModal());
     }
   };
 
   return (
-    <StDiv>
-      <Form>
-        <SearchBar size="small" />
-      </Form>
-      <Button className="addBTN" color="pink2" size="large" full onClick={onClickAddButton}>
-        장소 추가하기
-      </Button>
-      <StPostDiv>
-        <Posts />
-      </StPostDiv>
-    </StDiv>
+    <>
+      {modals.isAlertModalOpen && (
+        <AlertModal
+          message={modals.alertMessage}
+          isOpen={modals.isAlertModalOpen}
+          setIsOpen={() => dispatch(toggleAlertModal())}
+        />
+      )}
+      <StDiv>
+        <Form>
+          <SearchBar size="small" />
+        </Form>
+        <Button className="addBTN" color="pink2" size="large" full onClick={onClickAddButton}>
+          장소 추가하기
+        </Button>
+        <StPostDiv>
+          <Posts />
+        </StPostDiv>
+      </StDiv>
+    </>
   );
 };
 
