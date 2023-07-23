@@ -19,7 +19,7 @@ function KakaoMap() {
   const name = searchParams.get('name') || '';
   const page = searchParams.get('page') || 0;
   const { isLoading, isError, data } = useQuery({
-    queryKey: ['stores', +page],
+    queryKey: ['stores', name, +page],
     queryFn: () => searchStores(name, { page: +page }),
     keepPreviousData: true
   });
