@@ -36,3 +36,16 @@ button {
   font-weight: normal;
   font-style: normal;
 }
+
+/* 토글 버튼 클릭시 화면이 이동되면서,  */
+.toggle {
+  /* transform: translateX(-100px);
+   */
+  left: -600px !important;
+  & button {
+    background: none;
+  }
+}
+.toggleImg {
+  transform: rotate(180deg);
+}

@@ -1,12 +1,13 @@
 import { getStores, getStoresByIdArray } from '../../api/stores';
 import { useInfiniteQuery, useQuery, useQueryClient } from 'react-query';
 import PostItem from './postItem/PostItem';
-import Loading from '../shared/Loading/Loading/Loading';
 import NotFound from '../shared/NotFound/NotFound';
 import { useSearchParams } from 'react-router-dom';
 import { searchStores } from '../../algoiasearch';
 import useIntersect from '../../hooks/useIntersect';
 import { useEffect } from 'react';
+import SkeletonUi from '../shared/Loading/SkeletonUi/SkeletonUi';
+
 
 const Posts = () => {
   const [searchParams,setSearchParams] = useSearchParams();
@@ -31,7 +32,7 @@ const Posts = () => {
     setSearchParams({name,page})
   }
 
-  if (isLoading) return <Loading />;
+  if (isLoading) return <SkeletonUi />;
   if (isError) return <NotFound />;
   console.log(data)
 

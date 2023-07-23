@@ -18,10 +18,11 @@ const Search = () => {
   if (isLoading) return <Loading />;
   if (error) return <NotFound />;
   return (
-    <Container>
+    <Container style={{ height: 'calc(100vh - 75px)', overflow: 'hidden' }}>
       {isOpen && <StoreAddModal></StoreAddModal>}
-      <Mapcontents>
         {/* <div>
+      <Mapcontents style={{ position: 'absolute !important', top: '0', left: '0' }}>
+        <div>
           {data.length > 0 &&
             data.map((place) => (
               <li key={place.id}>
@@ -30,7 +31,7 @@ const Search = () => {
             ))}
         </div> */}
       </Mapcontents>
-      <KakaoMap />
+      <KakaoMap style={{ position: 'absolute', top: '0', left: '0' }} />
     </Container>
   );
 };
@@ -38,5 +39,6 @@ const Search = () => {
 export default Search;
 
 const Container = styled.div`
+  position: relative;
   display: flex;
 `;
