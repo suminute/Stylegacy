@@ -94,11 +94,7 @@ const StoreAddModal = () => {
     } else if (checkedDay.length === 0) {
       return null;
     } else {
-      const closeDay = days.map((day, index) => {
-        if (!checkedDay.includes(index)) {
-          return day;
-        } else return false;
-      });
+      const closeDay = days.filter((day, index) => !checkedDay.includes(index));
       return `휴무일 ${closeDay.join().replaceAll(',', '')}`;
     }
   };
