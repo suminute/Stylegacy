@@ -1,4 +1,5 @@
 body {
+  position: relative;
   margin: 0;
   font-family: 'Noto Sans KR', sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -27,4 +28,24 @@ a:link {
 /* 기본적으로 버튼은 커서가 포인트가되는 클래스 */
 button {
   cursor: pointer;
+}
+
+@font-face {
+  font-family: 'GmarketSansMedium';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* 토글 버튼 클릭시 화면이 이동되면서,  */
+.toggle {
+  /* transform: translateX(-100px);
+   */
+  left: -600px !important;
+  & button {
+    background: none;
+  }
+}
+.toggleImg {
+  transform: rotate(180deg);
 }

@@ -15,6 +15,12 @@ const firebaseConfig = {
   storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
   messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
   appId: process.env.REACT_APP_APP_ID
+  // apiKey: 'AIzaSyD4M4AAURg5jTeeCGfB8T4L1JgPUPKiT48',
+  // authDomain: 'stylegacy-e4ba6.firebaseapp.com',
+  // projectId: 'stylegacy-e4ba6',
+  // storageBucket: 'stylegacy-e4ba6.appspot.com',
+  // messagingSenderId: '945307463920',
+  // appId: '1:945307463920:web:8211831d5ff9a001a21235'
 };
 
 // Initialize Firebase
@@ -22,3 +28,4 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
+export const apiKey = firebaseConfig.apiKey;

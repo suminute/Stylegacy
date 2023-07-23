@@ -1,6 +1,5 @@
 import React from 'react';
 import { styled, css } from 'styled-components';
-import './../color.css';
 const Button = ({ onClick, color, full, size, children, ...props }) => {
   return (
     <StButton onClick={onClick} color={color} size={size} full={full ? 'true' : 'false'} {...props}>
@@ -18,7 +17,8 @@ const StButton = styled.button`
   border: none;
   border-radius: 8px;
   padding: 0.1rem;
-
+  white-space: nowrap;
+  transition: all 0.3s ease-in-out;
   ${({ color }) =>
     color === 'pink1' &&
     css`
@@ -45,6 +45,13 @@ const StButton = styled.button`
     css`
       background-color: var(--color_navy);
       color: var(--color_white);
+    `}
+
+    ${({ color }) =>
+    color === 'gray1' &&
+    css`
+      background-color: var(--color_gray1);
+      color: var(--color_black);
     `}
 
   ${(props) =>
@@ -78,10 +85,9 @@ const StButton = styled.button`
       padding: 0 1rem;
       margin: 10px auto;
     `}
+    ${({ disabled }) =>
+    disabled === true &&
+    css`
+      background-color: var(--color_gray2);
+    `}
 `;
-// 사용방식
-{
-  /* <Button color='pink2' size="large" full>
-        버튼입니다
-      </Button> */
-}
