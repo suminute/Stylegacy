@@ -11,7 +11,6 @@ const storeAddSlice = createSlice({
   reducers: {
     openStoreModal: (state, action) => {
       if (action.payload.clickLocation) {
-        console.log('payload', action.payload);
         const isOpen = true;
         const clickLocation = action.payload.clickLocation;
         const type = action.payload.type;

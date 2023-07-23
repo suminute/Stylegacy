@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { css, styled } from 'styled-components';
+import { styled } from 'styled-components';
 import Button from '../shared/Button';
 import { useMutation, useQueryClient } from 'react-query';
 import { storageUpload, updateStore } from '../../api/stores';
@@ -16,10 +16,10 @@ export const PORTAL_MODAL = 'portal-root';
 const StoreUpdateModal = () => {
   const { isOpenUpdate, post, isLoading } = useSelector((state) => state.storeUpdateSlice);
   const [disabled, setDisabled] = useState(true);
-  const [store, storeHandler, setStore] = useInput(post.store);
+  const [store, storeHandler] = useInput(post.store);
   const [openTime, openTimeHandler, setOpenTime] = useInput('');
   const [closeTime, closeTimeHandler, setCloseTime] = useInput('');
-  const [location, locationHandler, setLocation] = useInput(post.location);
+  const [location, locationHandler] = useInput(post.location);
   const [phoneNumber, phoneNumberHandler, setPhoneNumber] = useInput('');
   const [site, siteHandler, setSite] = useInput('');
   const [checkItems, setCheckItems] = useState(new Set());
@@ -45,7 +45,7 @@ const StoreUpdateModal = () => {
       setCloseTime('');
     }
     if (post.checkedDay) {
-      post.checkedDay.map((day) => {
+      post.checkedDay.forEach((day) => {
         checkItems.add(day);
       });
       setCheckItems(checkItems);
@@ -130,11 +130,7 @@ const StoreUpdateModal = () => {
     } else if (checkedDay.length === 0) {
       return null;
     } else {
-      const closeDay = days.map((day, index) => {
-        if (!checkedDay.includes(index)) {
-          return day;
-        }
-      });
+      const closeDay = days.filter((day, index) => !checkedDay.includes(index));
       return `휴무일 ${closeDay.join().replaceAll(',', '')}`;
     }
   };
@@ -166,22 +162,6 @@ const StoreUpdateModal = () => {
     setImgSrc(basicImgURL);
     setSelectedFile(null);
   };
-
-  // => 주소를 받아서 위도 경도 변환후 => setLatLng 으로 담음
-  // const geocoder = new window.kakao.maps.services.Geocoder();
-
-  // const changeAddress = (location) => {
-  //   return new Promise((resolve, reject) => {
-  //     geocoder.addressSearch(location, (result, status) => {
-  //       if (status === window.kakao.maps.services.Status.OK) {
-  //         console.log(result[0]);
-  //         resolve(result[0]);
-  //       } else {
-  //         reject('Failed to get address');
-  //       }
-  //     });
-  //   });
-  // };
 
   if (isLoading) return <div>로딩중...</div>;
 
@@ -395,6 +375,7 @@ const StImagePreview = styled.div`
 `;
 
 const Inner = styled.form`
+  max-height: 750px;
   display: flex;
   flex-direction: column;
   justify-items: center;
@@ -403,5 +384,7 @@ const Inner = styled.form`
   background-color: white;
   border-radius: 10px;
   overflow: scroll;
-  max-height: 930px;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;

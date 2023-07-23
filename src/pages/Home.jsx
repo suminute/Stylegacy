@@ -10,7 +10,6 @@ const Home = () => {
           <StTitleDiv>Find</StTitleDiv>
           <StTitleDiv>the store you want</StTitleDiv>
           <SearchBar size="large" />
-          {/* <Button style={{margin:0}} type="submit" size='large' color='navy'>Search</Button> */}
         </Stdiv>
       </StFormInner>
     </StPageContainer>

@@ -43,7 +43,6 @@ const storageUpload = async ({ id, selectedFile }) => {
 };
 
 const getStoresByIdArray = async (idArray) => {
-  // console.log('idArray', idArray);
   if (!idArray || idArray.length < 1) return [];
   const q = query(collection(db, 'stores'), where(documentId(), 'in', idArray));
   const querySnapshot = await getDocs(q);
@@ -51,7 +50,6 @@ const getStoresByIdArray = async (idArray) => {
   querySnapshot.forEach((doc) => {
     stores.push({ id: doc.id, ...doc.data() });
   });
-  // console.log('stores', stores);
   return stores.sort((a, b) => b.createdAt - a.createdAt);
 };
 

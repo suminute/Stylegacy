@@ -52,7 +52,6 @@ export const getCurrentUser = async () => {
 // 프로필 수정 시 user 데이터 변경
 export const updateUser = async (updatedUser) => {
   // uid 가져오기
-  console.log(updatedUser);
   const user = auth.currentUser;
   if (!user) throw new Error('로그인 상태가 아닙니다');
   const { uid } = user;

@@ -1,28 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { css, styled } from 'styled-components';
+import { styled } from 'styled-components';
 import Button from '../shared/Button';
 import { useMutation, useQueryClient } from 'react-query';
-import { addStore, storageUpload, updateStore } from '../../api/stores';
+import { addStore } from '../../api/stores';
 import useInput from '../../hooks/useInput';
 import Checkbox from './Checkbox';
 import { useDispatch, useSelector } from 'react-redux';
 import { createPortal } from 'react-dom';
-import { openStoreModal, closeStoreModal } from '../../redux/modules/storeAddSlice';
+import { closeStoreModal } from '../../redux/modules/storeAddSlice';
 import AlertModal from '../shared/AlertModal';
-import { setAlertMessage, toggleAlertModal } from '../../redux/modules/modalSlice';
+import { toggleAlertModal } from '../../redux/modules/modalSlice';
 
 export const PORTAL_MODAL = 'portal-root';
 
-const StoreAddModal = ({}) => {
+const StoreAddModal = () => {
   const [disabled, setDisabled] = useState(true);
-  const [store, storeHandler, setStore] = useInput('');
-  const [openTime, openTimeHandler, setOpenTime] = useInput('');
-  const [closeTime, closeTimeHandler, setCloseTime] = useInput('');
+  const [store, storeHandler] = useInput('');
+  const [openTime, openTimeHandler] = useInput('');
+  const [closeTime, closeTimeHandler] = useInput('');
   const [location, locationHandler, setLocation] = useInput('');
   const [checkItems, setCheckItems] = useState(new Set());
-
-  // const [newStoreAdded, setNewStoreAdded] = useState(false);
-
 
   const days = ['월', '화', '수', '목', '금', '토', '일'];
   const basicImgURL = 'https://github.com/suminute/Stylegacy/assets/92218638/9824667b-e8b9-4a4e-a271-a9d3d8341089';
@@ -42,7 +39,7 @@ const StoreAddModal = ({}) => {
     } else if (!location) {
       setDisabled(true);
     }
-  }, [location, store]);
+  }, [location, store, clickLocation]);
 
   // 쿼리
   const queryClient = useQueryClient();
@@ -51,21 +48,6 @@ const StoreAddModal = ({}) => {
       queryClient.invalidateQueries('stores');
     }
   });
-  // const addMutation = useMutation(addStore, {
-  //   onSuccess: () => {
-  //     setNewStoreAdded(true);
-  //   },
-  // });
-  // useEffect(() => {
-  //   if (newStoreAdded) {
-  //     const currentPage = queryClient.getQueryData(['stores', page]);
-  //     queryClient.invalidateQueries(['stores', currentPage]);
-  //     setNewStoreAdded(false);  // reset the flag
-  //   }
-  // }, [newStoreAdded]);
-  
-  
-  
 
   // 저장 버튼
   const addButtonHandler = async (e) => {
@@ -115,7 +97,7 @@ const StoreAddModal = ({}) => {
       const closeDay = days.map((day, index) => {
         if (!checkedDay.includes(index)) {
           return day;
-        }
+        } else return false;
       });
       return `휴무일 ${closeDay.join().replaceAll(',', '')}`;
     }
@@ -128,7 +110,6 @@ const StoreAddModal = ({}) => {
     return new Promise((resolve, reject) => {
       geocoder.addressSearch(location, (result, status) => {
         if (status === window.kakao.maps.services.Status.OK) {
-          console.log(result[0]);
           resolve(result[0]);
         } else {
           reject('Failed to get address');

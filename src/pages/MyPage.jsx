@@ -11,7 +11,6 @@ import { togglePasswordModal, toggleProfileModal } from '../redux/modules/modalS
 import Loading from '../components/shared/Loading/Loading/Loading';
 import NotFound from '../components/shared/NotFound/NotFound';
 
-
 const MyPage = () => {
   const { userName, userEmail } = useSelector(({ user }) => user.user);
 
@@ -20,10 +19,8 @@ const MyPage = () => {
 
   const user = useQuery({ queryKey: ['myPage'], queryFn: getCurrentUser });
   const likedStores = useQuery({ queryKey: ['likedStores'], queryFn: getLikedStoresByUser });
-  console.log(likedStores.data);
   if (user.isLoading) return <Loading />;
   if (user.isError) return <NotFound />;
-
 
   return (
     <Container>

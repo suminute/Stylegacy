@@ -86,7 +86,6 @@ const SignUpModal = ({ isOpen, setIsOpen }) => {
         userId: user.uid,
         userImage: ''
       };
-      console.log('newUser', newUser);
       // react-query로 users 컬렉션에 추가함
       addUserMutation.mutate(newUser);
       dispatch(setAlertMessage('회원가입에 성공하였습니다.'));

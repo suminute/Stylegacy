@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { styled } from 'styled-components';
 import Button from '../shared/Button';
 import Posts from './Posts';
@@ -90,9 +90,7 @@ const StToggleBtnBox = styled.div`
     background: none;
   }
 `;
-const StToggleBtn = styled.div`
-  position: relative;
-`;
+
 const StDiv = styled.div`
   position: relative;
   bottom: 0;
@@ -123,7 +121,6 @@ const StDiv = styled.div`
 const Form = styled.div`
   display: flex;
   justify-content: center;
-  gap: 10px;
   padding: 20px 30px;
   & input:focus {
     outline: none;
@@ -132,5 +129,4 @@ const Form = styled.div`
 
 const StPostDiv = styled.div`
   display: grid;
-  margin-top: 20px;
 `;

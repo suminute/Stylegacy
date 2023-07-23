@@ -5,7 +5,7 @@ import { useQuery } from 'react-query';
 
 const ProfileAvatar = ({ width = 100, height = 100, src, ...props }) => {
   const [imageUrl, setImageUrl] = useState('');
-  const { isLoading, error, data } = useQuery(['profileAvatar'], () => getDefaultProfileImageUrl(), {
+  const { isLoading, data } = useQuery(['profileAvatar'], () => getDefaultProfileImageUrl(), {
     staleTime: Infinity
   });
 
@@ -24,7 +24,6 @@ const ProfileAvatar = ({ width = 100, height = 100, src, ...props }) => {
   if (isLoading) return null;
   return (
     <ProfileImage
-      onLoad={() => console.log('onLoad', src)}
       width={`${width}`}
       height={`${height}`}
       src={imageUrl}

@@ -3,10 +3,10 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { deleteStore } from '../../../api/stores';
 import { styled } from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
-import { addLike, decreaseLikeCount, getLikes, increaseLikeCount, removeAllLike, removeLike } from '../../../api/likes';
+import { addLike, getLikes, removeAllLike, removeLike } from '../../../api/likes';
 import { FaHeart, FaRegHeart, FaEllipsisV } from 'react-icons/fa';
 import { openStoreUpdateModal } from '../../../redux/modules/storeUpdateSlice';
-import Loading from './../../shared/Loading';
+import Loading from './../../shared/Loading/Loading/Loading';
 
 const PostItemButtons = ({ post }) => {
   const queryClient = useQueryClient();

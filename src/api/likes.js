@@ -80,7 +80,6 @@ export const getLikedStoresByUser = async () => {
   const results = [];
   for (const storeId of storesList) {
     const storeSnap = await getDoc(doc(db, 'stores', storeId));
-    console.log(storeSnap);
     if (storeSnap.exists())
       results.push({
         id: storeSnap.id,

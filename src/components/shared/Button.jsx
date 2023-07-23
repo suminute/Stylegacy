@@ -91,8 +91,3 @@ const StButton = styled.button`
       background-color: var(--color_gray2);
     `}
 `;
-// 사용방식
-
-/* <Button color='pink2' size="large" full>
-        버튼입니다
-      </Button> */

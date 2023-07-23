@@ -13,12 +13,9 @@ const SearchBar = ({ size, ...props }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(location)
     if (location.pathname === '/search') {
-      alert('search')
       return setSearchParams({ name: searchText });
     }
-    alert('navigate')
     return navigate(`/search?name=${searchText}`);
   };
 

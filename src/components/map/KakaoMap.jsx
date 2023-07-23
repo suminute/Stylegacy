@@ -1,12 +1,9 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { Map, MapInfoWindow, MapMarker, ZoomControl, CustomOverlayMap, MarkerClusterer } from 'react-kakao-maps-sdk';
-import { useQuery, useQueryClient } from 'react-query';
-import { getStores } from '../../api/stores';
+import { Map, MapMarker, ZoomControl, MarkerClusterer } from 'react-kakao-maps-sdk';
+import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
-import { markerAddress } from '../../redux/modules/mapSlice';
 import heartMarkerNavy from '../../images/heart_marker_navy.svg';
-import toggleSlice, { toggleMap } from '../../redux/modules/toggleSlice';
-import { openMarkerStoreModal, openStoreModal } from '../../redux/modules/storeAddSlice';
+import { openStoreModal } from '../../redux/modules/storeAddSlice';
 import KakaoCustomInfo from './KakaoCustomInfo';
 import Button from './../shared/Button';
 import Loading from '../shared/Loading/Loading/Loading';
@@ -15,48 +12,34 @@ import { useSearchParams } from 'react-router-dom';
 import { searchStores } from '../../algoiasearch';
 import { styled } from 'styled-components';
 
-
 function KakaoMap() {
   const { kakao } = window;
   const [post, setPost] = useState([]);
-  const [searchParams,setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const name = searchParams.get('name') || '';
   const page = searchParams.get('page') || 0;
-  const queryClient = useQueryClient();
-  const {
-    isLoading,
-    isError,
-    error,
-    data,
-    isFetching,
-    isPreviousData,
-  } = useQuery({
+  const { isLoading, isError, data } = useQuery({
     queryKey: ['stores', +page],
-    queryFn: () => searchStores(name,{page: +page}),
-    keepPreviousData : true
-  })
+    queryFn: () => searchStores(name, { page: +page }),
+    keepPreviousData: true
+  });
   const mapRef = useRef(null);
   const [clickAddress, setClickAddress] = useState([]);
-  const [level, setLevel] = useState(12);
   // 이건 나중에 사용해서 맵 중앙을 바꿀 수 있는 useState 훅입니다.
   // 기본위치값은 강서구입니다.
   const [latitude, setLatitude] = useState(37.5543737621718);
   const [longitude, setLongitude] = useState(126.83326640676);
-  const [positionList, setPositionList] = useState([]);
   const [position, setPosition] = useState('');
 
   // 커스텀 인포박스 토글부분입니다.
-  const toggleSelector = useSelector((state) => state.toggleSlice);
   const dispatch = useDispatch();
   const { lat, lng } = position;
-  const [toggleCustom, setToggleCustom] = useState({ ...toggleSelector, render: 0 });
   const user = useSelector(({ user }) => user.user);
 
-  const [test, setTest] = useState('');
   useEffect(() => {
-    if(isLoading)return
-    setPost(data.stores);
-  }, [isLoading,data]);
+    if (isLoading) return;
+    setPost((prev) => data.stores);
+  }, [isLoading, data]);
 
   // 지도 클릭시 주소, 정보를 출력합니다
   const getCoor2Address = useCallback(
@@ -95,9 +78,9 @@ function KakaoMap() {
         }}
         center={{ lat: latitude, lng: longitude }}
         style={{ width: '100%', height: '94vh', padding: '20px' }}
-        level={level}
+        level={12}
       >
-        <StPGuide>마우스 우클릭을 해 store을 추가해보세요</StPGuide>
+        <StPGuide>마우스 우클릭하여 store을 추가해보세요</StPGuide>
         <MarkerClusterer
           // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
           averageCenter={true}

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { styled } from 'styled-components';
 import Button from '../shared/Button';
-import { uploadProfileImage, updateUser, getUsers } from '../../api/users';
+import { uploadProfileImage, updateUser, getCurrentUser } from '../../api/users';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import ProfileAvatar from './ProfileAvatar';
@@ -40,14 +40,12 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
 
   // 로그인한 userId
   const { user } = useSelector((state) => state.user);
-  const data = user;
-  const userId = user.userId;
+  const userData = user;
 
   // DB의 users 컬렉션에서 모든 user 정보 가져와서 -> 로그인한 userId에 해당하는 값만 담기
-  const { isLoading, error, data: allUsers } = useQuery(['users'], getUsers);
-  const userData = allUsers?.find((user) => user.userId === userId);
+  const { isLoading, error, data } = useQuery(['users'], getCurrentUser);
 
-  const [name, setName] = useState(data?.userName ?? '');
+  const [name, setName] = useState(userData?.userName ?? '');
   const [checkName, setCheckName] = useState(false);
   const [profileImage, setProfileImage] = useState('');
   const [profileImageFile, setProfileImageFile] = useState(null);
@@ -62,8 +60,8 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
 
   // 수정 모달 처음 열렸을 때, 초기 사용자 이름이 유효한지 확인
   useEffect(() => {
-    nameCheck(data?.userName);
-  }, [data?.userName, nameCheck]);
+    nameCheck(userData?.userName);
+  }, [userData?.userName, nameCheck]);
 
   // input 관리
   const nameController = (e) => {
@@ -78,7 +76,7 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
     e.preventDefault();
     try {
       const updatedUser = {};
-      if (name !== data?.userName) {
+      if (name !== userData?.userName) {
         updatedUser.userName = name;
       }
       if (isResetProfileImage) updatedUser.userImage = '';
@@ -179,7 +177,7 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
                   name="name"
                   value={name}
                   onChange={nameController}
-                  placeholder={data?.userName}
+                  placeholder={userData?.userName}
                   autoFocus
                 />
                 {checkName === true ? (

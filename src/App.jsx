@@ -5,6 +5,10 @@ import { useEffect } from 'react';
 import { getUser } from './redux/modules/userSlice';
 
 function App() {
+  console.log(
+    '%c StyLEgacy   ',
+    'background: #2B3A55; font-size: 40px; font-weight: bold; color: #E8C4C4; text-shadow: 2px 2px 4px #CE7777;'
+  );
   const dispatch = useDispatch();
 
   // 로그인 세션 유지

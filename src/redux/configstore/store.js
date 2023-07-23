@@ -14,7 +14,8 @@ const store = configureStore({
     storeAddSlice,
     modals,
     storeUpdateSlice
-  }
+  },
+  devTools: process.env.NODE_ENV !== 'production'
 });
 
 export default store;

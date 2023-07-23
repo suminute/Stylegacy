@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { styled } from 'styled-components';
 import { Link } from 'react-router-dom';
 import { FaHeart } from 'react-icons/fa';
@@ -8,7 +8,7 @@ const PostItem = ({ post }) => {
   return (
     <StCard key={post.id}>
       <Link to={`/store/${post.id}`} state={{ location: post.location }}>
-        <img src={post.image} />
+        <img src={post.image} alt={post.store} />
         <StCardContents className="contents">
           <span className="storeName">{post.store}</span>
           <p>{post.location}</p>
@@ -30,7 +30,8 @@ const PostItem = ({ post }) => {
 export default PostItem;
 
 const StCard = styled.div`
-  padding: 20px 10px;
+  padding: 10px 10px;
+  margin-top: 10px;
   display: grid;
   grid-template-columns: 1fr 100px;
 

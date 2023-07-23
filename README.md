@@ -1,10 +1,18 @@
 # STYLEGACY
 
-프로젝트 설명...
+`Style`과 `Legacy`의 합성어로, 패션과 스타일 분야에서 다양한 브랜드들을 유산처럼 보존하고, 사용자들에게 지도정보와 함께 실시간으로 전해주는 플랫폼입니다. 사용자들이 언제나 브랜드에 대한 최신 정보를 얻을 수 있도록 합니다.
 
-## 디자이너 브랜드 및 편집샵 위치 정보 제공
+## 주요 기능과 특징
 
-react-toolkit, react-query, firebase를 이용한 웹앱 구현
+- `react-toolkit, react-query, firebase를 이용한 웹앱 구현`
+
+- `디자이너 브랜드 및 편집샵 위치 정보 제공`
+
+  지도를 활용하여 사용자들에게 주변에 위치한 다양한 디자이너 브랜드와 편집샵을 보여줍니다. 실시간으로 지도 정보를 업데이트하여 사용자들이 쉽고 편리하게 원하는 스타일을 찾을 수 있습니다.
+
+- `브랜드 리뷰`
+
+  사용자들이 실시간으로 리뷰와 평가를 함께 남길 수 있어서 다른 사용자들에게 신뢰성 있는 정보를 얻을 수 있도록 돕습니다.
 
 ## install
 
@@ -110,3 +118,20 @@ const addPost = () => {};
   transition: 300ms;
 }
 ```
+
+## 구현 기능
+
+1. 메인페이지
+
+   ![image](https://github.com/suminute/Stylegacy/assets/92218638/dae2f489-036e-4897-8ee0-9e1a55834493)
+
+2. 로그인 / 회원가입
+
+- 로그인
+  ![image](https://github.com/suminute/Stylegacy/assets/92218638/db76ac92-5ca3-4a8b-839e-319a4281ab3f)
+- 회원가입
+  ![image](https://github.com/suminute/Stylegacy/assets/92218638/e4dfbcde-0969-48b5-9f4b-705555a3fa10)
+
+3. 검색 페이지
+
+4. 게시물 상세페이지
