@@ -78,7 +78,6 @@ const SignUpModal = ({ isOpen, setIsOpen }) => {
     e.preventDefault();
     try {
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
-      console.log('회원가입한 유저', user);
       await updateProfile(auth.currentUser, { displayName: name });
       const newUser = {
         userEmail: email,

@@ -1,4 +1,4 @@
-import { addDoc, collection, getDocs, query, where, doc, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, getDocs, query, where, updateDoc } from 'firebase/firestore';
 import { auth, db, storage } from '../firebase';
 import shortid from 'shortid';
 import { ref, uploadBytes, getDownloadURL } from '@firebase/storage';

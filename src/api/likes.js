@@ -1,16 +1,4 @@
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  doc,
-  setDoc,
-  deleteDoc,
-  getDoc,
-  updateDoc,
-  writeBatch,
-  runTransaction
-} from 'firebase/firestore';
+import { collection, getDocs, query, where, doc, getDoc, writeBatch, runTransaction } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 
 // 각 user의 좋아요 클릭 여부 handle
