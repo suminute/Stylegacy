@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import MarkerRed from '../../images/footprint_marker_red.svg';
+import footMarkerRed from '../../images/footprint_marker_red.svg';
+import footMarkerPink from '../../images/footprint_marker_pink.svg';
 import { MapMarker, useMap } from 'react-kakao-maps-sdk';
 import { useNavigate } from 'react-router-dom';
 import { styled } from 'styled-components';
@@ -8,20 +9,24 @@ import Button from './../shared/Button';
 function KakaoCustomInfo({ setLatitude, setLongitude, data }) {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const map = useMap();
   return (
     <>
       <MapMarker
-        onClick={() => {
+        onClick={(marker) => {
+          map.panTo(marker.getPosition());
           isOpen === false ? setIsOpen(true) : setIsOpen(false);
-
-          setLatitude(+data.marker.y);
-          setLongitude(+data.marker.x);
         }}
+        // onClick={() => {
+        //   isOpen === false ? setIsOpen(true) : setIsOpen(false);
+        //   setLatitude(+data.marker.y);
+        //   setLongitude(+data.marker.x);
+        // }}
         clickable={true}
         key={data.id}
         position={{ lat: data.marker.y, lng: data.marker.x }}
         image={{
-          src: MarkerRed,
+          src: isOpen ? footMarkerRed : footMarkerPink,
           size: {
             width: 64,
             height: 69
