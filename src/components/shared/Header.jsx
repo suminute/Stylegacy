@@ -32,6 +32,7 @@ const Header = () => {
     } catch (error) {
       console.log('error', error);
     }
+    navigate('/');
   };
 
   const goToMyPage = () => {

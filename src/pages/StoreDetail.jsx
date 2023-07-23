@@ -101,7 +101,9 @@ const StoreDetail = () => {
           <StStore>
             <StStoreCol>
               <StoreImage src={data.image} alt={data.store} width="500" height="625" />
-              <StoreButton to={data.site || '#'}>{data.site ? '웹 사이트' : '웹 사이트가 없습니다'}</StoreButton>
+              <StoreButton target="_blank" href={data.site || null}>
+                {data.site ? '웹 사이트' : '웹 사이트가 없습니다'}
+              </StoreButton>
             </StStoreCol>
             <StStoreCol>
               <StStoreInfo>
@@ -197,7 +199,7 @@ const StCommentsCount = styled.span`
   font-weight: 900;
 `;
 
-const StoreButton = styled(Link)`
+const StoreButton = styled.a`
   text-align: center;
   padding: 0.6em;
   font-size: 1.5rem;
