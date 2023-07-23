@@ -9,6 +9,7 @@ import AlertModal from '../shared/AlertModal';
 import { setAlertMessage, toggleAlertModal } from '../../redux/modules/modalSlice';
 
 import svgImg from '../../images/Back To.svg';
+import { FaChevronCircleLeft } from 'react-icons/fa';
 
 const Mapcontents = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -56,7 +57,14 @@ const Mapcontents = () => {
               setIsOpen((prev) => !isOpen);
             }}
           >
-            <img className={isOpen ? 'toggleImg' : null} src={svgImg} alt="버튼 이미지" />
+            {/* <Svg style={{ fill: 'red' }}  src={svgImg} alt="버튼 이미지" /> */}
+            {
+              <FaChevronCircleLeft
+                className={isOpen ? 'toggleImg' : null}
+                size="30"
+                color="#CE7777"
+              ></FaChevronCircleLeft>
+            }
           </button>
         </StToggleBtnBox>
       </StLeftBox>
@@ -65,6 +73,11 @@ const Mapcontents = () => {
 };
 
 export default React.memo(Mapcontents);
+
+const Svg = styled.img`
+  fill: red;
+  /* filter: invert(16%) sepia(89%) saturate(6054%) hue-rotate(358deg) brightness(97%) contrast(113%); */
+`;
 const StLeftBox = styled.div`
   position: absolute;
   left: 0;
