@@ -5,7 +5,10 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
+#root {
+  height: 100vh;
+  overflow: hidden;
+}
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
@@ -35,4 +38,12 @@ button {
   src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
   font-weight: normal;
   font-style: normal;
+}
+
+/* 토글 버튼 클릭시 화면이 이동되면서,  */
+.toggle {
+  transform: translateX(-600px);
+}
+.toggleImg {
+  transform: rotate(180deg);
 }
