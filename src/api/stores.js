@@ -43,15 +43,16 @@ const storageUpload = async ({ id, selectedFile }) => {
 };
 
 const getStoresByIdArray = async (idArray) => {
-  if (idArray.length < 1) return [];
+  // console.log('idArray', idArray);
+  if (!idArray || idArray.length < 1) return [];
   const q = query(collection(db, 'stores'), where(documentId(), 'in', idArray));
   const querySnapshot = await getDocs(q);
   const stores = [];
   querySnapshot.forEach((doc) => {
     stores.push({ id: doc.id, ...doc.data() });
   });
-  console.log(stores);
-  return stores;
+  // console.log('stores', stores);
+  return stores.sort((a, b) => b.createdAt - a.createdAt);
 };
 
 export { getStores, addStore, deleteStore, updateStore, storageUpload, getStoresByIdArray };

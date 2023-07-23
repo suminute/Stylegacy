@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Map, MapInfoWindow, MapMarker, ZoomControl, CustomOverlayMap, MarkerClusterer } from 'react-kakao-maps-sdk';
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import { getStores } from '../../api/stores';
 import { useDispatch, useSelector } from 'react-redux';
 import { markerAddress } from '../../redux/modules/mapSlice';
@@ -11,11 +11,28 @@ import KakaoCustomInfo from './KakaoCustomInfo';
 import Button from './../shared/Button';
 import Loading from '../shared/Loading/Loading/Loading';
 import NotFound from '../shared/NotFound/NotFound';
+import { useSearchParams } from 'react-router-dom';
+import { searchStores } from '../../algoiasearch';
 
 function KakaoMap() {
   const { kakao } = window;
   const [post, setPost] = useState([]);
-  const { isLoading, isError, data } = useQuery('stores', getStores);
+  const [searchParams,setSearchParams] = useSearchParams();
+  const name = searchParams.get('name') || '';
+  const page = searchParams.get('page') || 0;
+  const queryClient = useQueryClient();
+  const {
+    isLoading,
+    isError,
+    error,
+    data,
+    isFetching,
+    isPreviousData,
+  } = useQuery({
+    queryKey: ['stores', +page],
+    queryFn: () => searchStores(name,{page: +page}),
+    keepPreviousData : true
+  })
   const mapRef = useRef(null);
   const [clickAddress, setClickAddress] = useState([]);
   const [level, setLevel] = useState(14);
@@ -36,8 +53,9 @@ function KakaoMap() {
 
   const [test, setTest] = useState('');
   useEffect(() => {
-    setPost(data);
-  }, [data]);
+    if(isLoading)return
+    setPost(data.stores);
+  }, [isLoading,data]);
 
   // 지도 클릭시 주소, 정보를 출력합니다
   const getCoor2Address = useCallback(
@@ -60,7 +78,6 @@ function KakaoMap() {
 
   if (isLoading) return <Loading />;
   if (isError) return <NotFound />;
-
   return (
     <>
       <Map

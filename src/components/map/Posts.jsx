@@ -9,73 +9,40 @@ import useIntersect from '../../hooks/useIntersect';
 import { useEffect } from 'react';
 
 const Posts = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams,setSearchParams] = useSearchParams();
   const name = searchParams.get('name') || '';
+  const page = searchParams.get('page') || 0;
   const queryClient = useQueryClient();
-  const { 
+  const {
     isLoading,
-    status,
+    isError,
     error,
     data,
-    hasNextPage,
-    fetchNextPage,
     isFetching,
-  } = useInfiniteQuery(['searchResult',name], 
-  ({pageParam=0}) => searchStores(name,{page:pageParam}),
-  {
-    onSuccess:(data)=>{console.log('onSuccess',data)},
-    getNextPageParam:(lastPage, pages) => {
-      return lastPage.page < lastPage.nbPages-1 ? lastPage.page+1 : undefined
-    }
-  });
-
-  const idArray = data?.pages.map(page=> page.hits.map(hit=>hit.objectID));
-  console.log('idArray',idArray)
-  const stores = useInfiniteQuery('stores', 
-  ({pageParam=0}) => getStoresByIdArray(idArray[pageParam]),
-  { 
-    onSuccess:(data)=>console.log('stores',data), 
-    enabled: !!(idArray?.length>0),
-    getNextPageParam:(lastPage, pages) => {
-      console.log(lastPage,pages)
-      return pages.length < data.pages.length ? pages.length : undefined
-    }
-  });
-  
-  const ref = useIntersect(async (entry, observer) => {
-    observer.unobserve(entry.target)
-    console.log('entry',entry)
-    if (hasNextPage && !isFetching) {
-      console.log('fetch next page')
-      fetchNextPage()
-    }
+    isPreviousData,
+  } = useQuery({
+    queryKey: ['stores', +page],
+    queryFn: () => searchStores(name,{page: +page}),
+    keepPreviousData : true
   })
 
-  useEffect(() => {
-    if(isLoading || stores.error) return
-    if(!stores.data) {
-       console.log('refetch',isLoading,stores.data)
-      stores.refetch()
-    } else {
-      if(data.pages.length > stores.data.pages.length)
-      stores.fetchNextPage()
-    }
-  },[isLoading,stores,data])
 
+  const handleChangePage = (page) => {
+    setSearchParams({name,page})
+  }
 
-  if (status==='loading' ||  stores.status==='loading') return <Loading />;
-  if (error || stores.status === 'error') return <NotFound />;
+  if (isLoading) return <Loading />;
+  if (isError) return <NotFound />;
+  console.log(data)
+
   return (
     <>
-    <button onClick={()=>{console.log('invalid');queryClient.invalidateQueries('stores')}}>stores invalid</button>
-      {stores?.data?.pages &&
-      stores?.data?.pages.map((page, pageIndex)=>{
-        return page.map((post,itemIndex) => {
-          return <PostItem key={post.id} post={post} />;
-        })
-      })
-      }
-      {hasNextPage&& !isFetching && <div ref={ref}>next</div>}
+      {data.hasPrevPage && <button onClick={()=>handleChangePage(+page - 1)}>Prev</button>}
+      {data.hasNextPage && <button onClick={()=>handleChangePage(+page + 1)}>Next</button>}
+    {data?.stores.map((store,i) => (
+      <PostItem key={i} post={store} />
+      // <li>{store.location}: {store.store}</li>
+    ))}
     </>
   );
 };

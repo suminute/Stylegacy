@@ -21,6 +21,9 @@ const StoreAddModal = ({}) => {
   const [location, locationHandler, setLocation] = useInput('');
   const [checkItems, setCheckItems] = useState(new Set());
 
+  // const [newStoreAdded, setNewStoreAdded] = useState(false);
+
+
   const days = ['월', '화', '수', '목', '금', '토', '일'];
   const basicImgURL = 'https://github.com/suminute/Stylegacy/assets/92218638/9824667b-e8b9-4a4e-a271-a9d3d8341089';
   const dispatch = useDispatch();
@@ -48,6 +51,21 @@ const StoreAddModal = ({}) => {
       queryClient.invalidateQueries('stores');
     }
   });
+  // const addMutation = useMutation(addStore, {
+  //   onSuccess: () => {
+  //     setNewStoreAdded(true);
+  //   },
+  // });
+  // useEffect(() => {
+  //   if (newStoreAdded) {
+  //     const currentPage = queryClient.getQueryData(['stores', page]);
+  //     queryClient.invalidateQueries(['stores', currentPage]);
+  //     setNewStoreAdded(false);  // reset the flag
+  //   }
+  // }, [newStoreAdded]);
+  
+  
+  
 
   // 저장 버튼
   const addButtonHandler = async (e) => {
@@ -64,7 +82,8 @@ const StoreAddModal = ({}) => {
         phoneNumber: null,
         marker: { x: latLng.x, y: latLng.y },
         image: basicImgURL,
-        likeCount: 0
+        likeCount: 0,
+        createdAt: Number(new Date().getTime())
       };
 
       addMutation.mutate(newStore);

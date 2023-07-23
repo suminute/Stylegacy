@@ -30,7 +30,7 @@ const Search = () => {
             ))}
         </div> */}
       </Mapcontents>
-      {/* <KakaoMap /> */}
+      <KakaoMap />
     </Container>
   );
 };
