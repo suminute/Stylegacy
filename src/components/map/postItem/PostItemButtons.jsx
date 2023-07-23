@@ -16,6 +16,7 @@ const PostItemButtons = ({ post }) => {
   const [openMenu, setOpenMenu] = useState(false);
 
   // 좋아요
+  const [likeProcessing, setLikeProcessing] = useState(false);
   const { isLoading, data: likes } = useQuery(['likes', post.id], () => getLikes(post.id));
   const isLiked = likes ? likes.includes(userId) : undefined;
 
@@ -35,22 +36,19 @@ const PostItemButtons = ({ post }) => {
   const addLikeMutation = useMutation(addLike, {
     onSuccess: () => {
       queryClient.invalidateQueries(['likes', post.id]);
+      queryClient.invalidateQueries(['stores'], post.id);
+    },
+    onSettled: () => {
+      setLikeProcessing(false);
     }
   });
   const removeLikeMutation = useMutation(removeLike, {
     onSuccess: () => {
       queryClient.invalidateQueries(['likes', post.id]);
-    }
-  });
-  // 좋아요 수 카운트
-  const increaseLikeCountMutation = useMutation(increaseLikeCount, {
-    onSuccess: () => {
       queryClient.invalidateQueries(['stores'], post.id);
-    }
-  });
-  const decreaseLikeCountMutation = useMutation(decreaseLikeCount, {
-    onSuccess: () => {
-      queryClient.invalidateQueries(['stores'], post.id);
+    },
+    onSettled: () => {
+      setLikeProcessing(false);
     }
   });
   // 게시글 삭제 시, 해당 좋아요 문서 삭제
@@ -71,12 +69,14 @@ const PostItemButtons = ({ post }) => {
 
   // 좋아요 버튼
   const handleLikeClick = () => {
+    if (likeProcessing) {
+      return;
+    }
+    setLikeProcessing(true);
     if (isLiked) {
       removeLikeMutation.mutate({ userId, storeId: post.id });
-      decreaseLikeCountMutation.mutate(post.id);
     } else {
       addLikeMutation.mutate({ userId, storeId: post.id });
-      increaseLikeCountMutation.mutate(post.id);
     }
   };
 
@@ -85,7 +85,7 @@ const PostItemButtons = ({ post }) => {
   return (
     <StButtonContainer>
       {userId ? (
-        <StLikeButton onClick={handleLikeClick}>
+        <StLikeButton onClick={handleLikeClick} disabled={likeProcessing}>
           {isLiked ? <FaHeart size="25" color="#ce7777" /> : <FaRegHeart size="25" color="#ce7777" />}
         </StLikeButton>
       ) : (
