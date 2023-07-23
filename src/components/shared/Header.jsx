@@ -10,12 +10,14 @@ import { auth } from '../../firebase';
 import AlertModal from './AlertModal';
 import { clearUser } from '../../redux/modules/userSlice';
 import { setAlertMessage, toggleAlertModal, toggleLogInModal, toggleSignUpModal } from '../../redux/modules/modalSlice';
+import StoreUpdateModal from '../map/StoreUpdateModal';
 
 const Header = () => {
   const users = useSelector((state) => state.user);
   const { user } = users;
 
   const modals = useSelector((state) => state.modals);
+  const { isOpenUpdate } = useSelector((state) => state.storeUpdateSlice);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -38,6 +40,7 @@ const Header = () => {
 
   return (
     <>
+      {isOpenUpdate && <StoreUpdateModal></StoreUpdateModal>}
       <AlertModal
         isOpen={modals.isAlertModalOpen}
         setIsOpen={() => dispatch(toggleAlertModal())}

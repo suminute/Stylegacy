@@ -1,7 +1,6 @@
 import { getStores } from '../../api/stores';
 import { useQuery } from 'react-query';
-import PostItem from './PostItem';
-import { styled } from 'styled-components';
+import PostItem from './postItem/PostItem';
 import Loading from '../shared/Loading/Loading/Loading';
 import NotFound from '../shared/NotFound/NotFound';
 

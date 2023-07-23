@@ -53,7 +53,7 @@ function KakaoMap() {
   );
   const openModal = useCallback(
     (clickLocation) => {
-      dispatch(openMarkerStoreModal({ bool: true, clickLocation }));
+      dispatch(openStoreModal({ clickLocation, type: 'add' }));
     },
     [clickAddress]
   );
