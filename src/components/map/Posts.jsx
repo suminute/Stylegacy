@@ -1,21 +1,49 @@
-import { getStores } from '../../api/stores';
-import { useQuery } from 'react-query';
+import { getStores, getStoresByIdArray } from '../../api/stores';
+import { useInfiniteQuery, useQuery, useQueryClient } from 'react-query';
 import PostItem from './postItem/PostItem';
 import NotFound from '../shared/NotFound/NotFound';
+import { useSearchParams } from 'react-router-dom';
+import { searchStores } from '../../algoiasearch';
+import useIntersect from '../../hooks/useIntersect';
+import { useEffect } from 'react';
 import SkeletonUi from '../shared/Loading/SkeletonUi/SkeletonUi';
 
+
 const Posts = () => {
-  const { isLoading, isError, data: posts } = useQuery('stores', getStores);
+  const [searchParams,setSearchParams] = useSearchParams();
+  const name = searchParams.get('name') || '';
+  const page = searchParams.get('page') || 0;
+  const queryClient = useQueryClient();
+  const {
+    isLoading,
+    isError,
+    error,
+    data,
+    isFetching,
+    isPreviousData,
+  } = useQuery({
+    queryKey: ['stores', +page],
+    queryFn: () => searchStores(name,{page: +page}),
+    keepPreviousData : true
+  })
+
+
+  const handleChangePage = (page) => {
+    setSearchParams({name,page})
+  }
 
   if (isLoading) return <SkeletonUi />;
   if (isError) return <NotFound />;
+  console.log(data)
 
   return (
     <>
-      {posts &&
-        posts.map((post) => {
-          return <PostItem key={post.id} post={post} />;
-        })}
+      {data.hasPrevPage && <button onClick={()=>handleChangePage(+page - 1)}>Prev</button>}
+      {data.hasNextPage && <button onClick={()=>handleChangePage(+page + 1)}>Next</button>}
+    {data?.stores.map((store,i) => (
+      <PostItem key={i} post={store} />
+      // <li>{store.location}: {store.store}</li>
+    ))}
     </>
   );
 };

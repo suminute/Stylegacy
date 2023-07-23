@@ -1,7 +1,6 @@
-import { addDoc, collection, deleteDoc, doc, getDocs, query, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, documentId, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { db, storage } from '../firebase';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-
 // 데이터 조회
 const getStores = async () => {
   const q = query(collection(db, 'stores'));
@@ -43,4 +42,17 @@ const storageUpload = async ({ id, selectedFile }) => {
   }
 };
 
-export { getStores, addStore, deleteStore, updateStore, storageUpload };
+const getStoresByIdArray = async (idArray) => {
+  // console.log('idArray', idArray);
+  if (!idArray || idArray.length < 1) return [];
+  const q = query(collection(db, 'stores'), where(documentId(), 'in', idArray));
+  const querySnapshot = await getDocs(q);
+  const stores = [];
+  querySnapshot.forEach((doc) => {
+    stores.push({ id: doc.id, ...doc.data() });
+  });
+  // console.log('stores', stores);
+  return stores.sort((a, b) => b.createdAt - a.createdAt);
+};
+
+export { getStores, addStore, deleteStore, updateStore, storageUpload, getStoresByIdArray };

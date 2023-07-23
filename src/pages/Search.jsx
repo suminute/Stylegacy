@@ -20,6 +20,7 @@ const Search = () => {
   return (
     <Container style={{ height: 'calc(100vh - 75px)', overflow: 'hidden' }}>
       {isOpen && <StoreAddModal></StoreAddModal>}
+        {/* <div>
       <Mapcontents style={{ position: 'absolute !important', top: '0', left: '0' }}>
         <div>
           {data.length > 0 &&
@@ -28,7 +29,7 @@ const Search = () => {
                 {place.name} : {place.address}
               </li>
             ))}
-        </div>
+        </div> */}
       </Mapcontents>
       <KakaoMap style={{ position: 'absolute', top: '0', left: '0' }} />
     </Container>
