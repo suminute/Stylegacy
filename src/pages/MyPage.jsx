@@ -1,5 +1,5 @@
-import { useQuery } from 'react-query';
-import { Link } from 'react-router-dom';
+import { useQuery, useQueryClient } from 'react-query';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { getLikedStoresByUser } from '../api/likes';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,15 +10,26 @@ import ProfileAvatar from './../components/myPage/ProfileAvatar';
 import { togglePasswordModal, toggleProfileModal } from '../redux/modules/modalSlice';
 import Loading from '../components/shared/Loading/Loading/Loading';
 import NotFound from '../components/shared/NotFound/NotFound';
+import { useEffect } from 'react';
 
 const MyPage = () => {
   const { userName, userEmail } = useSelector(({ user }) => user.user);
-
+  const queryClient = useQueryClient();
   const modals = useSelector((state) => state.modals);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    return () => queryClient.removeQueries({ queryKey: 'myPage' });
+  }, [queryClient]);
 
   const user = useQuery({ queryKey: ['myPage'], queryFn: getCurrentUser });
   const likedStores = useQuery({ queryKey: ['likedStores'], queryFn: getLikedStoresByUser });
+
+  useEffect(() => {
+    if (user.isError) navigate('/');
+  }, [user.isError, navigate]);
+
   if (user.isLoading) return <Loading />;
   if (user.isError) return <NotFound />;
 
