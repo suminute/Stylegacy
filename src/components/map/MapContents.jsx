@@ -5,12 +5,15 @@ import Posts from './Posts';
 import SearchBar from '../shared/SearchBar';
 import { useDispatch, useSelector } from 'react-redux';
 import { openStoreModal } from '../../redux/modules/storeAddSlice';
+import AlertModal from '../shared/AlertModal';
+import { setAlertMessage, toggleAlertModal } from '../../redux/modules/modalSlice';
 
 import svgImg from '../../images/Back To.svg';
 
 const Mapcontents = () => {
   const [isOpen, setIsOpen] = useState(false);
   const user = useSelector(({ user }) => user.user);
+  const modals = useSelector((state) => state.modals);
   const dispatch = useDispatch();
   const openModal = () => {
     dispatch(openStoreModal({ type: 'add' }));
@@ -20,12 +23,20 @@ const Mapcontents = () => {
     if (user.userId) {
       openModal();
     } else {
-      window.alert('로그인 후 사용 가능합니다!');
+      dispatch(setAlertMessage('로그인 후 사용 가능합니다!'));
+      dispatch(toggleAlertModal());
     }
   };
 
   return (
     <>
+          {modals.isAlertModalOpen && (
+        <AlertModal
+          message={modals.alertMessage}
+          isOpen={modals.isAlertModalOpen}
+          setIsOpen={() => dispatch(toggleAlertModal())}
+        />
+      )}
       <StLeftBox className={isOpen ? 'toggle' : null}>
         <StDiv>
           <Form>
