@@ -110,6 +110,7 @@ const ProfileModal = ({ isOpen, setIsOpen }) => {
     if (!fileTypes.includes(type)) {
       dispatch(setAlertMessage('지원하지 않는 파일 형식입니다. 지원 형식: jpeg, png'));
       dispatch(toggleAlertModal());
+      return;
     }
     setProfileImageFile(file);
     setProfileImage(URL.createObjectURL(file));
