@@ -6,7 +6,6 @@ const initialState = {
   isAlertModalOpen: false,
   isProfileModalOpen: false,
   isPasswordModalOpen: false,
-  isConfirmModalOpen: false,
   alertMessage: ''
 };
 
@@ -29,9 +28,6 @@ const modalsSlice = createSlice({
     togglePasswordModal: (state) => {
       state.isPasswordModalOpen = !state.isPasswordModalOpen;
     },
-    toggleConfirmModal: (state) => {
-      state.isConfirmModalOpen = !state.isConfirmModalOpen;
-    },
     setAlertMessage: (state, action) => {
       state.alertMessage = action.payload;
     },
@@ -47,7 +43,6 @@ export const {
   toggleAlertModal,
   toggleProfileModal,
   togglePasswordModal,
-  toggleConfirmModal,
   setAlertMessage,
   clearAlertMessage
 } = modalsSlice.actions;

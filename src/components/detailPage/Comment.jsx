@@ -9,8 +9,7 @@ import InputText from '../shared/InputText';
 import ProfileAvatar from '../myPage/ProfileAvatar';
 import Button from '../shared/Button';
 import AlertModal from '../shared/AlertModal';
-import { setAlertMessage, toggleAlertModal, toggleConfirmModal } from '../../redux/modules/modalSlice';
-import ConfirmModal from '../shared/ConfirmModal';
+import { setAlertMessage, toggleAlertModal } from '../../redux/modules/modalSlice';
 
 const Comment = ({ comment }) => {
   const [isUpdating, setUpdating] = useState(false);
@@ -51,8 +50,9 @@ const Comment = ({ comment }) => {
 
   const handleDeleteComment = async (id) => {
     if (!id) return;
-    dispatch(setAlertMessage('이 댓글을 삭제하시겠습니까?'));
-    dispatch(toggleConfirmModal());
+    const confirm = window.confirm('이 댓글을 삭제하시겠습니까?');
+    if (!confirm) return;
+    mutationDeleteComment.mutate(id);
   };
 
   const handleUpdateComment = async (e) => {
@@ -76,14 +76,6 @@ const Comment = ({ comment }) => {
           message={modals.alertMessage}
           isOpen={modals.isAlertModalOpen}
           setIsOpen={() => dispatch(toggleAlertModal())}
-        />
-      )}
-      {modals.isConfirmModalOpen && (
-        <ConfirmModal
-          message={modals.alertMessage}
-          isOpen={modals.isConfirmModalOpen}
-          setIsOpen={() => dispatch(toggleConfirmModal())}
-          onConfirm={() => mutationDeleteComment.mutate(comment.id)}
         />
       )}
       <StComment>
