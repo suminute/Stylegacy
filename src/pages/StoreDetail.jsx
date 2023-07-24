@@ -11,13 +11,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { removeAllLike } from '../api/likes';
 import Button from './../components/shared/Button';
 import StaticMap from './../components/detailPage/StaticMap';
-import { setAlertMessage, toggleAlertModal } from '../redux/modules/modalSlice';
+import { setAlertMessage, toggleAlertModal, toggleConfirmModal } from '../redux/modules/modalSlice';
 import AlertModal from '../components/shared/AlertModal';
 import { openStoreUpdateModal } from '../redux/modules/storeUpdateSlice';
 import { deleteStore } from '../api/stores';
 import Loading from '../components/shared/Loading/Loading/Loading';
 import NotFound from '../components/shared/NotFound/NotFound';
 import SkeletonUi from '../components/shared/Loading/SkeletonUi/SkeletonUi';
+import ConfirmModal from '../components/shared/ConfirmModal';
 
 const StoreDetail = () => {
   const [inputComment, handleInputComment, setInputComment] = useInput('');
@@ -51,15 +52,17 @@ const StoreDetail = () => {
       queryClient.invalidateQueries(['likes'], data.id);
     }
   });
-  const deleteOnClickHandler = (id) => {
-    const deleteConf = window.confirm('정말 삭제하시겠습니까?');
-    if (deleteConf) {
-      deleteMutation.mutate(id);
-      removeAllLikeMutation.mutate(data.id);
-      dispatch(setAlertMessage('삭제되었습니다!'));
-      dispatch(toggleAlertModal());
-      navigate('/search');
-    }
+
+  // 게시글 삭제 버튼
+  const deleteOnClickHandler = () => {
+    dispatch(setAlertMessage('게시글을 정말 삭제하시겠습니까?'));
+    dispatch(toggleConfirmModal());
+  };
+
+  const confirmDelete = (id) => {
+    deleteMutation.mutate(id);
+    removeAllLikeMutation.mutate(data.id);
+    navigate('/search');
   };
 
   const mutationAddComment = useMutation(addComment, {
@@ -96,14 +99,20 @@ const StoreDetail = () => {
           setIsOpen={() => dispatch(toggleAlertModal())}
         />
       )}
+      {modals.isConfirmModalOpen && (
+        <ConfirmModal
+          message={modals.alertMessage}
+          isOpen={modals.isConfirmModalOpen}
+          setIsOpen={() => dispatch(toggleConfirmModal())}
+          onConfirm={() => confirmDelete(data.id)}
+        />
+      )}
       <StContainer>
         <StBox>
           <StStore>
             <StStoreCol>
               <StoreImage src={data.image} alt={data.store} width="500" height="625" />
-              <StoreButton target="_blank" href={data.site || null}>
-                {data.site ? '웹 사이트' : '웹 사이트가 없습니다'}
-              </StoreButton>
+              <StoreButton to={data.site || '#'}>{data.site ? '웹 사이트' : '웹 사이트가 없습니다'}</StoreButton>
             </StStoreCol>
             <StStoreCol>
               <StStoreInfo>
@@ -112,7 +121,7 @@ const StoreDetail = () => {
                   {userId && (
                     <StDelUpButton>
                       <StButton onClick={openUpdateModal}>수정</StButton>
-                      <StButton onClick={() => deleteOnClickHandler(data.id)}>삭제</StButton>
+                      <StButton onClick={deleteOnClickHandler}>삭제</StButton>
                     </StDelUpButton>
                   )}
                 </StStoreTitle>
@@ -199,7 +208,7 @@ const StCommentsCount = styled.span`
   font-weight: 900;
 `;
 
-const StoreButton = styled.a`
+const StoreButton = styled(Link)`
   text-align: center;
   padding: 0.6em;
   font-size: 1.5rem;
