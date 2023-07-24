@@ -1,5 +1,5 @@
 import { createPortal } from 'react-dom';
-import { styled } from 'styled-components';
+import styled from 'styled-components';
 import { useCallback, useEffect } from 'react';
 import Button from './Button';
 import { useDispatch } from 'react-redux';
@@ -7,22 +7,24 @@ import { clearAlertMessage } from '../../redux/modules/modalSlice';
 
 export const PORTAL_MODAL = 'portal-root';
 
-const AlertModal = ({ isOpen, setIsOpen, message }) => {
-  // 모달 닫힐 때 alertMessage 초기화
+const ConfirmModal = ({ isOpen, setIsOpen, message, onConfirm }) => {
   const dispatch = useDispatch();
 
-  // 모달 닫기
   const closeHandler = useCallback(() => {
     setIsOpen(false);
     dispatch(clearAlertMessage());
   }, [setIsOpen, dispatch]);
 
-  // 엔터 키 눌렀을 때도 모달창 닫히도록
+  const confirmHandler = useCallback(() => {
+    onConfirm();
+    closeHandler();
+  }, [onConfirm, closeHandler]);
+
   useEffect(() => {
     const enterKeyHandler = (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
-        closeHandler();
+        confirmHandler();
       }
     };
     if (isOpen) {
@@ -31,7 +33,7 @@ const AlertModal = ({ isOpen, setIsOpen, message }) => {
     return () => {
       window.removeEventListener('keydown', enterKeyHandler);
     };
-  }, [isOpen, closeHandler]);
+  }, [isOpen, confirmHandler]);
 
   const stopPropagation = (e) => {
     e.stopPropagation();
@@ -41,11 +43,14 @@ const AlertModal = ({ isOpen, setIsOpen, message }) => {
     ? createPortal(
         <Outer onClick={closeHandler}>
           <Inner onClick={stopPropagation}>
-            <StHeader>팝업창입니다.</StHeader>
+            <StHeader>확인창입니다.</StHeader>
             <StMain>
               <div>{message}</div>
-              <StButton color="navy" size="small" onClick={closeHandler}>
+              <StButton color="navy" size="small" onClick={confirmHandler} type="button">
                 확인
+              </StButton>
+              <StButton color="navy" size="small" onClick={closeHandler}>
+                취소
               </StButton>
             </StMain>
           </Inner>
@@ -55,7 +60,7 @@ const AlertModal = ({ isOpen, setIsOpen, message }) => {
     : null;
 };
 
-export default AlertModal;
+export default ConfirmModal;
 
 const Outer = styled.div`
   position: fixed;
@@ -69,7 +74,7 @@ const Outer = styled.div`
   z-index: 100;
 `;
 
-const Inner = styled.form`
+const Inner = styled.div`
   width: 90%;
   max-width: 400px;
   margin-top: 30px;
