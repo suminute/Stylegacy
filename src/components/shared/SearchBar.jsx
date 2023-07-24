@@ -4,19 +4,22 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 import IconButton from '../detailPage/IconButton';
 import { MagnifyingGlass } from '@phosphor-icons/react';
+import { useQueryClient } from 'react-query';
 
 const SearchBar = ({ size, ...props }) => {
   const [searchText, setSearchText] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-
+  const queryClient = useQueryClient()
   const handleSubmit = (e) => {
     e.preventDefault();
     if (location.pathname === '/search') {
-      return setSearchParams({ name: searchText });
+      setSearchParams({ name: searchText });
+    } else {
+      navigate(`/search?name=${searchText}`);
     }
-    return navigate(`/search?name=${searchText}`);
+    queryClient.invalidateQueries('stores')
   };
 
   const handleChange = (e) => {
