@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import footMarkerRed from '../../images/footprint_marker_red.svg';
 import footMarkerPink from '../../images/footprint_marker_pink.svg';
 import { MapMarker } from 'react-kakao-maps-sdk';
@@ -9,6 +9,11 @@ import Button from './../shared/Button';
 function KakaoCustomInfo({ setLatitude, setLongitude, data }) {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    setIsOpen(false);
+  }, [data]);
+
   return (
     <>
       <MapMarker
